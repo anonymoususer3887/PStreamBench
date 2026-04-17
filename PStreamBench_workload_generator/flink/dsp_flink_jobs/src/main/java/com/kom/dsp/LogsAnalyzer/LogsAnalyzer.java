@@ -1,0 +1,150 @@
+package com.kom.dsp.LogsAnalyzer;
+
+import com.kom.dsp.utils.Constants;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.connector.sink2.Sink;
+import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.core.execution.JobClient;
+import org.apache.flink.streaming.api.TimeCharacteristic;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+
+import java.util.concurrent.CompletableFuture;
+
+public class LogsAnalyzer {
+    public static void main(String[] args) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.getConfig().setLatencyTrackingInterval(10);
+        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+        //env.getConfig().setAutoWatermarkInterval(1000);
+        System.out.println("[main] Execution environment created.");
+
+        ParameterTool params = ParameterTool.fromArgs(args);
+
+        String parallelism = params.get("parallelism").replace(" ","").replace("[","").replace("]","").replace("'","");
+        String[] parallelism_degree = parallelism.split(",");
+        long secondsToWait = Long.parseLong(params.get("waitTimeToCancel"));
+        String mode = params.get("mode");
+        String input = params.get("input");// Contains LOG_PROCESSINGIN
+        String output = params.get("output");
+        String bootstrapServer;
+        int query = Integer.parseInt(params.get("query"));
+        int slidingWindowSize = Integer.parseInt(params.get("size")); // important to implement
+        int slidingWindowSlide = Integer.parseInt(params.get("slide"));
+        int watermarkLateness = Integer.parseInt(params.get("lateness"));
+        int topicPopularityThreshold = Integer.parseInt(params.get("popularityThreshold"));
+        env.setParallelism(Integer.parseInt(parallelism_degree[0]));
+
+
+        DataStream<String> source = null;
+        Sink sink = null;
+        if (mode.equalsIgnoreCase(Constants.FILE)) {
+        } else {
+            if (mode.equalsIgnoreCase(Constants.KAFKA)) {
+                bootstrapServer = params.get("kafka-server");
+                System.out.println("[main] Arguments parsed.");
+                KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
+                        .setBootstrapServers(bootstrapServer)
+                        .setTopics(input)
+                        .setGroupId("my-group")
+                        .setProperty("fetch.min.bytes", "100000")
+                        .setProperty("fetch.max.wait.ms", "50")
+                        .setValueOnlyDeserializer(new SimpleStringSchema())
+                        .setStartingOffsets(OffsetsInitializer.latest())
+                        .build();
+                source = env.fromSource(
+                        kafkaSource,
+                        WatermarkStrategy.noWatermarks(),
+                        "kafka-source")
+                        .setParallelism(Integer.parseInt(parallelism_degree[0]));
+
+                KafkaSink<String> kafkaSink = KafkaSink.<String>builder()
+                        .setBootstrapServers(bootstrapServer)
+                        .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                                .setTopic(output)
+                                .setValueSerializationSchema(new SimpleStringSchema())
+                                .build()
+                        )
+                        .setProperty("batch.size", "200000")
+                        .setProperty("batch.num.messages", "200000")
+                        .setProperty("linger.ms", "10")
+                        .setProperty("compression.type", "lz4")
+                        .setProperty("acks", "1")
+                        .build();
+                sink = kafkaSink;
+            } else {
+                throw new IllegalArgumentException("The only supported modes are \"file\" and \"kafka\".");
+            }
+        }
+
+        System.out.println("[main] Source and Sink created.");
+        
+        DataStream<LogEvent> parsedEntries = source
+            .map(new LogParser())
+            .name("Log-parser")
+            .setParallelism(Integer.parseInt(parallelism_degree[1]));
+
+        // For Volume counter
+        if (query == 1) {
+            DataStream<String> volumeCounterStream = parsedEntries
+                .keyBy(value -> value.getLogTime())
+                .window(SlidingProcessingTimeWindows.of(Time.milliseconds(slidingWindowSize), Time.milliseconds(slidingWindowSlide)))
+                .process(new VolumeCounter())
+                .name("volume-counter")
+                .setParallelism(Integer.parseInt(parallelism_degree[2]));
+
+            System.out.println("[main] VolumeCounter [Query 1] operator created.");
+
+            if (mode.equalsIgnoreCase(Constants.FILE)) {
+                volumeCounterStream.sinkTo(sink).name("file-sink");
+            }
+            if (mode.equalsIgnoreCase(Constants.KAFKA)) {
+                volumeCounterStream.sinkTo(sink).name("kafka-sink")
+                    .setParallelism(Integer.parseInt(parallelism_degree[3]));
+            }
+
+            System.out.println("[main] VolumeCounter [Query 1] sink created.");
+
+        } else if (query == 2) {
+            DataStream<String> statusCounterStream = parsedEntries
+                .keyBy(value -> value.getLogTime())
+                .window(SlidingProcessingTimeWindows.of(Time.milliseconds(slidingWindowSize), Time.milliseconds(slidingWindowSlide)))
+                .process(new StatusCounter())
+                .name("status-counter")
+                .setParallelism(Integer.parseInt(parallelism_degree[2]));
+
+            System.out.println("[main] StatusCounter [Query 2] operator created.");
+
+            if (mode.equalsIgnoreCase(Constants.FILE)) {
+                statusCounterStream.sinkTo(sink).name("file-sink");
+            }
+            if (mode.equalsIgnoreCase(Constants.KAFKA)) {
+                statusCounterStream.sinkTo(sink).name("kafka-sink")
+                    .setParallelism(Integer.parseInt(parallelism_degree[3]));
+            }
+
+            System.out.println("[main] StatusCounter [Query 2] sink created.");
+            
+        }
+        env.disableOperatorChaining();
+        //env.execute("Google Cloud Monitoring");
+
+        JobClient client = env.executeAsync("Logs Processing");
+        System.out.println("Time to cancel activate execution");
+        long start = System.currentTimeMillis();
+        long end = start + secondsToWait * 1000;
+        while (System.currentTimeMillis() < end) {
+            // Some expensive operation on the item.
+        }
+        CompletableFuture<Void> future=client.cancel();
+
+        System.out.println("Job should be cancelled "+future.isDone());
+    }
+}

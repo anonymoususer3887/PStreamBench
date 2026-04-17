@@ -1,0 +1,55 @@
+package com.kom.dsp.tpch;
+
+import java.util.Map;
+
+import org.apache.storm.task.OutputCollector;
+import org.apache.storm.task.TopologyContext;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.base.BaseRichBolt;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
+import com.kom.dsp.utils.KafkaUtils;
+
+
+public class TPCHEventParserBolt extends BaseRichBolt{
+    private OutputCollector collector;
+
+    @Override
+    public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
+        this.collector = outputCollector;
+        System.out.println("Preparing ParserBolt");
+    }
+
+    @Override
+    public void execute(Tuple tuple) {
+        long processingTimestamp = System.currentTimeMillis();
+        try {
+            long e2eTimestamp = tuple.getLongByField("e2eTimestamp");
+            String line = tuple.getStringByField("value");
+
+            String[] fields = line.split(",");
+            if(fields.length == 6){
+                String orderKey  = fields[0];
+                String cname = fields[1];
+                String caddress = fields[2];
+                int orderPriority     = Integer.parseInt(fields[3]);
+                double extendedPrice   = Double.parseDouble(fields[4]);
+                double discount   = Double.parseDouble(fields[5]);
+
+                TPCHEventModel event = new TPCHEventModel(orderKey, cname, caddress, orderPriority, extendedPrice, discount);
+                collector.emit(new Values(discount, event, e2eTimestamp, processingTimestamp));
+            }
+            collector.ack(tuple);
+        } catch (Exception e) {
+            e.printStackTrace();
+            collector.fail(tuple);
+        }
+    }
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields("discount", "tpchEvent","e2eTimestamp","processingTimestamp"));
+    }
+    
+}
