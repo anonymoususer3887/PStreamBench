@@ -1,0 +1,11 @@
+{
+    "job_framework": "Apache Flink",
+    "job_iteration": 3,
+    "job_sample": 0,
+    "job_run_time": "6",
+    "job_parallelization": "20,20,20,20",
+    "job_query_number": "1",
+    "job_window_size": "573",
+    "job_window_slide_size": "13",
+    "producer_event_per_second": "500000"
+}
