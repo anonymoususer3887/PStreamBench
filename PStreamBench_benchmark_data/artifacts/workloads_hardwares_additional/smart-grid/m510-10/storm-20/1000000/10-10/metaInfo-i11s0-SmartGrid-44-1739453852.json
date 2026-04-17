@@ -1,0 +1,15 @@
+{
+    "job_framework": "Apache Storm",
+    "job_iteration": 11,
+    "job_sample": 0,
+    "job_run_time": "6",
+    "job_parallelization": "60,60,60,60,60,60,60",
+    "job_query_number": "1",
+    "job_window_size": "10",
+    "job_window_slide_size": "10",
+    "producer_event_per_second": "1000000",
+    "cluster_hardware_type": "m510",
+    "cluster_nodes": "10",
+    "cluster_slots_per_node": "2",
+    "enumeration_strategy": "Custom"
+}
