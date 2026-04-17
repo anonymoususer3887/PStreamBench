@@ -1,0 +1,10 @@
+storm.zookeeper.servers:
+- localhost
+storm.local.dir: /tmp/storm
+nimbus.seeds:
+- node0.ddirks-209796.maki-test-pg0.utah.cloudlab.us
+supervisor.slots.ports:
+- 6700
+- 6701
+- 6702
+- 6703

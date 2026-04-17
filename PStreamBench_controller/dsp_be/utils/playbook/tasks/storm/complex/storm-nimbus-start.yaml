@@ -1,0 +1,29 @@
+---
+- name: Start Storm Nimbus
+  command: "nohup sudo /bin/bash {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm nimbus &"
+  ignore_errors: true
+  timeout: 10
+
+- name: Start Storm UI
+  command: "nohup sudo /bin/bash {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm ui &"
+  ignore_errors: true
+  timeout: 10
+
+- name: Wait for Storm UI
+  ansible.builtin.wait_for:
+    port: 8080
+
+- name: 5 second pause
+  pause:
+    seconds: 5
+
+- name: Create Prometheus Storm Exporter Script 
+  copy:
+    content: "while true; do python {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm_exporter.py localhost:8080 9093 1; sleep 5; done"
+    dest: "{{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm_exporter.sh"
+    mode: "a+x"
+
+- name: Start Prometheus Storm Exporter
+  command: "nohup {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm_exporter.sh"
+  async: 45000
+  poll: 0

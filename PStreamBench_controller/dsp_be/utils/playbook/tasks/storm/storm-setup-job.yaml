@@ -1,0 +1,7 @@
+---
+
+- name: Copy job JAR to Storm in Remote machine.
+  ansible.builtin.copy:
+    src: "{{ BASE_DIR }}/infra/storm_files/dsp_storm_jobs-1.0-SNAPSHOT-all.jar"
+    dest: "{{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin"
+  

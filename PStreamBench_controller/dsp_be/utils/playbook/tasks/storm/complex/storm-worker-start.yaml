@@ -1,0 +1,10 @@
+---
+- name: Start Storm Worker
+  command: "nohup sudo /bin/bash {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm supervisor &"
+  ignore_errors: true
+  timeout: 10
+
+- name: Start Storm Logviewer
+  command: "nohup sudo /bin/bash {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm logviewer &"
+  ignore_errors: true
+  timeout: 10

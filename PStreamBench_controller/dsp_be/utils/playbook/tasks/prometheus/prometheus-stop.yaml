@@ -1,0 +1,8 @@
+---
+
+- name: Stop Prometheus
+  shell: sudo fuser -k -n tcp 9090
+  ignore_errors: true
+  timeout: 10
+  tags:
+    - stop

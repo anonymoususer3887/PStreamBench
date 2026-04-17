@@ -1,0 +1,13 @@
+enumeration_strategy,model_template_name,evaluation_metric,hardware_configuration,50percentile,95percentile,99percentile
+random,template1+2+3,latency,heterogeneous,1.2814990282058716,3.5875483036041262,6.981468544006348
+random,template1+2+3,latency,homogeneous,1.2551539540290833,3.136387670040129,6.942665920257571
+random,template1+2+3,latency,seen,1.2854,3.0896,6.2330
+random,template1+2+3,throughput,heterogeneous,1.4810798168182373,4.729809856414796,12.575616035461426
+random,template1+2+3,throughput,homogeneous,1.426186978816986,4.132790732383712,9.25832781791688
+random,template1+2+3,throughput,seen,1.4745,5.1004,13.8603
+rulebased,template1+2+3,latency,heterogeneous,1.8959603309631348,11.167038536071782,20.368242721557618
+rulebased,template1+2+3,latency,homogeneous,1.9501917958259583,12.8260682106018,24.08688419342041
+rulebased,template1+2+3,latency,seen,1.3043,3.3456,5.6544
+rulebased,template1+2+3,throughput,heterogeneous,4.181948661804199,143.91074218750006,402.35486572265626
+rulebased,template1+2+3,throughput,homogeneous,3.088096857070923,64.06577186584461,248.64910964965856
+rulebased,template1+2+3,throughput,seen,1.5704,6.8195,14.9193

@@ -1,0 +1,8 @@
+---
+
+- name: Kill job on flink cluster
+  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/flink-1.16.0/bin/flink cancel '{{ job_id }}'"
+  async: 45000
+  poll: 0
+  tags:
+    - stop

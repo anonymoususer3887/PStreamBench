@@ -1,0 +1,10 @@
+---
+- name: Kill job on cluster
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/flink/flink-kill-job.yaml"
+      tags:
+        - "flink-kill-job"

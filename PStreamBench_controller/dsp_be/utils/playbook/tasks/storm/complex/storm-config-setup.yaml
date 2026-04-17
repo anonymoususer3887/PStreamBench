@@ -1,0 +1,4 @@
+---
+
+- name: Copy Storm config
+  template: src="{{ BASE_DIR }}/infra/storm_files/storm.yaml" dest="{{ INSTALLATION_DIR }}/apache-storm-2.6.2/conf" mode=0777

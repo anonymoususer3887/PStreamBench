@@ -1,0 +1,10 @@
+---
+- name: Stop Storm in worker nodes
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "./tasks/storm/complex/storm-worker-stop.yaml"
+      tags:
+        - "storm-stop"

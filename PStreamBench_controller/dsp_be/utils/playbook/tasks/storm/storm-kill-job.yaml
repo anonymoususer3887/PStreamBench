@@ -1,0 +1,8 @@
+---
+
+- name: Kill job on storm cluster
+  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm kill '{{ job_name }}' -w 0"
+  ignore_errors: true
+  timeout: 10
+  tags:
+    - stop

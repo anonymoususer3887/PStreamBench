@@ -1,0 +1,25 @@
+global: {scrape_interval: 1s, evaluation_interval: 1s}
+scrape_configs:
+- job_name: jobmanager
+  static_configs:
+  - targets: ['localhost:9250']
+- job_name: taskmanager
+  static_configs:
+  - targets: ['node1.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9250', 'node2.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9250',
+      'node3.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9250', 'node4.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9250',
+      'node5.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9250']
+- job_name: kafka
+  static_configs:
+  - targets: ['localhost:7075', 'node1:7075', 'node2:7075', 'node3:7075', 'node4:7075',
+      'node5:7075']
+- job_name: node_exporter
+  static_configs:
+  - targets: ['node1.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9100', 'node2.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9100',
+      'node3.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9100', 'node4.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9100',
+      'node5.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:9100']
+- job_name: push_gateway
+  static_configs:
+  - targets: ['localhost:9091']
+- job_name: storm_exporter
+  static_configs:
+  - targets: ['localhost:9093']

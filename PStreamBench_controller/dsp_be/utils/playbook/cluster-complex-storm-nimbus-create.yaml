@@ -1,0 +1,28 @@
+---
+- name: Install and start Storm Nimbus in master node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "./tasks/storm/complex/storm-config-setup.yaml"
+      tags:
+        - "storm-config-setup"
+    - include_tasks: "./tasks/storm/complex/storm-nimbus-start.yaml"
+      tags:
+        - "storm-start"
+    - include_tasks: "./tasks/prometheus/prometheus-config-setup.yaml"
+      tags:
+        - "prometheus-config-setup"
+    - include_tasks: "./tasks/prometheus/prometheus-start.yaml"
+      tags:
+        - "prometheus-start"
+    - include_tasks: "./tasks/push-gateway/push-gateway-start.yaml"
+      tags:
+        - "prometheus-start"
+    - include_tasks: "./tasks/grafana/grafana-unzip.yaml"
+      tags:
+        - "grafana-unzip"
+    - include_tasks: "./tasks/grafana/grafana-start.yaml"
+      tags:
+        - "grafana-start"

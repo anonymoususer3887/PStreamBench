@@ -1,0 +1,14 @@
+---
+- name: Install and start Storm in worker nodes
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "./tasks/storm/complex/storm-config-setup.yaml"
+      tags:
+        - "storm-config-setup"
+    - include_tasks: "./tasks/storm/complex/storm-worker-start.yaml"
+      tags:
+        - "storm-start"
+    - include_tasks: "./tasks/node-exporter/node-exporter-start.yaml"

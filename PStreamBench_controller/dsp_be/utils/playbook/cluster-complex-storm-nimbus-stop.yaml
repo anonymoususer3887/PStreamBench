@@ -1,0 +1,16 @@
+---
+- name: Stop Storm Nimbus in alpha node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/storm/complex/storm-nimbus-stop.yaml"
+      tags:
+        - "storm-start"
+    - include_tasks: "tasks/prometheus/prometheus-stop.yaml"
+      tags:
+        - "prometheus-start"
+    - include_tasks: "tasks/grafana/grafana-stop.yaml"
+      tags:
+        - "grafana-start"

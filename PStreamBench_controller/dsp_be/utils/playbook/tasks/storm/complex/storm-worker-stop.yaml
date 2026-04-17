@@ -1,0 +1,5 @@
+---
+- name: Stop Storm Worker
+  command: "sudo killall java"
+  ignore_errors: true
+  timeout: 10

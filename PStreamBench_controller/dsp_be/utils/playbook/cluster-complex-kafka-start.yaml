@@ -1,0 +1,9 @@
+- name: Configure and start Kafka cluster
+  hosts: all
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/kafka/kafka-start.yaml"
+      tags:
+        - "kafka-start"

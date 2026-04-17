@@ -1,0 +1,16 @@
+---
+- name: Start Storm Nimbus in alpha node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/storm/complex/storm-nimbus-start.yaml"
+      tags:
+        - "storm-start"
+    - include_tasks: "tasks/prometheus/prometheus-start.yaml"
+      tags:
+        - "prometheus-start"
+    - include_tasks: "tasks/grafana/grafana-start.yaml"
+      tags:
+        - "grafana-start"
