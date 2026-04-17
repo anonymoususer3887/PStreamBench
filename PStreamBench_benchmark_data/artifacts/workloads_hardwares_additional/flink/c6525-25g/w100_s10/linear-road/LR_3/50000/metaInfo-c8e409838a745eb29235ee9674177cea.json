@@ -1,0 +1,8 @@
+{
+    "job_run_time": "3",
+    "job_parallelization": "64,64,64",
+    "job_query_number": "3",
+    "job_window_size": "100",
+    "job_window_slide_size": "10",
+    "producer_event_per_second": "50000"
+}
