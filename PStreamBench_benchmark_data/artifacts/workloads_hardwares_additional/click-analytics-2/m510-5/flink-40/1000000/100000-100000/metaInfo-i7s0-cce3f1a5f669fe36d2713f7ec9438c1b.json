@@ -1,0 +1,15 @@
+{
+    "job_framework": "Apache Flink",
+    "job_iteration": 7,
+    "job_sample": 0,
+    "job_run_time": "6",
+    "job_parallelization": "40,40,40,40,40",
+    "job_query_number": "3",
+    "job_window_size": "100000",
+    "job_window_slide_size": "100000",
+    "producer_event_per_second": "1000000",
+    "cluster_hardware_type": "m510",
+    "cluster_nodes": "5",
+    "cluster_slots_per_node": "8",
+    "enumeration_strategy": "Custom"
+}
