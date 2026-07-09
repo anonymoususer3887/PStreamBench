@@ -1,11 +1,21 @@
 # Install python 3.10, java 11 openjdk
-sudo mkdir /home/playground 
+sudo mkdir /home/playground
 sudo /usr/local/etc/emulab/mkextrafs.pl -f /home/playground
 sudo mkdir /home/playground/kafka-logs
 sudo mkdir /home/playground/zip
-sudo mkdir ~/.kaggle
+sudo mkdir -p ~/.kaggle
 cp /local/repository/kaggle.json ~/.kaggle
 chmod 600 ~/.kaggle/kaggle.json
+# When this script is run as `sudo bash pre_conditioning.sh`, everything above
+# (the freshly-mounted /home/playground tree and ~/.kaggle, even though `~`
+# still expands to the invoking user's home) ends up owned by root -- later,
+# unprivileged steps (e.g. download_datasets.sh's `kaggle datasets download`)
+# can't write/read them. Hand ownership back to whoever invoked sudo. Services
+# that need root (Kafka, Spark, ...) are started with their own explicit sudo
+# in the Ansible playbooks regardless of file ownership, so this is safe.
+if [ -n "$SUDO_USER" ]; then
+    sudo chown -R "$SUDO_USER" ~/.kaggle /home/playground
+fi
 # EXPORT variables for custom producer
 sudo update-locale LC_ALL=C.UTF-8
 sudo update-locale LANG=C.UTF-8

@@ -62,6 +62,18 @@ curl -0 https://archive.apache.org/dist/storm/apache-storm-2.6.2/apache-storm-2.
 # Unzip flink to playgrounds directory
 tar zxf /home/playground/zip/storm.tar.gz -C /home/playground/
 
+# Downloading spark (Standalone mode -- no Hadoop/YARN cluster required, same as
+# how Flink/Storm run standalone here; -bin-hadoop3 build still bundles the
+# client libraries the Kafka connector needs)
+curl -0 https://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz --output /home/playground/zip/spark.tgz
+# Unzip spark to playgrounds directory
+tar zxf /home/playground/zip/spark.tgz -C /home/playground/
+
+# Unlike Flink's dsp_jobs jar, dsp_spark_jobs is not baked in here (same as
+# Storm's dsp_storm_jobs) -- it is built locally and copied to the cluster by
+# the controller's spark-setup-job.yaml at job-submission time instead. See
+# PStreamBench_workload_generator/spark/dsp_spark_jobs.
+
 # Copy oshi,jna and jna_platform
 cp /local/repository/jna-platform-5.10.0.jar /home/playground/flink-1.16.2/lib
 cp /local/repository/jna-5.10.0.jar /home/playground/flink-1.16.2/lib
@@ -90,7 +102,7 @@ tar zxf /home/playground/zip/grafana.tar.gz -C /home/playground/
 
 
 # Download kafka
-curl -L https://downloads.apache.org/kafka/3.8.0/kafka_2.12-3.8.0.tgz > /home/playground/zip/kafka.tgz
+curl -L https://archive.apache.org/dist/kafka/3.8.0/kafka_2.12-3.8.0.tgz > /home/playground/zip/kafka.tgz
 
 # Unzip kafka to playgrounds directory
 tar zxf /home/playground/zip/kafka.tgz -C /home/playground/
@@ -108,6 +120,12 @@ cp /local/repository/jmx_prometheus_javaagent.jar /home/playground/kafka_2.12/li
 
 # Copy prometheus exporter config
 cp /local/repository/jmx_exporter.yml /home/playground/kafka_2.12/config/jmx_exporter.yml
+
+# Enable Spark's own PrometheusServlet (spark.metrics.conf on the shared
+# spark-submit command points here) -- powers both the built-in
+# spark_streaming_* query metrics and the custom OperatorMetricsSource
+# gauges, scraped by the "spark_driver" Prometheus target.
+cp /local/repository/spark-metrics.properties /home/playground/spark-3.5.1-bin-hadoop3/conf/metrics.properties
 
 #rm -r /local/repository
 

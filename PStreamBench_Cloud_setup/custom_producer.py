@@ -57,8 +57,7 @@ def wordcount(event_per_second, kafka_bootstrap_server, kafka_input_topic):
 
     logging.info("\n\t\t\tKafka publishing on topic " + kafka_input_topic + "\n")
     producer_conf = {
-        #'bootstrap.servers': kafka_bootstrap_server,#'localhost:9092',
-        'bootstrap.servers': 'localhost:9092',
+        'bootstrap.servers': kafka_bootstrap_server,
         'client.id': socket.gethostname(),
         'message.max.bytes': 1000000000,
         'queue.buffering.max.messages': 1000000000,
@@ -69,7 +68,7 @@ def wordcount(event_per_second, kafka_bootstrap_server, kafka_input_topic):
         'acks': '0',
     }
     producer = Producer(producer_conf)
-    
+
 
     # Open the file in read mode
     with open(BASE_DIR+FILE_NAME_WC, 'r') as file:
@@ -176,8 +175,7 @@ def event_producer(event_per_second, kafka_bootstrap_server, kafka_input_topic, 
         #print('LRB read_data_file called')
     
     producer_conf = {
-        #'bootstrap.servers': kafka_bootstrap_server,
-        'bootstrap.servers': 'localhost:9092',
+        'bootstrap.servers': kafka_bootstrap_server,
         'client.id': socket.gethostname(),
         'message.max.bytes': 1000000000,
         'queue.buffering.max.messages': 1000000000,
