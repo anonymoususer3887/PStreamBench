@@ -1,0 +1,10 @@
+---
+- name: Stop Spark worker in beta nodes
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/complex/spark-worker-stop.yaml"
+      tags:
+        - "spark-stop"

@@ -1,0 +1,14 @@
+---
+
+# Spark Standalone client-mode submissions have no cancel-by-id API (unlike
+# Flink's "flink cancel <job_id>" or Storm's topology kill) -- the
+# spark-submit process itself is the driver. WordCountJob already
+# self-terminates via query.awaitTermination(waitTimeToCancel), so this is
+# only a safety net for the case where is_terminated() finds it still
+# running after that deadline.
+- name: Kill job on spark cluster
+  shell: "sudo pkill -f 'spark-submit.*{{ job_name }}' || true"
+  ignore_errors: true
+  timeout: 10
+  tags:
+    - stop

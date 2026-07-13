@@ -5,6 +5,22 @@ import os
 import shutil
 import requests
 import yaml
+
+# Must be set before any ansible.* import: ansible.constants resolves config
+# values at import time, so setting this env var later (e.g. inside a
+# request handler) is too late even across server restarts if the module
+# was already imported once this process started.
+#
+# The "Timeout (Ns) waiting for privilege escalation prompt" failures seen
+# under load are NOT controlled by become_timeout (not even a real ansible
+# config key in this version) -- ssh.py computes that wait as
+# `2 + self.get_option('timeout')`, i.e. 2 seconds plus the general
+# connection timeout. Since context.CLIARGS below never sets 'timeout',
+# that resolves to 0 through this in-process PlaybookExecutor/DataLoader
+# usage (unlike the ansible-playbook CLI, which would pick up ansible.cfg's
+# timeout=10 default), giving exactly the observed 2s. Set it directly.
+os.environ.setdefault("ANSIBLE_TIMEOUT", "30")
+
 from ansible import context
 from ansible.cli import CLI
 from ansible.executor.playbook_executor import PlaybookExecutor
@@ -19,7 +35,7 @@ from yaml.loader import SafeLoader
 
 from infra.models import Cluster, Nodes
 from infra.runner import JobRunner
-from utils import constants_flink, constants_storm
+from utils import constants_flink, constants_storm, constants_spark
 
 
 def getprom_manipulataion(configs, getprompath):
@@ -78,8 +94,8 @@ def grafana_manipulation(configs, clusterjsonpath):
 def _configure_and_run_playbooks(ansible_script_name, extravar=None,distributed=False):
     """ Configure the playbook
     """
-    
-    
+
+
     context.CLIARGS = ImmutableDict(connection='local', syntax=False, module_path=None, start_at_task=None,
                                     forks=10, become=None,
                                     become_method=None, become_user=None, check=False, diff=False)
@@ -190,7 +206,40 @@ def _storm_config_manipulation(configs, nimbus, node):
     return target
 
 
-def _prometheus_config_manipulation(nodes):
+def _spark_config_manipulation(configs, master, worker):
+    """ Edit and save spark-defaults.conf + spark-env.sh, mirroring
+        _flink_config_manipulation()'s "copy sample -> substitute -> write"
+        pattern. Called once per node (like _flink_config_manipulation),
+        so 'worker' is the node this particular spark-env.sh is destined
+        for (== master when configuring the master's own node).
+    """
+
+    worker_cores = int(configs["cluster_tm_slots"])
+    total_cores = max(worker_cores * int(configs["cluster_num_tm"]), 1)
+
+    conf_source = 'infra/spark_files/sample-spark-defaults.conf'
+    conf_target = 'infra/spark_files/spark-defaults.conf'
+    with open(conf_source) as f:
+        content = f.read()
+    content = content.replace('__MASTER_HOST__', master)
+    content = content.replace('__WORKER_CORES_TOTAL__', str(total_cores))
+    with open(conf_target, 'w') as f:
+        f.write(content)
+
+    env_source = 'infra/spark_files/sample-spark-env.sh'
+    env_target = 'infra/spark_files/spark-env.sh'
+    with open(env_source) as f:
+        content = f.read()
+    content = content.replace('__MASTER_HOST__', master)
+    content = content.replace('__WORKER_CORES__', str(worker_cores))
+    content = content.replace('__LOCAL_HOST__', worker)
+    with open(env_target, 'w') as f:
+        f.write(content)
+
+    return conf_target
+
+
+def _prometheus_config_manipulation(nodes, main_node=None):
     """ Edit and save the configs
     """
     # Creating a flink conf file from a default conf file
@@ -212,6 +261,13 @@ def _prometheus_config_manipulation(nodes):
     prometheus_configs['scrape_configs'][1]['static_configs'][0]['targets'] = tm_nodes
     prometheus_configs['scrape_configs'][2]['static_configs'][0]['targets'] = kafka_nodes
     prometheus_configs['scrape_configs'][3]['static_configs'][0]['targets'] = exporter_nodes
+
+    if main_node is not None:
+        # Spark's driver UI/metrics servlet binds to the node's own
+        # hostname (e.g. "ms1303:4040"), not localhost/0.0.0.0, so this
+        # can't be a static "localhost" target like kafka/push_gateway.
+        main_node_short = main_node.split(".")[0]
+        prometheus_configs['scrape_configs'][6]['static_configs'][0]['targets'] = ['{0}:4040'.format(main_node_short)]
 
     # Dump the new configs
     with open(target, 'w') as f:
@@ -326,7 +382,7 @@ class AnsibleClusterCreate(View):
         for count in range(1, int(configs['cluster_num_tm'])+1):
             tm_nodes.append(nodes_free[count].domain_name)
         tmgr_list = ','.join(tm_nodes)
-        _prometheus_config_manipulation(tm_nodes)
+        _prometheus_config_manipulation(tm_nodes, main_node=nodes_free[0].domain_name)
 
         # setup Zookeeper and Kafka
         kafka_nodes = []
@@ -375,6 +431,23 @@ class AnsibleClusterCreate(View):
                                     'user': nodes_free[count].user}]}
                 _inventory_manipulation(hosts)
                 _configure_and_run_playbooks("/cluster-complex-storm-worker-create.yaml",
+                                             distributed=True)
+        elif configs["cluster_type"] == "Apache Spark":
+            _spark_config_manipulation(configs,
+                                       master=nodes_free[0].domain_name.split(".")[0],
+                                       worker=nodes_free[0].domain_name.split(".")[0])
+            _configure_and_run_playbooks("/cluster-complex-spark-master-create.yaml",
+                                         distributed=True)
+
+            for count in range(1, int(configs['cluster_num_tm'])+1):
+                _spark_config_manipulation(configs,
+                                           master=nodes_free[0].domain_name.split(".")[0],
+                                           worker=nodes_free[count].domain_name.split(".")[0])
+                hosts = {'betas': [{'host_name': nodes_free[count].domain_name,
+                                    'user': nodes_free[count].user}]}
+                _inventory_manipulation(hosts)
+                _configure_and_run_playbooks("/cluster-complex-spark-worker-create.yaml",
+                                             extravar={"main_ip": nodes_free[0].domain_name.split(".")[0]},
                                              distributed=True)
 
         Cluster.objects.create(name=configs["cluster_name"],
@@ -439,6 +512,11 @@ class AnsibleClusterStart(View):
         elif cluster.cluster_type == "Apache Storm":
             _configure_and_run_playbooks('/cluster-complex-storm-nimbus-start.yaml', distributed=True)
             _configure_and_run_playbooks('/cluster-complex-storm-worker-start.yaml', distributed=True)
+        elif cluster.cluster_type == "Apache Spark":
+            _configure_and_run_playbooks('/cluster-complex-spark-master-start.yaml', distributed=True)
+            _configure_and_run_playbooks('/cluster-complex-spark-worker-start.yaml',
+                                         extravar={"main_ip": main_domain_name.split(".")[0]},
+                                         distributed=True)
         else:
             raise Exception
         response_status = 200
@@ -477,6 +555,9 @@ class AnsibleClusterStop(View):
         elif cluster.cluster_type == "Apache Storm":
             _configure_and_run_playbooks('/cluster-complex-storm-nimbus-stop.yaml', distributed=True)
             _configure_and_run_playbooks('/cluster-complex-storm-worker-stop.yaml', distributed=True)
+        elif cluster.cluster_type == "Apache Spark":
+            _configure_and_run_playbooks('/cluster-complex-spark-master-stop.yaml', distributed=True)
+            _configure_and_run_playbooks('/cluster-complex-spark-worker-stop.yaml', distributed=True)
         else:
             raise Exception
         response_status = 200
@@ -551,6 +632,8 @@ class AnsibleClusterGetAllCluster(View):
                     requests.get("http://" + data['main_node_ip'] + ":8086")
                 elif cluster_instance.cluster_type == "Apache Storm":
                     requests.get("http://" + data['main_node_ip'] + ":8080")
+                elif cluster_instance.cluster_type == "Apache Spark":
+                    requests.get("http://" + data['main_node_ip'] + ":8087")
                 else:
                     raise Exception
 
@@ -589,6 +672,8 @@ class AnsibleClusterGetCluster(View):
                 requests.get("http://" + data.main_node_ip + ":8086")
             elif data.cluster_type == "Apache Storm":
                 requests.get("http://" + data.main_node_ip + ":8080")
+            elif data.cluster_type == "Apache Spark":
+                requests.get("http://" + data.main_node_ip + ":8087")
             else:
                 raise Exception
 

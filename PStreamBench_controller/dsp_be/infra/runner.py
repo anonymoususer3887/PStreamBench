@@ -8,7 +8,7 @@ import paramiko
 from django.conf import settings
 
 from infra.models import Cluster, Nodes
-from utils import constants_flink, constants_storm
+from utils import constants_flink, constants_storm, constants_spark
 
 
 class JobRunner():
@@ -26,6 +26,8 @@ class JobRunner():
         max_slots = 0
 
         if self.cluster.cluster_type == "Apache Flink":
+            max_slots = self.cluster.slots * self.cluster.nodes
+        elif self.cluster.cluster_type == "Apache Spark":
             max_slots = self.cluster.slots * self.cluster.nodes
         elif self.cluster.cluster_type == "Apache Storm":
             hwtype = ""
@@ -190,6 +192,8 @@ class JobRunner():
             return self._run_flink_job(config)
         elif self.cluster.cluster_type == "Apache Storm":
             return self._run_storm_job(config)
+        elif self.cluster.cluster_type == "Apache Spark":
+            return self._run_spark_job(config)
 
     def _run_flink_job(self, config: dict) -> int:
         from infra.views import _config_manipulation_ansible, \
@@ -233,6 +237,33 @@ class JobRunner():
 
         time.sleep(int(config['job_run_time'])*60)
         return topology_id
+
+    def _run_spark_job(self, config: dict) -> str:
+        from infra.views import _config_manipulation_ansible, \
+                _configure_and_run_playbooks
+
+        config["num_workers"] = self.cluster.slots * self.cluster.nodes
+        self.ansible_variables = _config_manipulation_ansible(config, constants_spark)
+
+        _configure_and_run_playbooks('/cluster-simple-spark-job.yaml',
+                                     extravar=self.ansible_variables,
+                                     distributed=True)
+
+        # Spark Standalone has no numeric job id like Flink/Storm -- match by
+        # the --name given to spark-submit (job_name) instead, on the
+        # master's JSON status API (custom SPARK_MASTER_WEBUI_PORT, see
+        # infra/spark_files/sample-spark-env.sh).
+        url = "http://" + config['main_node_ip'] + ":8087/json/"
+        job_name = self.ansible_variables["job_name"]
+        application_id = ""
+        requested_cluster_apps = requests.get(url)
+        for app in requested_cluster_apps.json().get("activeapps", []):
+            if app["name"] == job_name:
+                application_id = app["id"]
+                break
+
+        time.sleep(int(config['job_run_time'])*60)
+        return application_id or job_name
 
     def run_enumerated(self, config: dict):
         """Runs an enumeration strategy on the cluster using calculator
@@ -305,6 +336,9 @@ class JobRunner():
         elif self.cluster.cluster_type == "Apache Storm":
             script_loc = os.path.join(settings.BASE_DIR, 'infra/reporting_scripts')
             script_name = os.path.join(script_loc, 'getprom_storm.py')
+        elif self.cluster.cluster_type == "Apache Spark":
+            script_loc = os.path.join(settings.BASE_DIR, 'infra/reporting_scripts')
+            script_name = os.path.join(script_loc, 'getprom_spark.py')
         script_arguments = ["--main_node_ip", str(config['main_node_ip']),
                             "--job_id", str(config['job_id']),
                             '--job_run_time', str(config['job_run_time']),
@@ -320,6 +354,8 @@ class JobRunner():
                             '--num_slots', str(self.cluster.slots),
                             '--enumeration_strategy', str(config['job_enumeration_strategy']),
                             ]
+        if self.cluster.cluster_type == "Apache Spark":
+            script_arguments += ['--job_class', str(config['job_class'])]
 
         # Use subprocess to run the script with arguments
         try:
@@ -346,6 +382,14 @@ class JobRunner():
                     continue
                 if topology["status"] == "ACTIVE":
                     return False
+
+        elif self.cluster.cluster_type == "Apache Spark":
+            url = "http://" + config['main_node_ip'] + ":8087/json/"
+            job_name = config["job_class"].replace(" ", "")
+            apps = requests.get(url)
+            for app in apps.json().get("activeapps", []):
+                if app["name"] == job_name:
+                    return False
         return True
 
     def terminate(self, config: dict, job_id: int):
@@ -364,6 +408,12 @@ class JobRunner():
             self.ansible_variables = _config_manipulation_ansible(config, constants_storm)
 
             _configure_and_run_playbooks('/cluster-simple-storm-job-kill.yaml',
+                                         extravar=self.ansible_variables,
+                                         distributed=True)
+        elif self.cluster.cluster_type == "Apache Spark":
+            self.ansible_variables = _config_manipulation_ansible(config, constants_spark)
+
+            _configure_and_run_playbooks('/cluster-simple-spark-job-kill.yaml',
                                          extravar=self.ansible_variables,
                                          distributed=True)
 

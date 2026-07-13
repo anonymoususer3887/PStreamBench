@@ -20,7 +20,7 @@ The controller is implemented in **Django (Python)** and uses **Ansible playbook
 - [Run the Controller](#run-the-controller)
 - [CloudLab SSH Access](#cloudlab-ssh-access)
 - [Controller Structure](#controller-structure)
-- [SUT Support: Flink and Storm](#sut-support-flink-and-storm)
+- [SUT Support: Flink, Storm, and Spark](#sut-support-flink-storm-and-spark)
 - [Job Binaries](#job-binaries)
 - [Monitoring and Metrics Collection](#monitoring-and-metrics-collection)
 - [Related Components](#related-components)
@@ -99,7 +99,7 @@ Job execution is abstracted through:
 
 ---
 
-## SUT Support: Flink and Storm
+## SUT Support: Flink, Storm, and Spark
 
 When creating a cluster in the Web UI, the controller deploys the selected SUT.
 
@@ -117,6 +117,13 @@ When creating a cluster in the Web UI, the controller deploys the selected SUT.
   - Storm UI provides operational visibility
   - metrics are collected primarily through exporter/scripts and artifacts
   - Storm metrics may update at coarse granularity (often ~1 minute)
+
+### Apache Spark (Structured Streaming) — all 14 workloads implemented and validated live
+
+- **Cluster roles:** Standalone Master (main node) + Workers (worker nodes). Master UI runs on port 8087 (not the Spark default 8080, which collides with Storm's UI port on this same node role).
+- **Execution:** `spark-submit --master spark://<main>:7077 --name <job> --total-executor-cores <n> --class <program> dsp_spark_jobs-1.0-SNAPSHOT.jar ...`
+- **Monitoring:** Spark's built-in Prometheus servlet + Prometheus/Grafana; query-level throughput is read from Kafka's own topic metrics (SUT-agnostic) rather than Spark-internal streaming-query metrics, since Structured Streaming does not expose an operator/vertex REST API the way Flink does.
+- **Status:** all 14 real-world workloads are implemented, build cleanly against Spark 3.5.1, and have been run end-to-end on a live CloudLab cluster (see [PStreamBench_workload_generator/spark/dsp_spark_jobs](https://github.com/anonymoususer3887/PStreamBench/tree/main/PStreamBench_workload_generator/spark/dsp_spark_jobs#readme) for how DoP vectors are approximated via `repartition()`/`spark.sql.shuffle.partitions`, per-workload deviations, and notes on two real bugs the live-validation pass surfaced and fixed: a `flatMapGroupsWithState` state-bean encoding issue affecting Machine Outlier/Linear Road, and a Gson/Guava classpath conflict with Spark's own bundled versions affecting Click Analytics/Sentiment Analysis).
 
 ---
 
@@ -142,7 +149,15 @@ cd dsp_storm_jobs
 ./gradlew shadowJar
 cp ./build/libs/dsp_storm_jobs-1.0-SNAPSHOT-all.jar ../dsp_be/infra/storm_files/
 ```
-> Tip: Both directories include Makefiles that run these commands directly.
+
+### Build Spark job jar
+
+```bash
+cd dsp_spark_jobs
+mvn package
+cp ./target/dsp_spark_jobs-1.0-SNAPSHOT.jar ../dsp_be/infra/spark_files/
+```
+> Tip: All three directories include Makefiles that run these commands directly.
 
 ## Monitoring and Metrics Collection
 

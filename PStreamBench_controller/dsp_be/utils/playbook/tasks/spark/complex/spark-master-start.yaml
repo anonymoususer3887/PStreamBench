@@ -1,0 +1,5 @@
+---
+- name: Start Spark master (./start-master.sh)
+  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/sbin/start-master.sh"
+  async: 45000
+  poll: 0

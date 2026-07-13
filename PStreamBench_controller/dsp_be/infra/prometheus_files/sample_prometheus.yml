@@ -45,3 +45,13 @@ scrape_configs:
   - job_name: "storm_exporter"
     static_configs:
       - targets: ["localhost:9093"]
+
+  # Spark driver's built-in PrometheusServlet (spark.metrics.conf +
+  # spark.sql.streaming.metricsEnabled=true, set on the shared spark-submit
+  # command in spark-provide-job.yaml). The driver always runs in client mode
+  # on the master itself, so this is a fixed localhost target -- it's simply
+  # "down" whenever no Spark job is currently running.
+  - job_name: "spark_driver"
+    metrics_path: "/metrics/prometheus/"
+    static_configs:
+      - targets: ["localhost:4040"]

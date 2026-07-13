@@ -1,0 +1,7 @@
+---
+
+- name: Copy temporary spark-defaults.conf to Spark.
+  template: src="{{ BASE_DIR }}/infra/spark_files/spark-defaults.conf" dest="{{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/conf" mode=0777
+
+- name: Copy temporary spark-env.sh to Spark.
+  template: src="{{ BASE_DIR }}/infra/spark_files/spark-env.sh" dest="{{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/conf" mode=0755

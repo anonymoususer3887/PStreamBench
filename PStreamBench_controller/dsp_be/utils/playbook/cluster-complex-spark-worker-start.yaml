@@ -1,0 +1,10 @@
+---
+- name: Start Spark worker in beta nodes
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/complex/spark-worker-start.yaml"
+      tags:
+        - "spark-start"

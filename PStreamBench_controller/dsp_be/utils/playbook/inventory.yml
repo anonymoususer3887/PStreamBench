@@ -1,26 +1,28 @@
-all:
+alpha:
   hosts:
-    node0.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:
+    ms1122.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 0
-    node1.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:
+betas:
+  hosts:
+    ms1310.utah.cloudlab.us:
+      ansible_user: pagnih03
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      id: 0
+    ms1137.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 1
-    node2.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:
+    ms1126.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 2
-    node3.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:
+    ms1317.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 3
-    node4.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:
+    ms1118.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 4
-    node5.pagnih03-271235.maki-test-pg0.utah.cloudlab.us:
-      ansible_user: pagnih03
-      ansible_ssh_private_key_file: ~/.ssh/id_rsa
-      id: 5

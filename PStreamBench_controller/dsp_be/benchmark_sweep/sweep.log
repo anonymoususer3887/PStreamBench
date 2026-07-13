@@ -1,0 +1,1211 @@
+=== Starting sweep: 276 total runs ===
+
+[1/276] Ad Analytics q=1 rate=100000 pd=['2', '2', '2', '2', '2', '2', '1']
+  [OK] Ad Analytics q=1 rate=100000 pd=['2', '2', '2', '2', '2', '2', '1'] -- run 1/276 complete
+
+[2/276] Ad Analytics q=1 rate=100000 pd=['2', '4', '4', '4', '4', '4', '1']
+  [OK] Ad Analytics q=1 rate=100000 pd=['2', '4', '4', '4', '4', '4', '1'] -- run 2/276 complete
+
+[3/276] Ad Analytics q=1 rate=100000 pd=['2', '8', '8', '8', '8', '8', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [FAILED] Ad Analytics q=1 rate=100000 pd=['2', '8', '8', '8', '8', '8', '1']: kafka/zookeeper recovery failed
+
+[4/276] Ad Analytics q=1 rate=100000 pd=['2', '16', '16', '16', '16', '16', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [FAILED] Ad Analytics q=1 rate=100000 pd=['2', '16', '16', '16', '16', '16', '1']: kafka/zookeeper recovery failed
+
+[5/276] Ad Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '40', '40', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [FAILED] Ad Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '40', '40', '1']: kafka/zookeeper recovery failed
+
+[6/276] Ad Analytics q=1 rate=500000 pd=['2', '2', '2', '2', '2', '2', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [FAILED] Ad Analytics q=1 rate=500000 pd=['2', '2', '2', '2', '2', '2', '1']: kafka/zookeeper recovery failed
+
+[7/276] Ad Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '4', '4', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [FAILED] Ad Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '4', '4', '1']: kafka/zookeeper recovery failed
+
+[8/276] Ad Analytics q=1 rate=500000 pd=['2', '8', '8', '8', '8', '8', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [FAILED] Ad Analytics q=1 rate=500000 pd=['2', '8', '8', '8', '8', '8', '1']: kafka/zookeeper recovery failed
+
+[9/276] Ad Analytics q=1 rate=500000 pd=['2', '16', '16', '16', '16', '16', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+=== Starting sweep: 276 total runs ===
+
+[3/276] Ad Analytics q=1 rate=100000 pd=['2', '8', '8', '8', '8', '8', '1']
+  [OK] Ad Analytics q=1 rate=100000 pd=['2', '8', '8', '8', '8', '8', '1'] -- run 3/276 complete
+
+[4/276] Ad Analytics q=1 rate=100000 pd=['2', '16', '16', '16', '16', '16', '1']
+  [OK] Ad Analytics q=1 rate=100000 pd=['2', '16', '16', '16', '16', '16', '1'] -- run 4/276 complete
+
+[5/276] Ad Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '40', '40', '1']
+  [OK] Ad Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '40', '40', '1'] -- run 5/276 complete
+
+[6/276] Ad Analytics q=1 rate=500000 pd=['2', '2', '2', '2', '2', '2', '1']
+  [OK] Ad Analytics q=1 rate=500000 pd=['2', '2', '2', '2', '2', '2', '1'] -- run 6/276 complete
+
+[7/276] Ad Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '4', '4', '1']
+  [FAILED] Ad Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '4', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[8/276] Ad Analytics q=1 rate=500000 pd=['2', '8', '8', '8', '8', '8', '1']
+  [OK] Ad Analytics q=1 rate=500000 pd=['2', '8', '8', '8', '8', '8', '1'] -- run 8/276 complete
+
+[9/276] Ad Analytics q=1 rate=500000 pd=['2', '16', '16', '16', '16', '16', '1']
+  [OK] Ad Analytics q=1 rate=500000 pd=['2', '16', '16', '16', '16', '16', '1'] -- run 9/276 complete
+
+[10/276] Ad Analytics q=1 rate=500000 pd=['2', '40', '40', '40', '40', '40', '1']
+  [OK] Ad Analytics q=1 rate=500000 pd=['2', '40', '40', '40', '40', '40', '1'] -- run 10/276 complete
+
+[11/276] Ad Analytics q=1 rate=1000000 pd=['2', '2', '2', '2', '2', '2', '1']
+  [OK] Ad Analytics q=1 rate=1000000 pd=['2', '2', '2', '2', '2', '2', '1'] -- run 11/276 complete
+
+[12/276] Ad Analytics q=1 rate=1000000 pd=['2', '4', '4', '4', '4', '4', '1']
+  [FAILED] Ad Analytics q=1 rate=1000000 pd=['2', '4', '4', '4', '4', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[13/276] Ad Analytics q=1 rate=1000000 pd=['2', '8', '8', '8', '8', '8', '1']
+  [OK] Ad Analytics q=1 rate=1000000 pd=['2', '8', '8', '8', '8', '8', '1'] -- run 13/276 complete
+
+[14/276] Ad Analytics q=1 rate=1000000 pd=['2', '16', '16', '16', '16', '16', '1']
+  [OK] Ad Analytics q=1 rate=1000000 pd=['2', '16', '16', '16', '16', '16', '1'] -- run 14/276 complete
+
+[15/276] Ad Analytics q=1 rate=1000000 pd=['2', '40', '40', '40', '40', '40', '1']
+  [OK] Ad Analytics q=1 rate=1000000 pd=['2', '40', '40', '40', '40', '40', '1'] -- run 15/276 complete
+
+[16/276] Ad Analytics q=2 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Ad Analytics q=2 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 16/276 complete
+
+[17/276] Ad Analytics q=2 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Ad Analytics q=2 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 17/276 complete
+
+[18/276] Ad Analytics q=2 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Ad Analytics q=2 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 18/276 complete
+
+[19/276] Ad Analytics q=2 rate=100000 pd=['2', '16', '16', '16', '1']
+  [FAILED] Ad Analytics q=2 rate=100000 pd=['2', '16', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[20/276] Ad Analytics q=2 rate=100000 pd=['2', '40', '40', '40', '1']
+  Kafka/Zookeeper unhealthy, attempting recovery...
+  [recover] restarting Zookeeper on all nodes...
+  [recover] restarting Kafka brokers on all nodes...
+  [OK] Ad Analytics q=2 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 20/276 complete
+
+[21/276] Ad Analytics q=2 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Ad Analytics q=2 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 21/276 complete
+
+[22/276] Ad Analytics q=2 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Ad Analytics q=2 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 22/276 complete
+
+[23/276] Ad Analytics q=2 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Ad Analytics q=2 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 23/276 complete
+
+[24/276] Ad Analytics q=2 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Ad Analytics q=2 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 24/276 complete
+
+[25/276] Ad Analytics q=2 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Ad Analytics q=2 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 25/276 complete
+
+[26/276] Ad Analytics q=2 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Ad Analytics q=2 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 26/276 complete
+
+[27/276] Ad Analytics q=2 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Ad Analytics q=2 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 27/276 complete
+
+[28/276] Ad Analytics q=2 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Ad Analytics q=2 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 28/276 complete
+
+[29/276] Ad Analytics q=2 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Ad Analytics q=2 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 29/276 complete
+
+[30/276] Ad Analytics q=2 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Ad Analytics q=2 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 30/276 complete
+
+[31/276] Bargain Index q=1 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Bargain Index q=1 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 31/276 complete
+
+[32/276] Bargain Index q=1 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Bargain Index q=1 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 32/276 complete
+
+[33/276] Bargain Index q=1 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Bargain Index q=1 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 33/276 complete
+
+[34/276] Bargain Index q=1 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Bargain Index q=1 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 34/276 complete
+
+[35/276] Bargain Index q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Bargain Index q=1 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 35/276 complete
+
+[36/276] Bargain Index q=1 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Bargain Index q=1 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 36/276 complete
+
+[37/276] Bargain Index q=1 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Bargain Index q=1 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 37/276 complete
+
+[38/276] Bargain Index q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Bargain Index q=1 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 38/276 complete
+
+[39/276] Bargain Index q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Bargain Index q=1 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 39/276 complete
+
+[40/276] Bargain Index q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Bargain Index q=1 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 40/276 complete
+
+[41/276] Bargain Index q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Bargain Index q=1 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 41/276 complete
+
+[42/276] Bargain Index q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Bargain Index q=1 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 42/276 complete
+
+[43/276] Bargain Index q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Bargain Index q=1 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 43/276 complete
+
+[44/276] Bargain Index q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Bargain Index q=1 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 44/276 complete
+
+[45/276] Bargain Index q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Bargain Index q=1 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 45/276 complete
+
+[46/276] Click Analytics q=1 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Click Analytics q=1 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 46/276 complete
+
+[47/276] Click Analytics q=1 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Click Analytics q=1 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 47/276 complete
+
+[48/276] Click Analytics q=1 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Click Analytics q=1 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 48/276 complete
+
+[49/276] Click Analytics q=1 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Click Analytics q=1 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 49/276 complete
+
+[50/276] Click Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [FAILED] Click Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[51/276] Click Analytics q=1 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Click Analytics q=1 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 51/276 complete
+
+[52/276] Click Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Click Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 52/276 complete
+
+[53/276] Click Analytics q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Click Analytics q=1 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 53/276 complete
+
+[54/276] Click Analytics q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Click Analytics q=1 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 54/276 complete
+
+[55/276] Click Analytics q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Click Analytics q=1 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 55/276 complete
+
+[56/276] Click Analytics q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Click Analytics q=1 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 56/276 complete
+
+[57/276] Click Analytics q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Click Analytics q=1 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 57/276 complete
+
+[58/276] Click Analytics q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Click Analytics q=1 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 58/276 complete
+
+[59/276] Click Analytics q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Click Analytics q=1 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 59/276 complete
+
+[60/276] Click Analytics q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Click Analytics q=1 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 60/276 complete
+
+[61/276] Click Analytics q=2 rate=100000 pd=['2', '2', '2', '1']
+  [OK] Click Analytics q=2 rate=100000 pd=['2', '2', '2', '1'] -- run 61/276 complete
+
+[62/276] Click Analytics q=2 rate=100000 pd=['2', '4', '4', '1']
+  [OK] Click Analytics q=2 rate=100000 pd=['2', '4', '4', '1'] -- run 62/276 complete
+
+[63/276] Click Analytics q=2 rate=100000 pd=['2', '8', '8', '1']
+  [FAILED] Click Analytics q=2 rate=100000 pd=['2', '8', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[64/276] Click Analytics q=2 rate=100000 pd=['2', '16', '16', '1']
+  [FAILED] Click Analytics q=2 rate=100000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[65/276] Click Analytics q=2 rate=100000 pd=['2', '40', '40', '1']
+  [FAILED] Click Analytics q=2 rate=100000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[66/276] Click Analytics q=2 rate=500000 pd=['2', '2', '2', '1']
+  [OK] Click Analytics q=2 rate=500000 pd=['2', '2', '2', '1'] -- run 66/276 complete
+
+[67/276] Click Analytics q=2 rate=500000 pd=['2', '4', '4', '1']
+  [OK] Click Analytics q=2 rate=500000 pd=['2', '4', '4', '1'] -- run 67/276 complete
+
+[68/276] Click Analytics q=2 rate=500000 pd=['2', '8', '8', '1']
+  [OK] Click Analytics q=2 rate=500000 pd=['2', '8', '8', '1'] -- run 68/276 complete
+
+[69/276] Click Analytics q=2 rate=500000 pd=['2', '16', '16', '1']
+  [FAILED] Click Analytics q=2 rate=500000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[70/276] Click Analytics q=2 rate=500000 pd=['2', '40', '40', '1']
+  [FAILED] Click Analytics q=2 rate=500000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[71/276] Click Analytics q=2 rate=1000000 pd=['2', '2', '2', '1']
+  [OK] Click Analytics q=2 rate=1000000 pd=['2', '2', '2', '1'] -- run 71/276 complete
+
+[72/276] Click Analytics q=2 rate=1000000 pd=['2', '4', '4', '1']
+  [OK] Click Analytics q=2 rate=1000000 pd=['2', '4', '4', '1'] -- run 72/276 complete
+
+[73/276] Click Analytics q=2 rate=1000000 pd=['2', '8', '8', '1']
+  [OK] Click Analytics q=2 rate=1000000 pd=['2', '8', '8', '1'] -- run 73/276 complete
+
+[74/276] Click Analytics q=2 rate=1000000 pd=['2', '16', '16', '1']
+  [FAILED] Click Analytics q=2 rate=1000000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[75/276] Click Analytics q=2 rate=1000000 pd=['2', '40', '40', '1']
+  [FAILED] Click Analytics q=2 rate=1000000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[76/276] Click Analytics q=3 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Click Analytics q=3 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 76/276 complete
+
+[77/276] Click Analytics q=3 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Click Analytics q=3 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 77/276 complete
+
+[78/276] Click Analytics q=3 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Click Analytics q=3 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 78/276 complete
+
+[79/276] Click Analytics q=3 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Click Analytics q=3 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 79/276 complete
+
+[80/276] Click Analytics q=3 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Click Analytics q=3 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 80/276 complete
+
+[81/276] Click Analytics q=3 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Click Analytics q=3 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 81/276 complete
+
+[82/276] Click Analytics q=3 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Click Analytics q=3 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 82/276 complete
+
+[83/276] Click Analytics q=3 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Click Analytics q=3 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 83/276 complete
+
+[84/276] Click Analytics q=3 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Click Analytics q=3 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 84/276 complete
+
+[85/276] Click Analytics q=3 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Click Analytics q=3 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 85/276 complete
+
+[86/276] Click Analytics q=3 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Click Analytics q=3 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 86/276 complete
+
+[87/276] Click Analytics q=3 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Click Analytics q=3 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 87/276 complete
+
+[88/276] Click Analytics q=3 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Click Analytics q=3 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 88/276 complete
+
+[89/276] Click Analytics q=3 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Click Analytics q=3 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 89/276 complete
+
+[90/276] Click Analytics q=3 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Click Analytics q=3 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 90/276 complete
+
+[91/276] Google cloud Monitoring q=1 rate=100000 pd=['2', '2', '2', '1']
+  [FAILED] Google cloud Monitoring q=1 rate=100000 pd=['2', '2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[92/276] Google cloud Monitoring q=1 rate=100000 pd=['2', '4', '4', '1']
+  [OK] Google cloud Monitoring q=1 rate=100000 pd=['2', '4', '4', '1'] -- run 92/276 complete
+
+[93/276] Google cloud Monitoring q=1 rate=100000 pd=['2', '8', '8', '1']
+  [OK] Google cloud Monitoring q=1 rate=100000 pd=['2', '8', '8', '1'] -- run 93/276 complete
+
+[94/276] Google cloud Monitoring q=1 rate=100000 pd=['2', '16', '16', '1']
+  [OK] Google cloud Monitoring q=1 rate=100000 pd=['2', '16', '16', '1'] -- run 94/276 complete
+
+[95/276] Google cloud Monitoring q=1 rate=100000 pd=['2', '40', '40', '1']
+  [OK] Google cloud Monitoring q=1 rate=100000 pd=['2', '40', '40', '1'] -- run 95/276 complete
+
+[96/276] Google cloud Monitoring q=1 rate=500000 pd=['2', '2', '2', '1']
+  [OK] Google cloud Monitoring q=1 rate=500000 pd=['2', '2', '2', '1'] -- run 96/276 complete
+
+[97/276] Google cloud Monitoring q=1 rate=500000 pd=['2', '4', '4', '1']
+  [OK] Google cloud Monitoring q=1 rate=500000 pd=['2', '4', '4', '1'] -- run 97/276 complete
+
+[98/276] Google cloud Monitoring q=1 rate=500000 pd=['2', '8', '8', '1']
+  [OK] Google cloud Monitoring q=1 rate=500000 pd=['2', '8', '8', '1'] -- run 98/276 complete
+
+[99/276] Google cloud Monitoring q=1 rate=500000 pd=['2', '16', '16', '1']
+  [OK] Google cloud Monitoring q=1 rate=500000 pd=['2', '16', '16', '1'] -- run 99/276 complete
+
+[100/276] Google cloud Monitoring q=1 rate=500000 pd=['2', '40', '40', '1']
+  [OK] Google cloud Monitoring q=1 rate=500000 pd=['2', '40', '40', '1'] -- run 100/276 complete
+
+[101/276] Google cloud Monitoring q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [OK] Google cloud Monitoring q=1 rate=1000000 pd=['2', '2', '2', '1'] -- run 101/276 complete
+
+[102/276] Google cloud Monitoring q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [OK] Google cloud Monitoring q=1 rate=1000000 pd=['2', '4', '4', '1'] -- run 102/276 complete
+
+[103/276] Google cloud Monitoring q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [OK] Google cloud Monitoring q=1 rate=1000000 pd=['2', '8', '8', '1'] -- run 103/276 complete
+
+[104/276] Google cloud Monitoring q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [OK] Google cloud Monitoring q=1 rate=1000000 pd=['2', '16', '16', '1'] -- run 104/276 complete
+
+[105/276] Google cloud Monitoring q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [OK] Google cloud Monitoring q=1 rate=1000000 pd=['2', '40', '40', '1'] -- run 105/276 complete
+
+[106/276] Linear Road q=1 rate=100000 pd=['2', '2', '1']
+  [OK] Linear Road q=1 rate=100000 pd=['2', '2', '1'] -- run 106/276 complete
+
+[107/276] Linear Road q=1 rate=100000 pd=['2', '4', '1']
+  [OK] Linear Road q=1 rate=100000 pd=['2', '4', '1'] -- run 107/276 complete
+
+[108/276] Linear Road q=1 rate=100000 pd=['2', '8', '1']
+  [OK] Linear Road q=1 rate=100000 pd=['2', '8', '1'] -- run 108/276 complete
+
+[109/276] Linear Road q=1 rate=100000 pd=['2', '16', '1']
+  [OK] Linear Road q=1 rate=100000 pd=['2', '16', '1'] -- run 109/276 complete
+
+[110/276] Linear Road q=1 rate=100000 pd=['2', '40', '1']
+  [OK] Linear Road q=1 rate=100000 pd=['2', '40', '1'] -- run 110/276 complete
+
+[111/276] Linear Road q=1 rate=500000 pd=['2', '2', '1']
+  [OK] Linear Road q=1 rate=500000 pd=['2', '2', '1'] -- run 111/276 complete
+
+[112/276] Linear Road q=1 rate=500000 pd=['2', '4', '1']
+  [OK] Linear Road q=1 rate=500000 pd=['2', '4', '1'] -- run 112/276 complete
+
+[113/276] Linear Road q=1 rate=500000 pd=['2', '8', '1']
+  [OK] Linear Road q=1 rate=500000 pd=['2', '8', '1'] -- run 113/276 complete
+
+[114/276] Linear Road q=1 rate=500000 pd=['2', '16', '1']
+  [OK] Linear Road q=1 rate=500000 pd=['2', '16', '1'] -- run 114/276 complete
+
+[115/276] Linear Road q=1 rate=500000 pd=['2', '40', '1']
+  [OK] Linear Road q=1 rate=500000 pd=['2', '40', '1'] -- run 115/276 complete
+
+[116/276] Linear Road q=1 rate=1000000 pd=['2', '2', '1']
+  [OK] Linear Road q=1 rate=1000000 pd=['2', '2', '1'] -- run 116/276 complete
+
+[117/276] Linear Road q=1 rate=1000000 pd=['2', '4', '1']
+  [OK] Linear Road q=1 rate=1000000 pd=['2', '4', '1'] -- run 117/276 complete
+
+[118/276] Linear Road q=1 rate=1000000 pd=['2', '8', '1']
+  [OK] Linear Road q=1 rate=1000000 pd=['2', '8', '1'] -- run 118/276 complete
+
+[119/276] Linear Road q=1 rate=1000000 pd=['2', '16', '1']
+  [OK] Linear Road q=1 rate=1000000 pd=['2', '16', '1'] -- run 119/276 complete
+
+[120/276] Linear Road q=1 rate=1000000 pd=['2', '40', '1']
+  [OK] Linear Road q=1 rate=1000000 pd=['2', '40', '1'] -- run 120/276 complete
+
+[121/276] Linear Road q=2 rate=100000 pd=['2', '2', '1']
+  [OK] Linear Road q=2 rate=100000 pd=['2', '2', '1'] -- run 121/276 complete
+
+[122/276] Linear Road q=2 rate=100000 pd=['2', '4', '1']
+  [OK] Linear Road q=2 rate=100000 pd=['2', '4', '1'] -- run 122/276 complete
+
+[123/276] Linear Road q=2 rate=100000 pd=['2', '8', '1']
+  [OK] Linear Road q=2 rate=100000 pd=['2', '8', '1'] -- run 123/276 complete
+
+[124/276] Linear Road q=2 rate=100000 pd=['2', '16', '1']
+  [FAILED] Linear Road q=2 rate=100000 pd=['2', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[125/276] Linear Road q=2 rate=100000 pd=['2', '40', '1']
+  [OK] Linear Road q=2 rate=100000 pd=['2', '40', '1'] -- run 125/276 complete
+
+[126/276] Linear Road q=2 rate=500000 pd=['2', '2', '1']
+  [FAILED] Linear Road q=2 rate=500000 pd=['2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[127/276] Linear Road q=2 rate=500000 pd=['2', '4', '1']
+  [FAILED] Linear Road q=2 rate=500000 pd=['2', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[128/276] Linear Road q=2 rate=500000 pd=['2', '8', '1']
+  [OK] Linear Road q=2 rate=500000 pd=['2', '8', '1'] -- run 128/276 complete
+
+[129/276] Linear Road q=2 rate=500000 pd=['2', '16', '1']
+  [OK] Linear Road q=2 rate=500000 pd=['2', '16', '1'] -- run 129/276 complete
+
+[130/276] Linear Road q=2 rate=500000 pd=['2', '40', '1']
+  [FAILED] Linear Road q=2 rate=500000 pd=['2', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[131/276] Linear Road q=2 rate=1000000 pd=['2', '2', '1']
+  [FAILED] Linear Road q=2 rate=1000000 pd=['2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[132/276] Linear Road q=2 rate=1000000 pd=['2', '4', '1']
+  [OK] Linear Road q=2 rate=1000000 pd=['2', '4', '1'] -- run 132/276 complete
+
+[133/276] Linear Road q=2 rate=1000000 pd=['2', '8', '1']
+  [FAILED] Linear Road q=2 rate=1000000 pd=['2', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[134/276] Linear Road q=2 rate=1000000 pd=['2', '16', '1']
+  [OK] Linear Road q=2 rate=1000000 pd=['2', '16', '1'] -- run 134/276 complete
+
+[135/276] Linear Road q=2 rate=1000000 pd=['2', '40', '1']
+  [OK] Linear Road q=2 rate=1000000 pd=['2', '40', '1'] -- run 135/276 complete
+
+[136/276] Linear Road q=3 rate=100000 pd=['2', '1']
+  [OK] Linear Road q=3 rate=100000 pd=['2', '1'] -- run 136/276 complete
+
+[137/276] Linear Road q=3 rate=500000 pd=['2', '1']
+  [OK] Linear Road q=3 rate=500000 pd=['2', '1'] -- run 137/276 complete
+
+[138/276] Linear Road q=3 rate=1000000 pd=['2', '1']
+  [OK] Linear Road q=3 rate=1000000 pd=['2', '1'] -- run 138/276 complete
+
+[139/276] Linear Road q=4 rate=100000 pd=['2', '1']
+  [OK] Linear Road q=4 rate=100000 pd=['2', '1'] -- run 139/276 complete
+
+[140/276] Linear Road q=4 rate=500000 pd=['2', '1']
+  [OK] Linear Road q=4 rate=500000 pd=['2', '1'] -- run 140/276 complete
+
+[141/276] Linear Road q=4 rate=1000000 pd=['2', '1']
+  [OK] Linear Road q=4 rate=1000000 pd=['2', '1'] -- run 141/276 complete
+
+[142/276] Log Processing q=1 rate=100000 pd=['2', '2', '2', '1']
+  [OK] Log Processing q=1 rate=100000 pd=['2', '2', '2', '1'] -- run 142/276 complete
+
+[143/276] Log Processing q=1 rate=100000 pd=['2', '4', '4', '1']
+  [OK] Log Processing q=1 rate=100000 pd=['2', '4', '4', '1'] -- run 143/276 complete
+
+[144/276] Log Processing q=1 rate=100000 pd=['2', '8', '8', '1']
+  [OK] Log Processing q=1 rate=100000 pd=['2', '8', '8', '1'] -- run 144/276 complete
+
+[145/276] Log Processing q=1 rate=100000 pd=['2', '16', '16', '1']
+  [OK] Log Processing q=1 rate=100000 pd=['2', '16', '16', '1'] -- run 145/276 complete
+
+[146/276] Log Processing q=1 rate=100000 pd=['2', '40', '40', '1']
+  [OK] Log Processing q=1 rate=100000 pd=['2', '40', '40', '1'] -- run 146/276 complete
+
+[147/276] Log Processing q=1 rate=500000 pd=['2', '2', '2', '1']
+  [OK] Log Processing q=1 rate=500000 pd=['2', '2', '2', '1'] -- run 147/276 complete
+
+[148/276] Log Processing q=1 rate=500000 pd=['2', '4', '4', '1']
+  [OK] Log Processing q=1 rate=500000 pd=['2', '4', '4', '1'] -- run 148/276 complete
+
+[149/276] Log Processing q=1 rate=500000 pd=['2', '8', '8', '1']
+  [OK] Log Processing q=1 rate=500000 pd=['2', '8', '8', '1'] -- run 149/276 complete
+
+[150/276] Log Processing q=1 rate=500000 pd=['2', '16', '16', '1']
+  [OK] Log Processing q=1 rate=500000 pd=['2', '16', '16', '1'] -- run 150/276 complete
+
+[151/276] Log Processing q=1 rate=500000 pd=['2', '40', '40', '1']
+  [OK] Log Processing q=1 rate=500000 pd=['2', '40', '40', '1'] -- run 151/276 complete
+
+[152/276] Log Processing q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [OK] Log Processing q=1 rate=1000000 pd=['2', '2', '2', '1'] -- run 152/276 complete
+
+[153/276] Log Processing q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [OK] Log Processing q=1 rate=1000000 pd=['2', '4', '4', '1'] -- run 153/276 complete
+
+[154/276] Log Processing q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [OK] Log Processing q=1 rate=1000000 pd=['2', '8', '8', '1'] -- run 154/276 complete
+
+[155/276] Log Processing q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [OK] Log Processing q=1 rate=1000000 pd=['2', '16', '16', '1'] -- run 155/276 complete
+
+[156/276] Log Processing q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [OK] Log Processing q=1 rate=1000000 pd=['2', '40', '40', '1'] -- run 156/276 complete
+
+[157/276] Machine Outlier q=1 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Machine Outlier q=1 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 157/276 complete
+
+[158/276] Machine Outlier q=1 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Machine Outlier q=1 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 158/276 complete
+
+[159/276] Machine Outlier q=1 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Machine Outlier q=1 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 159/276 complete
+
+[160/276] Machine Outlier q=1 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Machine Outlier q=1 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 160/276 complete
+
+[161/276] Machine Outlier q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Machine Outlier q=1 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 161/276 complete
+
+[162/276] Machine Outlier q=1 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Machine Outlier q=1 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 162/276 complete
+
+[163/276] Machine Outlier q=1 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Machine Outlier q=1 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 163/276 complete
+
+[164/276] Machine Outlier q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Machine Outlier q=1 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 164/276 complete
+
+[165/276] Machine Outlier q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Machine Outlier q=1 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 165/276 complete
+
+[166/276] Machine Outlier q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Machine Outlier q=1 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 166/276 complete
+
+[167/276] Machine Outlier q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Machine Outlier q=1 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 167/276 complete
+
+[168/276] Machine Outlier q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Machine Outlier q=1 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 168/276 complete
+
+[169/276] Machine Outlier q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Machine Outlier q=1 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 169/276 complete
+
+[170/276] Machine Outlier q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Machine Outlier q=1 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 170/276 complete
+
+[171/276] Machine Outlier q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Machine Outlier q=1 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 171/276 complete
+
+[172/276] Sentiment Analysis q=1 rate=100000 pd=['2', '2', '2', '1']
+  [OK] Sentiment Analysis q=1 rate=100000 pd=['2', '2', '2', '1'] -- run 172/276 complete
+
+[173/276] Sentiment Analysis q=1 rate=100000 pd=['2', '4', '4', '1']
+  [OK] Sentiment Analysis q=1 rate=100000 pd=['2', '4', '4', '1'] -- run 173/276 complete
+
+[174/276] Sentiment Analysis q=1 rate=100000 pd=['2', '8', '8', '1']
+  [OK] Sentiment Analysis q=1 rate=100000 pd=['2', '8', '8', '1'] -- run 174/276 complete
+
+[175/276] Sentiment Analysis q=1 rate=100000 pd=['2', '16', '16', '1']
+  [OK] Sentiment Analysis q=1 rate=100000 pd=['2', '16', '16', '1'] -- run 175/276 complete
+
+[176/276] Sentiment Analysis q=1 rate=100000 pd=['2', '40', '40', '1']
+  [OK] Sentiment Analysis q=1 rate=100000 pd=['2', '40', '40', '1'] -- run 176/276 complete
+
+[177/276] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[178/276] Sentiment Analysis q=1 rate=500000 pd=['2', '4', '4', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '4', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[179/276] Sentiment Analysis q=1 rate=500000 pd=['2', '8', '8', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '8', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[180/276] Sentiment Analysis q=1 rate=500000 pd=['2', '16', '16', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[181/276] Sentiment Analysis q=1 rate=500000 pd=['2', '40', '40', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[182/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[183/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '4', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[184/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '8', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[185/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[186/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[187/276] Smart Grid q=1 rate=100000 pd=['2', '2', '2', '1']
+  [OK] Smart Grid q=1 rate=100000 pd=['2', '2', '2', '1'] -- run 187/276 complete
+
+[188/276] Smart Grid q=1 rate=100000 pd=['2', '4', '4', '1']
+  [OK] Smart Grid q=1 rate=100000 pd=['2', '4', '4', '1'] -- run 188/276 complete
+
+[189/276] Smart Grid q=1 rate=100000 pd=['2', '8', '8', '1']
+  [OK] Smart Grid q=1 rate=100000 pd=['2', '8', '8', '1'] -- run 189/276 complete
+
+[190/276] Smart Grid q=1 rate=100000 pd=['2', '16', '16', '1']
+  [OK] Smart Grid q=1 rate=100000 pd=['2', '16', '16', '1'] -- run 190/276 complete
+
+[191/276] Smart Grid q=1 rate=100000 pd=['2', '40', '40', '1']
+  [OK] Smart Grid q=1 rate=100000 pd=['2', '40', '40', '1'] -- run 191/276 complete
+
+[192/276] Smart Grid q=1 rate=500000 pd=['2', '2', '2', '1']
+  [OK] Smart Grid q=1 rate=500000 pd=['2', '2', '2', '1'] -- run 192/276 complete
+
+[193/276] Smart Grid q=1 rate=500000 pd=['2', '4', '4', '1']
+  [OK] Smart Grid q=1 rate=500000 pd=['2', '4', '4', '1'] -- run 193/276 complete
+
+[194/276] Smart Grid q=1 rate=500000 pd=['2', '8', '8', '1']
+  [OK] Smart Grid q=1 rate=500000 pd=['2', '8', '8', '1'] -- run 194/276 complete
+
+[195/276] Smart Grid q=1 rate=500000 pd=['2', '16', '16', '1']
+  [OK] Smart Grid q=1 rate=500000 pd=['2', '16', '16', '1'] -- run 195/276 complete
+
+[196/276] Smart Grid q=1 rate=500000 pd=['2', '40', '40', '1']
+  [OK] Smart Grid q=1 rate=500000 pd=['2', '40', '40', '1'] -- run 196/276 complete
+
+[197/276] Smart Grid q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [OK] Smart Grid q=1 rate=1000000 pd=['2', '2', '2', '1'] -- run 197/276 complete
+
+[198/276] Smart Grid q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [OK] Smart Grid q=1 rate=1000000 pd=['2', '4', '4', '1'] -- run 198/276 complete
+
+[199/276] Smart Grid q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [OK] Smart Grid q=1 rate=1000000 pd=['2', '8', '8', '1'] -- run 199/276 complete
+
+[200/276] Smart Grid q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [OK] Smart Grid q=1 rate=1000000 pd=['2', '16', '16', '1'] -- run 200/276 complete
+
+[201/276] Smart Grid q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [OK] Smart Grid q=1 rate=1000000 pd=['2', '40', '40', '1'] -- run 201/276 complete
+
+[202/276] Spike Detection q=1 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Spike Detection q=1 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 202/276 complete
+
+[203/276] Spike Detection q=1 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Spike Detection q=1 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 203/276 complete
+
+[204/276] Spike Detection q=1 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Spike Detection q=1 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 204/276 complete
+
+[205/276] Spike Detection q=1 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Spike Detection q=1 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 205/276 complete
+
+[206/276] Spike Detection q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Spike Detection q=1 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 206/276 complete
+
+[207/276] Spike Detection q=1 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Spike Detection q=1 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 207/276 complete
+
+[208/276] Spike Detection q=1 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Spike Detection q=1 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 208/276 complete
+
+[209/276] Spike Detection q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Spike Detection q=1 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 209/276 complete
+
+[210/276] Spike Detection q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Spike Detection q=1 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 210/276 complete
+
+[211/276] Spike Detection q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Spike Detection q=1 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 211/276 complete
+
+[212/276] Spike Detection q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Spike Detection q=1 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 212/276 complete
+
+[213/276] Spike Detection q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Spike Detection q=1 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 213/276 complete
+
+[214/276] Spike Detection q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Spike Detection q=1 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 214/276 complete
+
+[215/276] Spike Detection q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Spike Detection q=1 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 215/276 complete
+
+[216/276] Spike Detection q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Spike Detection q=1 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 216/276 complete
+
+[217/276] TPCH q=1 rate=100000 pd=['2', '2', '2', '2', '2', '1']
+  [OK] TPCH q=1 rate=100000 pd=['2', '2', '2', '2', '2', '1'] -- run 217/276 complete
+
+[218/276] TPCH q=1 rate=100000 pd=['2', '4', '4', '4', '4', '1']
+  [OK] TPCH q=1 rate=100000 pd=['2', '4', '4', '4', '4', '1'] -- run 218/276 complete
+
+[219/276] TPCH q=1 rate=100000 pd=['2', '8', '8', '8', '8', '1']
+  [OK] TPCH q=1 rate=100000 pd=['2', '8', '8', '8', '8', '1'] -- run 219/276 complete
+
+[220/276] TPCH q=1 rate=100000 pd=['2', '16', '16', '16', '16', '1']
+  [OK] TPCH q=1 rate=100000 pd=['2', '16', '16', '16', '16', '1'] -- run 220/276 complete
+
+[221/276] TPCH q=1 rate=100000 pd=['2', '40', '40', '40', '40', '1']
+  [OK] TPCH q=1 rate=100000 pd=['2', '40', '40', '40', '40', '1'] -- run 221/276 complete
+
+[222/276] TPCH q=1 rate=500000 pd=['2', '2', '2', '2', '2', '1']
+  [OK] TPCH q=1 rate=500000 pd=['2', '2', '2', '2', '2', '1'] -- run 222/276 complete
+
+[223/276] TPCH q=1 rate=500000 pd=['2', '4', '4', '4', '4', '1']
+  [OK] TPCH q=1 rate=500000 pd=['2', '4', '4', '4', '4', '1'] -- run 223/276 complete
+
+[224/276] TPCH q=1 rate=500000 pd=['2', '8', '8', '8', '8', '1']
+  [OK] TPCH q=1 rate=500000 pd=['2', '8', '8', '8', '8', '1'] -- run 224/276 complete
+
+[225/276] TPCH q=1 rate=500000 pd=['2', '16', '16', '16', '16', '1']
+  [OK] TPCH q=1 rate=500000 pd=['2', '16', '16', '16', '16', '1'] -- run 225/276 complete
+
+[226/276] TPCH q=1 rate=500000 pd=['2', '40', '40', '40', '40', '1']
+  [OK] TPCH q=1 rate=500000 pd=['2', '40', '40', '40', '40', '1'] -- run 226/276 complete
+
+[227/276] TPCH q=1 rate=1000000 pd=['2', '2', '2', '2', '2', '1']
+  [OK] TPCH q=1 rate=1000000 pd=['2', '2', '2', '2', '2', '1'] -- run 227/276 complete
+
+[228/276] TPCH q=1 rate=1000000 pd=['2', '4', '4', '4', '4', '1']
+  [OK] TPCH q=1 rate=1000000 pd=['2', '4', '4', '4', '4', '1'] -- run 228/276 complete
+
+[229/276] TPCH q=1 rate=1000000 pd=['2', '8', '8', '8', '8', '1']
+  [OK] TPCH q=1 rate=1000000 pd=['2', '8', '8', '8', '8', '1'] -- run 229/276 complete
+
+[230/276] TPCH q=1 rate=1000000 pd=['2', '16', '16', '16', '16', '1']
+  [OK] TPCH q=1 rate=1000000 pd=['2', '16', '16', '16', '16', '1'] -- run 230/276 complete
+
+[231/276] TPCH q=1 rate=1000000 pd=['2', '40', '40', '40', '40', '1']
+  [OK] TPCH q=1 rate=1000000 pd=['2', '40', '40', '40', '40', '1'] -- run 231/276 complete
+
+[232/276] Traffic Monitoring q=1 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Traffic Monitoring q=1 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 232/276 complete
+
+[233/276] Traffic Monitoring q=1 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Traffic Monitoring q=1 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 233/276 complete
+
+[234/276] Traffic Monitoring q=1 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Traffic Monitoring q=1 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 234/276 complete
+
+[235/276] Traffic Monitoring q=1 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Traffic Monitoring q=1 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 235/276 complete
+
+[236/276] Traffic Monitoring q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Traffic Monitoring q=1 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 236/276 complete
+
+[237/276] Traffic Monitoring q=1 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Traffic Monitoring q=1 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 237/276 complete
+
+[238/276] Traffic Monitoring q=1 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Traffic Monitoring q=1 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 238/276 complete
+
+[239/276] Traffic Monitoring q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [FAILED] Traffic Monitoring q=1 rate=500000 pd=['2', '8', '8', '8', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[240/276] Traffic Monitoring q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [FAILED] Traffic Monitoring q=1 rate=500000 pd=['2', '16', '16', '16', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[241/276] Traffic Monitoring q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [FAILED] Traffic Monitoring q=1 rate=500000 pd=['2', '40', '40', '40', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[242/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [FAILED] Traffic Monitoring q=1 rate=1000000 pd=['2', '2', '2', '2', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[243/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [FAILED] Traffic Monitoring q=1 rate=1000000 pd=['2', '4', '4', '4', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[244/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [FAILED] Traffic Monitoring q=1 rate=1000000 pd=['2', '8', '8', '8', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[245/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [FAILED] Traffic Monitoring q=1 rate=1000000 pd=['2', '16', '16', '16', '1']: jobcreate request failed: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=900)
+
+[246/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+=== Starting sweep: 276 total runs ===
+
+[7/276] Ad Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '4', '4', '1']
+  [OK] Ad Analytics q=1 rate=500000 pd=['2', '4', '4', '4', '4', '4', '1'] -- run 7/276 complete
+
+[12/276] Ad Analytics q=1 rate=1000000 pd=['2', '4', '4', '4', '4', '4', '1']
+  [OK] Ad Analytics q=1 rate=1000000 pd=['2', '4', '4', '4', '4', '4', '1'] -- run 12/276 complete
+
+[19/276] Ad Analytics q=2 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Ad Analytics q=2 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 19/276 complete
+
+[50/276] Click Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Click Analytics q=1 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 50/276 complete
+
+[63/276] Click Analytics q=2 rate=100000 pd=['2', '8', '8', '1']
+  [OK] Click Analytics q=2 rate=100000 pd=['2', '8', '8', '1'] -- run 63/276 complete
+
+[64/276] Click Analytics q=2 rate=100000 pd=['2', '16', '16', '1']
+  [FAILED] Click Analytics q=2 rate=100000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[65/276] Click Analytics q=2 rate=100000 pd=['2', '40', '40', '1']
+  [FAILED] Click Analytics q=2 rate=100000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[69/276] Click Analytics q=2 rate=500000 pd=['2', '16', '16', '1']
+  [FAILED] Click Analytics q=2 rate=500000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[70/276] Click Analytics q=2 rate=500000 pd=['2', '40', '40', '1']
+  [FAILED] Click Analytics q=2 rate=500000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[74/276] Click Analytics q=2 rate=1000000 pd=['2', '16', '16', '1']
+  [FAILED] Click Analytics q=2 rate=1000000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[75/276] Click Analytics q=2 rate=1000000 pd=['2', '40', '40', '1']
+  [FAILED] Click Analytics q=2 rate=1000000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[91/276] Google cloud Monitoring q=1 rate=100000 pd=['2', '2', '2', '1']
+  [OK] Google cloud Monitoring q=1 rate=100000 pd=['2', '2', '2', '1'] -- run 91/276 complete
+
+[124/276] Linear Road q=2 rate=100000 pd=['2', '16', '1']
+  [OK] Linear Road q=2 rate=100000 pd=['2', '16', '1'] -- run 124/276 complete
+
+[126/276] Linear Road q=2 rate=500000 pd=['2', '2', '1']
+  [FAILED] Linear Road q=2 rate=500000 pd=['2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[127/276] Linear Road q=2 rate=500000 pd=['2', '4', '1']
+  [FAILED] Linear Road q=2 rate=500000 pd=['2', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[130/276] Linear Road q=2 rate=500000 pd=['2', '40', '1']
+  [FAILED] Linear Road q=2 rate=500000 pd=['2', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[131/276] Linear Road q=2 rate=1000000 pd=['2', '2', '1']
+  [FAILED] Linear Road q=2 rate=1000000 pd=['2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[133/276] Linear Road q=2 rate=1000000 pd=['2', '8', '1']
+  [FAILED] Linear Road q=2 rate=1000000 pd=['2', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[177/276] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[178/276] Sentiment Analysis q=1 rate=500000 pd=['2', '4', '4', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '4', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[179/276] Sentiment Analysis q=1 rate=500000 pd=['2', '8', '8', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '8', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[180/276] Sentiment Analysis q=1 rate=500000 pd=['2', '16', '16', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[181/276] Sentiment Analysis q=1 rate=500000 pd=['2', '40', '40', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[182/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[183/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '4', '4', '1']: driver log contained a real (non-shutdown-noise) error
+
+[184/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '8', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[185/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '16', '16', '1']: driver log contained a real (non-shutdown-noise) error
+
+[186/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [FAILED] Sentiment Analysis q=1 rate=1000000 pd=['2', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[239/276] Traffic Monitoring q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Traffic Monitoring q=1 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 239/276 complete
+
+[240/276] Traffic Monitoring q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Traffic Monitoring q=1 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 240/276 complete
+
+[241/276] Traffic Monitoring q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Traffic Monitoring q=1 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 241/276 complete
+
+[242/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Traffic Monitoring q=1 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 242/276 complete
+
+[243/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Traffic Monitoring q=1 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 243/276 complete
+
+[244/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Traffic Monitoring q=1 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 244/276 complete
+
+[245/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Traffic Monitoring q=1 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 245/276 complete
+
+[246/276] Traffic Monitoring q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Traffic Monitoring q=1 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 246/276 complete
+
+[247/276] Trending Topics q=1 rate=100000 pd=['2', '2', '2', '2', '1']
+  [OK] Trending Topics q=1 rate=100000 pd=['2', '2', '2', '2', '1'] -- run 247/276 complete
+
+[248/276] Trending Topics q=1 rate=100000 pd=['2', '4', '4', '4', '1']
+  [OK] Trending Topics q=1 rate=100000 pd=['2', '4', '4', '4', '1'] -- run 248/276 complete
+
+[249/276] Trending Topics q=1 rate=100000 pd=['2', '8', '8', '8', '1']
+  [OK] Trending Topics q=1 rate=100000 pd=['2', '8', '8', '8', '1'] -- run 249/276 complete
+
+[250/276] Trending Topics q=1 rate=100000 pd=['2', '16', '16', '16', '1']
+  [OK] Trending Topics q=1 rate=100000 pd=['2', '16', '16', '16', '1'] -- run 250/276 complete
+
+[251/276] Trending Topics q=1 rate=100000 pd=['2', '40', '40', '40', '1']
+  [OK] Trending Topics q=1 rate=100000 pd=['2', '40', '40', '40', '1'] -- run 251/276 complete
+
+[252/276] Trending Topics q=1 rate=500000 pd=['2', '2', '2', '2', '1']
+  [OK] Trending Topics q=1 rate=500000 pd=['2', '2', '2', '2', '1'] -- run 252/276 complete
+
+[253/276] Trending Topics q=1 rate=500000 pd=['2', '4', '4', '4', '1']
+  [OK] Trending Topics q=1 rate=500000 pd=['2', '4', '4', '4', '1'] -- run 253/276 complete
+
+[254/276] Trending Topics q=1 rate=500000 pd=['2', '8', '8', '8', '1']
+  [OK] Trending Topics q=1 rate=500000 pd=['2', '8', '8', '8', '1'] -- run 254/276 complete
+
+[255/276] Trending Topics q=1 rate=500000 pd=['2', '16', '16', '16', '1']
+  [OK] Trending Topics q=1 rate=500000 pd=['2', '16', '16', '16', '1'] -- run 255/276 complete
+
+[256/276] Trending Topics q=1 rate=500000 pd=['2', '40', '40', '40', '1']
+  [OK] Trending Topics q=1 rate=500000 pd=['2', '40', '40', '40', '1'] -- run 256/276 complete
+
+[257/276] Trending Topics q=1 rate=1000000 pd=['2', '2', '2', '2', '1']
+  [OK] Trending Topics q=1 rate=1000000 pd=['2', '2', '2', '2', '1'] -- run 257/276 complete
+
+[258/276] Trending Topics q=1 rate=1000000 pd=['2', '4', '4', '4', '1']
+  [OK] Trending Topics q=1 rate=1000000 pd=['2', '4', '4', '4', '1'] -- run 258/276 complete
+
+[259/276] Trending Topics q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [FAILED] Trending Topics q=1 rate=1000000 pd=['2', '8', '8', '8', '1']: driver log contained a real (non-shutdown-noise) error
+
+[260/276] Trending Topics q=1 rate=1000000 pd=['2', '16', '16', '16', '1']
+  [OK] Trending Topics q=1 rate=1000000 pd=['2', '16', '16', '16', '1'] -- run 260/276 complete
+
+[261/276] Trending Topics q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [FAILED] Trending Topics q=1 rate=1000000 pd=['2', '40', '40', '40', '1']: driver log contained a real (non-shutdown-noise) error
+
+[262/276] Word Count q=1 rate=100000 pd=['2', '2', '2', '1']
+  [OK] Word Count q=1 rate=100000 pd=['2', '2', '2', '1'] -- run 262/276 complete
+
+[263/276] Word Count q=1 rate=100000 pd=['2', '4', '4', '1']
+  [OK] Word Count q=1 rate=100000 pd=['2', '4', '4', '1'] -- run 263/276 complete
+
+[264/276] Word Count q=1 rate=100000 pd=['2', '8', '8', '1']
+  [OK] Word Count q=1 rate=100000 pd=['2', '8', '8', '1'] -- run 264/276 complete
+
+[265/276] Word Count q=1 rate=100000 pd=['2', '16', '16', '1']
+  [OK] Word Count q=1 rate=100000 pd=['2', '16', '16', '1'] -- run 265/276 complete
+
+[266/276] Word Count q=1 rate=100000 pd=['2', '40', '40', '1']
+  [OK] Word Count q=1 rate=100000 pd=['2', '40', '40', '1'] -- run 266/276 complete
+
+[267/276] Word Count q=1 rate=500000 pd=['2', '2', '2', '1']
+  [OK] Word Count q=1 rate=500000 pd=['2', '2', '2', '1'] -- run 267/276 complete
+
+[268/276] Word Count q=1 rate=500000 pd=['2', '4', '4', '1']
+  [OK] Word Count q=1 rate=500000 pd=['2', '4', '4', '1'] -- run 268/276 complete
+
+[269/276] Word Count q=1 rate=500000 pd=['2', '8', '8', '1']
+  [OK] Word Count q=1 rate=500000 pd=['2', '8', '8', '1'] -- run 269/276 complete
+
+[270/276] Word Count q=1 rate=500000 pd=['2', '16', '16', '1']
+  [OK] Word Count q=1 rate=500000 pd=['2', '16', '16', '1'] -- run 270/276 complete
+
+[271/276] Word Count q=1 rate=500000 pd=['2', '40', '40', '1']
+  [OK] Word Count q=1 rate=500000 pd=['2', '40', '40', '1'] -- run 271/276 complete
+
+[272/276] Word Count q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [OK] Word Count q=1 rate=1000000 pd=['2', '2', '2', '1'] -- run 272/276 complete
+
+[273/276] Word Count q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [OK] Word Count q=1 rate=1000000 pd=['2', '4', '4', '1'] -- run 273/276 complete
+
+[274/276] Word Count q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [OK] Word Count q=1 rate=1000000 pd=['2', '8', '8', '1'] -- run 274/276 complete
+
+[275/276] Word Count q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [OK] Word Count q=1 rate=1000000 pd=['2', '16', '16', '1'] -- run 275/276 complete
+
+[276/276] Word Count q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [OK] Word Count q=1 rate=1000000 pd=['2', '40', '40', '1'] -- run 276/276 complete
+
+=== Sweep pass complete: 253 done, 23 failed, out of 276 ===
+=== Starting sweep: 276 total runs ===
+
+[64/276] Click Analytics q=2 rate=100000 pd=['2', '16', '16', '1']
+  [OK] Click Analytics q=2 rate=100000 pd=['2', '16', '16', '1'] -- run 64/276 complete
+
+[65/276] Click Analytics q=2 rate=100000 pd=['2', '40', '40', '1']
+  [OK] Click Analytics q=2 rate=100000 pd=['2', '40', '40', '1'] -- run 65/276 complete
+
+[69/276] Click Analytics q=2 rate=500000 pd=['2', '16', '16', '1']
+  [OK] Click Analytics q=2 rate=500000 pd=['2', '16', '16', '1'] -- run 69/276 complete
+
+[70/276] Click Analytics q=2 rate=500000 pd=['2', '40', '40', '1']
+  [OK] Click Analytics q=2 rate=500000 pd=['2', '40', '40', '1'] -- run 70/276 complete
+
+[74/276] Click Analytics q=2 rate=1000000 pd=['2', '16', '16', '1']
+  [OK] Click Analytics q=2 rate=1000000 pd=['2', '16', '16', '1'] -- run 74/276 complete
+
+[75/276] Click Analytics q=2 rate=1000000 pd=['2', '40', '40', '1']
+  [OK] Click Analytics q=2 rate=1000000 pd=['2', '40', '40', '1'] -- run 75/276 complete
+
+[126/276] Linear Road q=2 rate=500000 pd=['2', '2', '1']
+  [OK] Linear Road q=2 rate=500000 pd=['2', '2', '1'] -- run 126/276 complete
+
+[127/276] Linear Road q=2 rate=500000 pd=['2', '4', '1']
+  [OK] Linear Road q=2 rate=500000 pd=['2', '4', '1'] -- run 127/276 complete
+
+[130/276] Linear Road q=2 rate=500000 pd=['2', '40', '1']
+  [OK] Linear Road q=2 rate=500000 pd=['2', '40', '1'] -- run 130/276 complete
+
+[131/276] Linear Road q=2 rate=1000000 pd=['2', '2', '1']
+  [OK] Linear Road q=2 rate=1000000 pd=['2', '2', '1'] -- run 131/276 complete
+
+[133/276] Linear Road q=2 rate=1000000 pd=['2', '8', '1']
+  [OK] Linear Road q=2 rate=1000000 pd=['2', '8', '1'] -- run 133/276 complete
+
+[177/276] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']
+  [FAILED] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']: driver log contained a real (non-shutdown-noise) error
+
+[178/276] Sentiment Analysis q=1 rate=500000 pd=['2', '4', '4', '1']
+  [OK] Sentiment Analysis q=1 rate=500000 pd=['2', '4', '4', '1'] -- run 178/276 complete
+
+[179/276] Sentiment Analysis q=1 rate=500000 pd=['2', '8', '8', '1']
+  [OK] Sentiment Analysis q=1 rate=500000 pd=['2', '8', '8', '1'] -- run 179/276 complete
+
+[180/276] Sentiment Analysis q=1 rate=500000 pd=['2', '16', '16', '1']
+  [OK] Sentiment Analysis q=1 rate=500000 pd=['2', '16', '16', '1'] -- run 180/276 complete
+
+[181/276] Sentiment Analysis q=1 rate=500000 pd=['2', '40', '40', '1']
+  [OK] Sentiment Analysis q=1 rate=500000 pd=['2', '40', '40', '1'] -- run 181/276 complete
+
+[182/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '2', '2', '1']
+  [OK] Sentiment Analysis q=1 rate=1000000 pd=['2', '2', '2', '1'] -- run 182/276 complete
+
+[183/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '4', '4', '1']
+  [OK] Sentiment Analysis q=1 rate=1000000 pd=['2', '4', '4', '1'] -- run 183/276 complete
+
+[184/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '8', '8', '1']
+  [OK] Sentiment Analysis q=1 rate=1000000 pd=['2', '8', '8', '1'] -- run 184/276 complete
+
+[185/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '16', '16', '1']
+  [OK] Sentiment Analysis q=1 rate=1000000 pd=['2', '16', '16', '1'] -- run 185/276 complete
+
+[186/276] Sentiment Analysis q=1 rate=1000000 pd=['2', '40', '40', '1']
+  [OK] Sentiment Analysis q=1 rate=1000000 pd=['2', '40', '40', '1'] -- run 186/276 complete
+
+[259/276] Trending Topics q=1 rate=1000000 pd=['2', '8', '8', '8', '1']
+  [OK] Trending Topics q=1 rate=1000000 pd=['2', '8', '8', '8', '1'] -- run 259/276 complete
+
+[261/276] Trending Topics q=1 rate=1000000 pd=['2', '40', '40', '40', '1']
+  [OK] Trending Topics q=1 rate=1000000 pd=['2', '40', '40', '40', '1'] -- run 261/276 complete
+
+=== Sweep pass complete: 275 done, 1 failed, out of 276 ===
+=== Starting sweep: 276 total runs ===
+
+[177/276] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1']
+  [OK] Sentiment Analysis q=1 rate=500000 pd=['2', '2', '2', '1'] -- run 177/276 complete
+
+=== Sweep pass complete: 276 done, 0 failed, out of 276 ===
+=== Starting sweep: 330 total runs ===
+
+[5/330] Ad Analytics q=1 rate=100000 pd=['2', '32', '32', '32', '32', '32', '1']
+  [OK] Ad Analytics q=1 rate=100000 pd=['2', '32', '32', '32', '32', '32', '1'] -- run 5/330 complete
+
+[11/330] Ad Analytics q=1 rate=500000 pd=['2', '32', '32', '32', '32', '32', '1']
+  [OK] Ad Analytics q=1 rate=500000 pd=['2', '32', '32', '32', '32', '32', '1'] -- run 11/330 complete
+
+[17/330] Ad Analytics q=1 rate=1000000 pd=['2', '32', '32', '32', '32', '32', '1']
+  [OK] Ad Analytics q=1 rate=1000000 pd=['2', '32', '32', '32', '32', '32', '1'] -- run 17/330 complete
+
+[23/330] Ad Analytics q=2 rate=100000 pd=['2', '32', '32', '32', '1']
+  [OK] Ad Analytics q=2 rate=100000 pd=['2', '32', '32', '32', '1'] -- run 23/330 complete
+
+[29/330] Ad Analytics q=2 rate=500000 pd=['2', '32', '32', '32', '1']
+  [OK] Ad Analytics q=2 rate=500000 pd=['2', '32', '32', '32', '1'] -- run 29/330 complete
+
+[35/330] Ad Analytics q=2 rate=1000000 pd=['2', '32', '32', '32', '1']
+  [OK] Ad Analytics q=2 rate=1000000 pd=['2', '32', '32', '32', '1'] -- run 35/330 complete
+
+[41/330] Bargain Index q=1 rate=100000 pd=['2', '32', '32', '32', '1']
+  [OK] Bargain Index q=1 rate=100000 pd=['2', '32', '32', '32', '1'] -- run 41/330 complete
+
+[47/330] Bargain Index q=1 rate=500000 pd=['2', '32', '32', '32', '1']
+  [OK] Bargain Index q=1 rate=500000 pd=['2', '32', '32', '32', '1'] -- run 47/330 complete
+
+[53/330] Bargain Index q=1 rate=1000000 pd=['2', '32', '32', '32', '1']
+  [OK] Bargain Index q=1 rate=1000000 pd=['2', '32', '32', '32', '1'] -- run 53/330 complete
+
+[59/330] Click Analytics q=1 rate=100000 pd=['2', '32', '32', '32', '1']
+  [OK] Click Analytics q=1 rate=100000 pd=['2', '32', '32', '32', '1'] -- run 59/330 complete
+
+[65/330] Click Analytics q=1 rate=500000 pd=['2', '32', '32', '32', '1']
+  [OK] Click Analytics q=1 rate=500000 pd=['2', '32', '32', '32', '1'] -- run 65/330 complete
+
+[71/330] Click Analytics q=1 rate=1000000 pd=['2', '32', '32', '32', '1']
+  [OK] Click Analytics q=1 rate=1000000 pd=['2', '32', '32', '32', '1'] -- run 71/330 complete
+
+[77/330] Click Analytics q=2 rate=100000 pd=['2', '32', '32', '1']
+  [OK] Click Analytics q=2 rate=100000 pd=['2', '32', '32', '1'] -- run 77/330 complete
+
+[83/330] Click Analytics q=2 rate=500000 pd=['2', '32', '32', '1']
+  [OK] Click Analytics q=2 rate=500000 pd=['2', '32', '32', '1'] -- run 83/330 complete
+
+[89/330] Click Analytics q=2 rate=1000000 pd=['2', '32', '32', '1']
+  [OK] Click Analytics q=2 rate=1000000 pd=['2', '32', '32', '1'] -- run 89/330 complete
+
+[95/330] Click Analytics q=3 rate=100000 pd=['2', '32', '32', '32', '1']
+  [OK] Click Analytics q=3 rate=100000 pd=['2', '32', '32', '32', '1'] -- run 95/330 complete
+
+[101/330] Click Analytics q=3 rate=500000 pd=['2', '32', '32', '32', '1']
+  [OK] Click Analytics q=3 rate=500000 pd=['2', '32', '32', '32', '1'] -- run 101/330 complete
+
+[107/330] Click Analytics q=3 rate=1000000 pd=['2', '32', '32', '32', '1']
+  [OK] Click Analytics q=3 rate=1000000 pd=['2', '32', '32', '32', '1'] -- run 107/330 complete
+
+[113/330] Google cloud Monitoring q=1 rate=100000 pd=['2', '32', '32', '1']
+  [OK] Google cloud Monitoring q=1 rate=100000 pd=['2', '32', '32', '1'] -- run 113/330 complete
+
+[119/330] Google cloud Monitoring q=1 rate=500000 pd=['2', '32', '32', '1']
+  [OK] Google cloud Monitoring q=1 rate=500000 pd=['2', '32', '32', '1'] -- run 119/330 complete
+
+[125/330] Google cloud Monitoring q=1 rate=1000000 pd=['2', '32', '32', '1']
+  [OK] Google cloud Monitoring q=1 rate=1000000 pd=['2', '32', '32', '1'] -- run 125/330 complete
+
+[131/330] Linear Road q=1 rate=100000 pd=['2', '32', '1']
+  [OK] Linear Road q=1 rate=100000 pd=['2', '32', '1'] -- run 131/330 complete
+
+[137/330] Linear Road q=1 rate=500000 pd=['2', '32', '1']
+  [OK] Linear Road q=1 rate=500000 pd=['2', '32', '1'] -- run 137/330 complete
+
+[143/330] Linear Road q=1 rate=1000000 pd=['2', '32', '1']
+  [OK] Linear Road q=1 rate=1000000 pd=['2', '32', '1'] -- run 143/330 complete
+
+[149/330] Linear Road q=2 rate=100000 pd=['2', '32', '1']
+  [OK] Linear Road q=2 rate=100000 pd=['2', '32', '1'] -- run 149/330 complete
+
+[155/330] Linear Road q=2 rate=500000 pd=['2', '32', '1']
+  [OK] Linear Road q=2 rate=500000 pd=['2', '32', '1'] -- run 155/330 complete
+
+[161/330] Linear Road q=2 rate=1000000 pd=['2', '32', '1']
+  [OK] Linear Road q=2 rate=1000000 pd=['2', '32', '1'] -- run 161/330 complete
+
+[173/330] Log Processing q=1 rate=100000 pd=['2', '32', '32', '1']
+  [OK] Log Processing q=1 rate=100000 pd=['2', '32', '32', '1'] -- run 173/330 complete
+
+[179/330] Log Processing q=1 rate=500000 pd=['2', '32', '32', '1']
+  [OK] Log Processing q=1 rate=500000 pd=['2', '32', '32', '1'] -- run 179/330 complete
+
+[185/330] Log Processing q=1 rate=1000000 pd=['2', '32', '32', '1']
+  [OK] Log Processing q=1 rate=1000000 pd=['2', '32', '32', '1'] -- run 185/330 complete
+
+[191/330] Machine Outlier q=1 rate=100000 pd=['2', '32', '32', '32', '1']
+  [OK] Machine Outlier q=1 rate=100000 pd=['2', '32', '32', '32', '1'] -- run 191/330 complete
+
+[197/330] Machine Outlier q=1 rate=500000 pd=['2', '32', '32', '32', '1']
+  [OK] Machine Outlier q=1 rate=500000 pd=['2', '32', '32', '32', '1'] -- run 197/330 complete
+
+[203/330] Machine Outlier q=1 rate=1000000 pd=['2', '32', '32', '32', '1']
+  [OK] Machine Outlier q=1 rate=1000000 pd=['2', '32', '32', '32', '1'] -- run 203/330 complete
+
+[209/330] Sentiment Analysis q=1 rate=100000 pd=['2', '32', '32', '1']
+  [OK] Sentiment Analysis q=1 rate=100000 pd=['2', '32', '32', '1'] -- run 209/330 complete
+
+[215/330] Sentiment Analysis q=1 rate=500000 pd=['2', '32', '32', '1']
+  [OK] Sentiment Analysis q=1 rate=500000 pd=['2', '32', '32', '1'] -- run 215/330 complete
+
+[221/330] Sentiment Analysis q=1 rate=1000000 pd=['2', '32', '32', '1']
+  [OK] Sentiment Analysis q=1 rate=1000000 pd=['2', '32', '32', '1'] -- run 221/330 complete
+
+[227/330] Smart Grid q=1 rate=100000 pd=['2', '32', '32', '1']
+  [OK] Smart Grid q=1 rate=100000 pd=['2', '32', '32', '1'] -- run 227/330 complete
+
+[233/330] Smart Grid q=1 rate=500000 pd=['2', '32', '32', '1']
+  [OK] Smart Grid q=1 rate=500000 pd=['2', '32', '32', '1'] -- run 233/330 complete
+
+[239/330] Smart Grid q=1 rate=1000000 pd=['2', '32', '32', '1']
+  [OK] Smart Grid q=1 rate=1000000 pd=['2', '32', '32', '1'] -- run 239/330 complete
+
+[245/330] Spike Detection q=1 rate=100000 pd=['2', '32', '32', '32', '1']
+  [OK] Spike Detection q=1 rate=100000 pd=['2', '32', '32', '32', '1'] -- run 245/330 complete
+
+[251/330] Spike Detection q=1 rate=500000 pd=['2', '32', '32', '32', '1']
+  [OK] Spike Detection q=1 rate=500000 pd=['2', '32', '32', '32', '1'] -- run 251/330 complete
+
+[257/330] Spike Detection q=1 rate=1000000 pd=['2', '32', '32', '32', '1']
+  [OK] Spike Detection q=1 rate=1000000 pd=['2', '32', '32', '32', '1'] -- run 257/330 complete
+
+[263/330] TPCH q=1 rate=100000 pd=['2', '32', '32', '32', '32', '1']
+  [OK] TPCH q=1 rate=100000 pd=['2', '32', '32', '32', '32', '1'] -- run 263/330 complete
+
+[269/330] TPCH q=1 rate=500000 pd=['2', '32', '32', '32', '32', '1']

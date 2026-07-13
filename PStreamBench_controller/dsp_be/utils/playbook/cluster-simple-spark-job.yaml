@@ -1,0 +1,25 @@
+---
+- name: Provide job to cluster
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/spark-setup-job.yaml"
+      tags:
+        - "spark-setup-job"
+    - include_tasks: "tasks/kafka/kafka-create-topic.yaml"
+      tags:
+        - "kafka-create-topic"
+    - include_tasks: "tasks/spark/spark-provide-job.yaml"
+      tags:
+        - "spark-provide-job"
+- name: Run producer
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/producer/producer-run.yaml"
+      tags:
+        - "producer-run"

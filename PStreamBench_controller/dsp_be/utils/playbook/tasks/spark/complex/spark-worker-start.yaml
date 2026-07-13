@@ -1,0 +1,5 @@
+---
+- name: Start Spark worker (./start-worker.sh)
+  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/sbin/start-worker.sh spark://{{ main_ip }}:7077"
+  async: 45000
+  poll: 0

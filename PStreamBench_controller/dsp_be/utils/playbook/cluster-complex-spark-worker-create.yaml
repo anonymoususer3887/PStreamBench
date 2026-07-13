@@ -1,0 +1,14 @@
+---
+- name: Install and start Spark worker in a node
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/complex/spark-config-setup.yaml"
+      tags:
+        - "spark-config-setup"
+    - include_tasks: "tasks/spark/complex/spark-worker-start.yaml"
+      tags:
+        - "spark-start"
+    - include_tasks: "./tasks/node-exporter/node-exporter-start.yaml"

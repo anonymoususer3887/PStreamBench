@@ -1,0 +1,8 @@
+[
+  {"host": "ms1122.utah.cloudlab.us", "zk_myid": 0, "broker_id": 0},
+  {"host": "ms1310.utah.cloudlab.us", "zk_myid": 1, "broker_id": 1},
+  {"host": "ms1137.utah.cloudlab.us", "zk_myid": 2, "broker_id": 2},
+  {"host": "ms1126.utah.cloudlab.us", "zk_myid": 3, "broker_id": 3},
+  {"host": "ms1317.utah.cloudlab.us", "zk_myid": 4, "broker_id": 4},
+  {"host": "ms1118.utah.cloudlab.us", "zk_myid": 5, "broker_id": 5}
+]

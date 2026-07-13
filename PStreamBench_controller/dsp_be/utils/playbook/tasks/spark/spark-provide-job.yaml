@@ -1,0 +1,8 @@
+---
+
+- name: Provide job to spark
+  command: "sudo /bin/bash -c '{{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/bin/spark-submit --master spark://{{ main_ip }}:7077 --name {{ job_name }} --total-executor-cores {{ num_workers }} --executor-memory 4g --conf spark.sql.streaming.metricsEnabled=true --conf spark.metrics.conf={{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/conf/metrics.properties --conf spark.ui.port=4040 --class {{ job_program }} {{ INSTALLATION_DIR }}/spark-3.5.1-bin-hadoop3/bin/dsp_spark_jobs-1.0-SNAPSHOT.jar -parallelism {{ job_parallelization }} -mode {{ job_mode }} -input {{ job_input }} -output {{ job_output }} -kafka-server {{ producer_bootstrap_server }} -waitTimeToCancel {{ job_run_time }} -size {{ job_window_size }} -slide {{ job_window_slide_size }} -query {{ job_query_number }} -popularityThreshold {{ job_threshold }} > /tmp/spark-driver-{{ job_name }}.log 2>&1'"
+  async: 45000
+  poll: 0
+  tags:
+    - start

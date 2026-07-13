@@ -1,0 +1,16 @@
+---
+- name: Stop Spark master in alpha node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/complex/spark-master-stop.yaml"
+      tags:
+        - "spark-stop"
+    - include_tasks: "tasks/prometheus/prometheus-stop.yaml"
+      tags:
+        - "prometheus-stop"
+    - include_tasks: "tasks/grafana/grafana-stop.yaml"
+      tags:
+        - "grafana-stop"

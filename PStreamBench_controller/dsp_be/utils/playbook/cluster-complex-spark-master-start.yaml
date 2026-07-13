@@ -1,0 +1,16 @@
+---
+- name: Start Spark master in alpha node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/complex/spark-master-start.yaml"
+      tags:
+        - "spark-start"
+    - include_tasks: "tasks/prometheus/prometheus-start.yaml"
+      tags:
+        - "prometheus-start"
+    - include_tasks: "tasks/grafana/grafana-start.yaml"
+      tags:
+        - "grafana-start"

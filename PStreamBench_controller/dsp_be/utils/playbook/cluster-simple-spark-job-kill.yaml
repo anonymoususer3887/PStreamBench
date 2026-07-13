@@ -1,0 +1,10 @@
+---
+- name: Kill job on cluster
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/spark/spark-kill-job.yaml"
+      tags:
+        - "spark-kill-job"
