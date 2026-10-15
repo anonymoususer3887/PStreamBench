@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import logging
 import socket
@@ -52,113 +53,204 @@ def getOperatorMetrics(parallelization,main_node_ip,job_id,operatorId, operatorN
     print(data)
     
     
-    selectivity_avg = data["data"]["result"][0]["value"][1]
+    # Guarded the same way as the latency queries below: an empty result
+    # here (job already finished/evicted its metrics by collection time,
+    # or a genuinely metric-less operator) crashed every caller with an
+    # unhandled IndexError -- found live 2026-10-11.
+    try:
+        selectivity_avg = data["data"]["result"][0]["value"][1]
+    except (IndexError, KeyError):
+        selectivity_avg = None
 
 
     response_data = { "job_id:"+str(job_id)+"--OperatorName:"+operatorName+"--OperatorId:"+str(operatorId)+"--parallelization : "+str(pd)+"metric : Selectivity" : selectivity_avg }
     #print(response_data)
     dict_response["selectivity"]=response_data
     #dict_response.update(response_data)
+
+    # throughput_per_sec / busy_ratio / backpressure_ratio -- added
+    # 2026-09-13 for ds2_strategy/dhalion_strategy (parallelism_strategies.py),
+    # matching the flat-float shape load_stage_metrics_flink() expects (same
+    # convention as the Storm/Spark adapters -- see that module's docstring).
+    # Flink natively exposes busy/backpressure time per TASK (not per
+    # "task_operator" like numRecordsOutPerSecond above -- confirmed live,
+    # 2026-09-13, via /api/v1/series), labeled by task_id rather than
+    # operator_id. Since every job in this project calls
+    # env.disableOperatorChaining() (see e.g. WordCountJob.java), each task
+    # contains exactly one operator, so task_id and operator_id are the same
+    # value here -- there is no separate task_id to plumb through.
+    prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(avg_over_time(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\",operator_id=\""+operatorId+"\"}[5m] @ " +timestamp_prom+"))"
+    response = requests.get(prom_endpoint_Throughput)
+    data = response.json()
+    try:
+        value = float(data["data"]["result"][0]["value"][1])
+        dict_response["throughput_per_sec"] = 0.0 if math.isnan(value) else value
+    except (IndexError, KeyError):
+        dict_response["throughput_per_sec"] = 0.0
+
+    # busyTimeMsPerSecond/backPressuredTimeMsPerSecond are milliseconds busy
+    # (backpressured) per second of wall-clock time, i.e. already bounded to
+    # [0, 1000] by construction (unlike Storm's "capacity", which can exceed
+    # 1.0 when a bolt falls behind) -- dividing by 1000 gives a clean [0, 1]
+    # ratio with no clamping needed. Flink itself reports these gauges as
+    # NaN during any idle sub-interval (e.g. the first few seconds while a
+    # task is still starting up) -- confirmed live 2026-09-13, a real
+    # Word Count run's busy_ratio came back NaN for every stage because
+    # avg_over_time's 5m window fully contained that brief startup idle
+    # period (job_run_time itself was only 5 minutes) and PromQL's
+    # avg_over_time propagates a single NaN sample into the whole window's
+    # average. Coerced to the same neutral-default 0.0 used for a missing
+    # result, otherwise a bare NaN gets serialized into the persisted
+    # evaluationMetrics-*.json (invalid per strict JSON, and silently
+    # poisons ds2_strategy/dhalion_strategy's downstream arithmetic).
+    prom_endpoint_Busy = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(avg_over_time(flink_taskmanager_job_task_busyTimeMsPerSecond{job_id=\"" + job_id + "\",task_id=\""+operatorId+"\"}[5m] @ " +timestamp_prom+"))"
+    response = requests.get(prom_endpoint_Busy)
+    data = response.json()
+    try:
+        value = float(data["data"]["result"][0]["value"][1])
+        dict_response["busy_ratio"] = 0.0 if math.isnan(value) else value / 1000.0
+    except (IndexError, KeyError):
+        dict_response["busy_ratio"] = 0.0
+
+    prom_endpoint_BackPressure = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(avg_over_time(flink_taskmanager_job_task_backPressuredTimeMsPerSecond{job_id=\"" + job_id + "\",task_id=\""+operatorId+"\"}[5m] @ " +timestamp_prom+"))"
+    response = requests.get(prom_endpoint_BackPressure)
+    data = response.json()
+    try:
+        value = float(data["data"]["result"][0]["value"][1])
+        dict_response["backpressure_ratio"] = 0.0 if math.isnan(value) else value / 1000.0
+    except (IndexError, KeyError):
+        dict_response["backpressure_ratio"] = 0.0
+
 #'Processing Latency 98th percentile'
+    # A pure source operator (e.g. this project's synthetic "spout" stages,
+    # see dsp_flink_synthetic_jobs) has no upstream to measure latency FROM --
+    # Flink's latency-marker metric is relative to a source's own emission
+    # time, so a source never reports a series against itself. That made
+    # this query's result list deterministically empty (not a transient gap
+    # like the NaN cases elsewhere in this file) and crashed with
+    # IndexError every single time a source operator was passed in -- found
+    # live 2026-10-11 wiring up the Flink synthetic-workload collector,
+    # where every shape's first stage is exactly this case. Guarded the same
+    # way as throughput_per_sec/busy_ratio/backpressure_ratio above.
     prom_endpoint_Latency_98th = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\", operator_id=\""+operatorId+"\",quantile='0.98'}[5m] @ " +timestamp_prom+"))"
     #print(prom_endpoint_Latency_98th)
     response = requests.get(prom_endpoint_Latency_98th)
     data = response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     #print(data)
-    
+
     response_data = { "job_id:"+str(job_id)+"--OperatorName:"+operatorName+"--OperatorId:"+str(operatorId)+"--parallelization:"+str(parallelization)+"metric : Latency_98th" : data }
     #print(response_data)
     dict_response["processing_latency_98th"]=response_data
-    #dict_response.update(response_data)                
+    #dict_response.update(response_data)
 
-    
+
 #'Processing Latency 95th percentile'
     prom_endpoint_Latency_95th = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\", operator_id=\""+operatorId+"\",quantile='0.95'}[5m] @ " +timestamp_prom+"))"
     response = requests.get(prom_endpoint_Latency_95th)
     data = response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     #print(data)
-    
+
     response_data = { "job_id:"+str(job_id)+"--OperatorName:"+operatorName+"--OperatorId:"+str(operatorId)+"--parallelization:"+str(parallelization)+"metric : Latency_95th" : data }
     #print(response_data)
     dict_response["processing_latency_95th"]=response_data
-    
+
     prom_endpoint_Latency_50th = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\", operator_id=\""+operatorId+"\",quantile='0.5'}[5m] @ " +timestamp_prom+"))"
     response = requests.get(prom_endpoint_Latency_50th)
     data = response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     #print(data)
-    
+
     response_data = { "job_id:"+str(job_id)+"--OperatorName:"+operatorName+"--OperatorId:"+str(operatorId)+"--parallelization:"+str(parallelization)+"metric : Latency_50th" : data }
     #print(response_data)
     dict_response["processing_latency_50th"]=response_data
-    #dict_response.update(response_data)  
+    #dict_response.update(response_data)
 
     return dict_response
 
 def getQueryMetrics(main_node_ip, job_id, timestamp_prom):
     dictReturn = {}
-    prom_endpoint_recPerSecOutSource = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(max_over_time(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
-    #print(prom_endpoint_Throughput)
-    recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource)
-    data =recPerSecOutSource_resp.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["recPerSecOutSource_max"]= data
+    # This whole block assumes a Kafka sink (hardcoded operator_name=
+    # 'kafka_sink:_Writer') -- never true for the synthetic workloads
+    # (dsp_flink_synthetic_jobs runs in-process generation -> discard/file
+    # sink, no Kafka anywhere), and was previously unguarded, crashing on
+    # the very first query for every synthetic run. Wrapped in the same
+    # try/except-and-degrade-gracefully style already used for the
+    # CPU/NW/Memory block right below, rather than leaving half this
+    # function's queries crash-prone and the other half not.
+    try:
+        prom_endpoint_recPerSecOutSource = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(max_over_time(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
+        #print(prom_endpoint_Throughput)
+        recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource)
+        data =recPerSecOutSource_resp.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["recPerSecOutSource_max"]= data
 
-    prom_endpoint_recPerSecOutSource_50 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.5, flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
-    #print(prom_endpoint_Throughput)
-    recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_50)
-    data =recPerSecOutSource_resp.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["recPerSecOutSource_50"]= data
+        prom_endpoint_recPerSecOutSource_50 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.5, flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
+        #print(prom_endpoint_Throughput)
+        recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_50)
+        data =recPerSecOutSource_resp.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["recPerSecOutSource_50"]= data
 
-    prom_endpoint_recPerSecOutSource_98 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.98, flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
-    print(prom_endpoint_recPerSecOutSource_98)
-    recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_98)
-    data =recPerSecOutSource_resp.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["recPerSecOutSource_98"]= data
+        prom_endpoint_recPerSecOutSource_98 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.98, flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
+        print(prom_endpoint_recPerSecOutSource_98)
+        recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_98)
+        data =recPerSecOutSource_resp.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["recPerSecOutSource_98"]= data
 
-    prom_endpoint_recPerSecOutSource_95 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.95, flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
-    #print(prom_endpoint_Throughput)
-    recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_95)
-    data =recPerSecOutSource_resp.json()
-    data = data['data']['result'][0]['value'][1]
-    print(data)
-    dictReturn["recPerSecOutSource_95"]= data
+        prom_endpoint_recPerSecOutSource_95 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.95, flink_taskmanager_job_task_operator_numRecordsOutPerSecond{job_id=\"" + job_id + "\" ,operator_name=~'Source:.*'}[5m] @ " +timestamp_prom+"))"
+        #print(prom_endpoint_Throughput)
+        recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_95)
+        data =recPerSecOutSource_resp.json()
+        data = data['data']['result'][0]['value'][1]
+        print(data)
+        dictReturn["recPerSecOutSource_95"]= data
 
-    prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom
-    #print(prom_endpoint_Throughput)
-    throughput_response = requests.get(prom_endpoint_Throughput)
-    data =throughput_response.json()
-    data = data['data']['result']
-    dictReturn["throughput"]= data
-    #print('throughput done')house-event-parser
-    
-    prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.50, flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom+"))"
-    print(prom_endpoint_Throughput)
-    throughput_response = requests.get(prom_endpoint_Throughput)
-    data =throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["throughput_50"]= data
-    #print('throughput 50 done')
+        prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom
+        #print(prom_endpoint_Throughput)
+        throughput_response = requests.get(prom_endpoint_Throughput)
+        data =throughput_response.json()
+        data = data['data']['result']
+        dictReturn["throughput"]= data
+        #print('throughput done')house-event-parser
 
-    prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.95, flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom+"))"
-    #print(prom_endpoint_Throughput)
-    throughput_response = requests.get(prom_endpoint_Throughput)
-    data =throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["throughput_95"]= data
-    #print('throughput 95 done')
+        prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.50, flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom+"))"
+        print(prom_endpoint_Throughput)
+        throughput_response = requests.get(prom_endpoint_Throughput)
+        data =throughput_response.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["throughput_50"]= data
+        #print('throughput 50 done')
 
-    prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.98, flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom+"))"
-    #print(prom_endpoint_Throughput)
-    throughput_response = requests.get(prom_endpoint_Throughput)
-    data =throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["throughput_98"]= data
-    #print('throughput 98 done')
+        prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.95, flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom+"))"
+        #print(prom_endpoint_Throughput)
+        throughput_response = requests.get(prom_endpoint_Throughput)
+        data =throughput_response.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["throughput_95"]= data
+        #print('throughput 95 done')
+
+        prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.98, flink_taskmanager_job_task_operator_numRecordsInPerSecond{job_id=\"" + job_id + "\" ,operator_name='kafka_sink:_Writer'}[5m] @ " +timestamp_prom+"))"
+        #print(prom_endpoint_Throughput)
+        throughput_response = requests.get(prom_endpoint_Throughput)
+        data =throughput_response.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["throughput_98"]= data
+        #print('throughput 98 done')
+    except (IndexError, KeyError):
+        pass
 
     try:
         prom_endpoint_cpu = "http://" + main_node_ip + ":9090/api/v1/query?query=flink_taskmanager_System_CPU_Load15min[5m] @ " +timestamp_prom
@@ -256,25 +348,28 @@ def getQueryMetrics(main_node_ip, job_id, timestamp_prom):
         pass
 
     
-    prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\",operator_subtask_index='0',quantile='0.98'}[5m] @ " +timestamp_prom+"))"
-    #print('prom_endpoint_Latency_98')
-    #print(prom_endpoint_Latency)
-    latency_response = requests.get(prom_endpoint_Latency)
-    data = latency_response.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["endtoend_latency_98"]= data
+    try:
+        prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\",operator_subtask_index='0',quantile='0.98'}[5m] @ " +timestamp_prom+"))"
+        #print('prom_endpoint_Latency_98')
+        #print(prom_endpoint_Latency)
+        latency_response = requests.get(prom_endpoint_Latency)
+        data = latency_response.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["endtoend_latency_98"]= data
 
-    prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\",operator_subtask_index='0',quantile='0.95'}[5m] @ " +timestamp_prom+"))"
-    latency_response = requests.get(prom_endpoint_Latency)
-    data = latency_response.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["endtoend_latency_95"]= data
-    
-    prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\",operator_subtask_index='0',quantile='0.5'}[5m] @ " +timestamp_prom+"))"
-    latency_response = requests.get(prom_endpoint_Latency)
-    data = latency_response.json()
-    data = data['data']['result'][0]['value'][1]
-    dictReturn["endtoend_latency_50"]= data
+        prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\",operator_subtask_index='0',quantile='0.95'}[5m] @ " +timestamp_prom+"))"
+        latency_response = requests.get(prom_endpoint_Latency)
+        data = latency_response.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["endtoend_latency_95"]= data
+
+        prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{job_id=\"" + job_id + "\",operator_subtask_index='0',quantile='0.5'}[5m] @ " +timestamp_prom+"))"
+        latency_response = requests.get(prom_endpoint_Latency)
+        data = latency_response.json()
+        data = data['data']['result'][0]['value'][1]
+        dictReturn["endtoend_latency_50"]= data
+    except (IndexError, KeyError):
+        pass
     
     return dictReturn
 
@@ -1407,6 +1502,61 @@ def getWordCount(job_id, main_node_ip, timestamp_prom):
 
     return dictCombo
 
+# Synthetic-workload dispatch (dsp_flink_synthetic_jobs), added 2026-10-11 --
+# same pattern as the 14 real-workload functions above (match vertex names by
+# substring, call getOperatorMetrics per match), kept as 3 parameterized
+# helpers instead of 9 near-duplicate functions since the synthetic shapes
+# are themselves parameterized by width/filter-count. Vertex names here are
+# exactly the .name(...) strings used in dsp_flink_synthetic_jobs' topology
+# classes (LinearQueryTopology, ChainedFiltersTopology, JoinTopology).
+def _getSyntheticOperatorDict(jsonVertice, names):
+    """names: list of vertex-name substrings to match, in order. Returns an
+    operatorMetrics dict keyed by the same names, skipping any not found
+    (mirrors the "if verticeId... is not None" guard used throughout this
+    file for shapes whose stage list varies, e.g. join width)."""
+    found = {}
+    if "vertices" in jsonVertice:
+        for vertice in jsonVertice["vertices"]:
+            if "name" not in vertice:
+                continue
+            for name in names:
+                if name in vertice["name"] and name not in found:
+                    found[name] = (vertice["id"], int(vertice["parallelism"]))
+                    break
+    return found
+
+def getSyntheticMetrics(job_id, main_node_ip, timestamp_prom, stageNames):
+    verticeResponse = requests.get("http://" + main_node_ip + ":8086/v1/jobs/" + job_id)
+    jsonVertice = verticeResponse.json()
+    jobName = jsonVertice["name"]
+
+    found = _getSyntheticOperatorDict(jsonVertice, stageNames)
+    dictCombo = {"job_name": jobName, "operatorMetrics": {}}
+    for name in stageNames:
+        if name in found:
+            verticeId, parallelism = found[name]
+            dictCombo["operatorMetrics"][name] = getOperatorMetrics(
+                parallelism, main_node_ip, job_id, verticeId, name, timestamp_prom)
+
+    dictCombo["queryMetrics"] = getQueryMetrics(main_node_ip, job_id, timestamp_prom)
+    dictCombo["hardwareMetrics"] = getHardwareMetrics(main_node_ip, job_id, timestamp_prom)
+    return dictCombo
+
+def getLinearQuerySynthetic(job_id, main_node_ip, timestamp_prom):
+    return getSyntheticMetrics(job_id, main_node_ip, timestamp_prom,
+                                ["spout", "filter1", "window-agg", "filter2", "sink"])
+
+def getChainedFiltersSynthetic(job_id, main_node_ip, timestamp_prom, n):
+    stageNames = ["spout", "window-agg"] + [f"filter{i}" for i in range(1, n + 1)] + ["sink"]
+    return getSyntheticMetrics(job_id, main_node_ip, timestamp_prom, stageNames)
+
+def getJoinSynthetic(job_id, main_node_ip, timestamp_prom, n):
+    stageNames = [f"spout-{i}" for i in range(n)]
+    if n <= 3:
+        stageNames += [f"filter-{i}" for i in range(n)]
+    stageNames += [f"join-{i}" for i in range(1, n)] + ["window-agg", "sink"]
+    return getSyntheticMetrics(job_id, main_node_ip, timestamp_prom, stageNames)
+
 @click.command()
 @click.option('--main_node_ip', type=str, help='node address where prometheus and flink resides')
 @click.option('--job_id', type=str, help='node address where prometheus and flink resides')
@@ -1443,7 +1593,22 @@ def main(main_node_ip, job_id, job_run_time, job_parallelization,
     #main_node_ip_jobs_json = requested_main_node_ip_jobs.json()
     #print(main_node_ip_jobs_json)
     ###You have to see that everytime which job is being called.
-    response = requests.get("http://"+ main_node_ip + ":8086/v1/jobs/"+job_id)
+    # No timeout here previously meant a single transient network hiccup
+    # (confirmed live, 2026-09-14, across 5 separate Flink strategy-sweep
+    # combos: Linear Road Q1, Machine Outlier, Smart Grid Q2 x2, Sentiment
+    # Analysis -- all failed with the exact same ConnectTimeout/
+    # MaxRetryError at this exact line) crashed the whole script with an
+    # uncaught exception, discarding an otherwise-successful job run's
+    # metrics. A short retry with an explicit timeout survives the kind of
+    # brief blip seen live rather than losing the whole combo to it.
+    for attempt in range(3):
+        try:
+            response = requests.get("http://"+ main_node_ip + ":8086/v1/jobs/"+job_id, timeout=15)
+            break
+        except requests.exceptions.RequestException:
+            if attempt == 2:
+                raise
+            time.sleep(5)
     response = response.json()
     #node0.sat.maki-test.emulab.net
     jobName = response["name"]
@@ -1508,6 +1673,15 @@ def main(main_node_ip, job_id, job_run_time, job_parallelization,
         processedMetrics = getTrafficMonitoring(job_id, main_node_ip, timestamp_prom)
     elif jobName == "TPCH":
         processedMetrics = getTpch(job_id, main_node_ip, timestamp_prom)
+    elif jobName == "LinearQuery":
+        processedMetrics = getLinearQuerySynthetic(job_id, main_node_ip, timestamp_prom)
+    elif jobName in ("TwoFilters", "ThreeFilters", "FourFilters"):
+        n = {"TwoFilters": 2, "ThreeFilters": 3, "FourFilters": 4}[jobName]
+        processedMetrics = getChainedFiltersSynthetic(job_id, main_node_ip, timestamp_prom, n)
+    elif jobName in ("TwoWayJoin", "ThreeWayJoin", "FourWayJoin", "FiveWayJoin", "SixWayJoin"):
+        n = {"TwoWayJoin": 2, "ThreeWayJoin": 3, "FourWayJoin": 4,
+             "FiveWayJoin": 5, "SixWayJoin": 6}[jobName]
+        processedMetrics = getJoinSynthetic(job_id, main_node_ip, timestamp_prom, n)
     print('printing processed metrics#####################################################################')
     #print(processedMetrics)
     metaInfo = {

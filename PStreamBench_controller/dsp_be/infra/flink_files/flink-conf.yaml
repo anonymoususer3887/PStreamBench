@@ -1,10 +1,10 @@
-jobmanager.rpc.address: node0.fix2.maki-test-pg0.utah.cloudlab.us
+jobmanager.rpc.address: node0
 jobmanager.rpc.port: 6123
 jobmanager.bind-host: 0.0.0.0
-jobmanager.memory.process.size: 56000m
+jobmanager.memory.process.size: 64gb
 taskmanager.bind-host: 0.0.0.0
-taskmanager.host: node1.fix2.maki-test-pg0.utah.cloudlab.us
-taskmanager.memory.process.size: 56000m
+taskmanager.host: node5
+taskmanager.memory.process.size: 64gb
 taskmanager.numberOfTaskSlots: 16
 parallelism.default: 1
 jobmanager.execution.failover-strategy: region

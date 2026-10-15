@@ -171,7 +171,45 @@ def _get_operator_rows(name, main_node_ip, timestamp_prom):
     return _first_value(data['data']['result'])
 
 
-def getOperatorMetrics(operator_names, main_node_ip, timestamp_prom, batch_duration_ms):
+def _capacity_ratio(spark_streaming_metrics):
+    """Job-wide "is this job keeping up with its input" ratio, derived from
+    Spark's own built-in input_rate/processing_rate (see
+    getSparkStreamingMetrics) -- this project's Spark stand-in for
+    busy_ratio/backpressure_ratio, the two fields ds2_strategy/
+    dhalion_strategy (parallelism_strategies.py) need and that RisingWave's
+    per-fragment stream_actor_poll_duration/output_buffer_blocking_duration
+    metrics have no Spark equivalent for (Structured Streaming exposes no
+    per-operator timing at all, only per-microbatch job-wide numbers -- see
+    getOperatorMetrics's own docstring).
+
+    processing_rate < input_rate is a direct, real signal that the pipeline
+    is falling behind its input during the measurement window -- the same
+    thing backpressure_ratio measures for RisingWave, just at job
+    granularity instead of per-fragment. Applied uniformly to every stage
+    (see getOperatorMetrics below): a coarser version of the same
+    simplification RisingWave's own adapter already documents (per-fragment,
+    not per-instance) -- here it's per-job, not per-fragment, because that
+    is the finest granularity Spark's built-in metrics actually expose
+    without new per-stage timing instrumentation in the job code itself.
+
+    Returns None if either rate is missing/zero (can't compute a ratio, same
+    "don't guess" fallback used throughout this file and
+    parallelism_strategies.py) -- capped at 1.0 since processing transiently
+    faster than input arrives during a catch-up burst isn't "over capacity"
+    in the sense busy_ratio means.
+    """
+    input_rate = spark_streaming_metrics.get("input_rate")
+    processing_rate = spark_streaming_metrics.get("processing_rate")
+    if input_rate is None or processing_rate is None:
+        return None
+    input_rate = float(input_rate)
+    processing_rate = float(processing_rate)
+    if input_rate <= 0:
+        return None
+    return min(1.0, processing_rate / input_rate)
+
+
+def getOperatorMetrics(operator_names, main_node_ip, timestamp_prom, batch_duration_ms, spark_streaming_metrics=None):
     """Per-stage row counts + selectivity + throughput for the custom
     OperatorMetricsSource gauges fed by a job's Dataset.observe() calls (see
     MetricsUtils.java) -- the Spark counterpart of Flink/Storm's native
@@ -190,6 +228,14 @@ def getOperatorMetrics(operator_names, main_node_ip, timestamp_prom, batch_durat
     equivalent "time spent inside this operator" number here; do not confuse
     rows/duration (a rate) with a latency.
 
+    busy_ratio/backpressure_ratio (only populated when spark_streaming_metrics
+    is given) are the same job-wide capacity-ratio value replicated onto
+    every stage -- see _capacity_ratio's docstring for why this is job-wide,
+    not truly per-stage. Present so load_stage_metrics_spark()
+    (parallelism_strategies.py) can feed this file's output straight into
+    ds2_strategy/dhalion_strategy without a shape mismatch against the
+    RisingWave adapter.
+
     This assumes a single sequential pipeline -- see
     getAdAnalyticsQuery1OperatorMetrics for a job whose stages fan in from
     two independent sources, where this chain-based selectivity doesn't apply.
@@ -201,6 +247,9 @@ def getOperatorMetrics(operator_names, main_node_ip, timestamp_prom, batch_durat
     batch_duration_seconds = None
     if batch_duration_ms is not None and float(batch_duration_ms) > 0:
         batch_duration_seconds = float(batch_duration_ms) / 1000.0
+
+    busy_ratio = _capacity_ratio(spark_streaming_metrics) if spark_streaming_metrics else None
+    backpressure_ratio = (1.0 - busy_ratio) if busy_ratio is not None else None
 
     dict_return = {}
     previous_rows = None
@@ -221,6 +270,8 @@ def getOperatorMetrics(operator_names, main_node_ip, timestamp_prom, batch_durat
             "rows": current,
             "selectivity": selectivity,
             "throughput_per_sec": throughput_per_sec,
+            "busy_ratio": busy_ratio,
+            "backpressure_ratio": backpressure_ratio,
         }
 
     return dict_return
@@ -269,14 +320,15 @@ def getCombo(job_name, main_node_ip, input_topic, output_topic, timestamp_prom, 
     if operator_names:
         combo["operatorMetrics"] = getOperatorMetrics(
             operator_names, main_node_ip, timestamp_prom,
-            spark_streaming_metrics.get("processing_latency_ms"))
+            spark_streaming_metrics.get("processing_latency_ms"),
+            spark_streaming_metrics=spark_streaming_metrics)
     if has_end_to_end_lag:
         combo["endToEndLatency"] = getEndToEndLatency(main_node_ip, timestamp_prom)
     combo["hardwareMetrics"] = getHardwareMetrics(main_node_ip, timestamp_prom)
     return combo
 
 
-def getAdAnalyticsQuery1OperatorMetrics(main_node_ip, timestamp_prom, batch_duration_ms):
+def getAdAnalyticsQuery1OperatorMetrics(main_node_ip, timestamp_prom, batch_duration_ms, spark_streaming_metrics=None):
     """Ad Analytics Query 1 has two independent Kafka sources
     ("clicksparser"/"impressionsparser") feeding a single windowed
     aggregation ("window"), not one sequential pipeline -- so unlike
@@ -291,11 +343,15 @@ def getAdAnalyticsQuery1OperatorMetrics(main_node_ip, timestamp_prom, batch_dura
     if batch_duration_ms is not None and float(batch_duration_ms) > 0:
         batch_duration_seconds = float(batch_duration_ms) / 1000.0
 
+    busy_ratio = _capacity_ratio(spark_streaming_metrics) if spark_streaming_metrics else None
+    backpressure_ratio = (1.0 - busy_ratio) if busy_ratio is not None else None
+
     def _entry(rows, selectivity):
         throughput = None
         if rows is not None and batch_duration_seconds is not None:
             throughput = rows / batch_duration_seconds
-        return {"rows": rows, "selectivity": selectivity, "throughput_per_sec": throughput}
+        return {"rows": rows, "selectivity": selectivity, "throughput_per_sec": throughput,
+                "busy_ratio": busy_ratio, "backpressure_ratio": backpressure_ratio}
 
     clicks_rows = _get_operator_rows("clicksparser", main_node_ip, timestamp_prom)
     impressions_rows = _get_operator_rows("impressionsparser", main_node_ip, timestamp_prom)
@@ -376,7 +432,8 @@ def getAdAnalytics(main_node_ip, timestamp_prom, job_query_number=None):
         spark_streaming_metrics = getSparkStreamingMetrics(main_node_ip, timestamp_prom)
         combo["sparkStreamingMetrics"] = spark_streaming_metrics
         combo["operatorMetrics"] = getAdAnalyticsQuery1OperatorMetrics(
-            main_node_ip, timestamp_prom, spark_streaming_metrics.get("processing_latency_ms"))
+            main_node_ip, timestamp_prom, spark_streaming_metrics.get("processing_latency_ms"),
+            spark_streaming_metrics=spark_streaming_metrics)
         combo["endToEndLatency"] = {}
         combo["endToEndLatency"].update(getEndToEndLatency(
             main_node_ip, timestamp_prom,

@@ -28,6 +28,42 @@ def getBoltMetrics(parallelization, main_node_ip, job_id, operatorId,
     response_data = {"Selectivity": selectivity_avg}
     dict_response["selectivity"] = response_data
 
+    # throughput_per_sec -- executed-tuples rate, same
+    # bolts_executed/uptime_seconds averaging as the selectivity query
+    # above (Storm's REST API reports emitted/executed as counts over its
+    # own default stats window, not a raw Prometheus counter, so dividing
+    # by uptime_seconds -- not rate() -- is what the rest of this file
+    # already does elsewhere to get a per-second figure).
+    prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=bolts_executed{TopologyId='"+job_id+"',BoltId='"+operatorId+"'} / on() group_left() uptime_seconds{TopologyId='"+job_id+"'}"
+    response = requests.get(prom_endpoint_Throughput)
+    data = response.json()
+    throughput_per_sec = float(data["data"]["result"][0]["value"][1])
+    dict_response["throughput_per_sec"] = throughput_per_sec
+
+    # busy_ratio / backpressure_ratio -- derived from Storm's native
+    # "capacity" metric (num executed * avg execute latency / time
+    # window), the same "fraction of time spent doing useful work"
+    # concept ds2_strategy/dhalion_strategy already consume for
+    # RisingWave/Spark (see parallelism_strategies.py's DS2/Dhalion
+    # docstrings). capacity can exceed 1.0 when a bolt is fully
+    # saturated and falling behind (it needed more than the whole
+    # window to process what arrived) -- busy_ratio clamps that to 1.0
+    # (matches DS2's [0,1] "fraction of time busy" assumption), while
+    # backpressure_ratio keeps the overshoot as
+    # max(0, 1 - 1/capacity): capacity=1.25 (25% over capacity) maps to
+    # backpressure_ratio=0.2, i.e. Dhalion's scale-up resolver would
+    # then propose new_p = ceil(current_p / (1 - 0.2)) = 1.25x -- the
+    # same relationship the exporter's own metric name promises.
+    prom_endpoint_Capacity = "http://" + main_node_ip + ":9090/api/v1/query?query=avg_over_time(bolts_capacity{TopologyId=\"" + job_id + "\", BoltId=\""+operatorId+"\"}[5m] @ " +timestamp_prom+")"
+    response = requests.get(prom_endpoint_Capacity)
+    data = response.json()
+    try:
+        capacity = float(data["data"]["result"][0]["value"][1])
+    except (IndexError, KeyError):
+        capacity = 0.0
+    dict_response["busy_ratio"] = min(1.0, capacity)
+    dict_response["backpressure_ratio"] = max(0.0, 1.0 - 1.0 / capacity) if capacity > 0 else 0.0
+
     # latency 98th
     prom_endpoint_Latency_98th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.98, bolts_execute_latency{TopologyId=\"" + job_id + "\", BoltId=\""+operatorId+"\"}[5m] @ " +timestamp_prom+")"
     response = requests.get(prom_endpoint_Latency_98th)
@@ -585,10 +621,42 @@ def main(main_node_ip, job_id, job_run_time, job_parallelization,
         spouts = ["spout"]
         bolts = ["parse-click-log-bolt", "repeat-visit-operator-bolt",
                  "sum-reducer-bolt", "geography-operator-bolt"]
+    elif jobName == "LinearQuery":
+        # Synthetic Linear query -- see LinearQueryTopology.java (parallelism
+        # indices: 0 spout, 1 filter1, 2 window-agg, 3 filter2, 4 sink).
+        spouts = ["spout"]
+        bolts = ["filter1", "window-agg", "filter2"]
+    elif jobName in ("TwoFilters", "ThreeFilters", "FourFilters"):
+        # Synthetic chained-filters query -- see ChainedFiltersTopology.java
+        # (spout -> window-agg -> filter1..N -> sink; N = 2/3/4 per app name).
+        spouts = ["spout"]
+        n = {"TwoFilters": 2, "ThreeFilters": 3, "FourFilters": 4}[jobName]
+        bolts = ["window-agg"] + [f"filter{i}" for i in range(1, n + 1)]
+    elif jobName in ("TwoWayJoin", "ThreeWayJoin", "FourWayJoin", "FiveWayJoin", "SixWayJoin"):
+        # Synthetic N-way join -- see JoinTopology.java (N sources -> [filter-i
+        # per source, 2/3-way only] -> join -> window-agg -> sink).
+        n = {"TwoWayJoin": 2, "ThreeWayJoin": 3, "FourWayJoin": 4,
+             "FiveWayJoin": 5, "SixWayJoin": 6}[jobName]
+        spouts = [f"spout-{i}" for i in range(n)]
+        bolts = ([f"filter-{i}" for i in range(n)] if n <= 3 else []) + ["join", "window-agg"]
     elif jobName == "LinearRoad":
         spouts = ["spout"]
+        # Union of all 4 query variants' real bolt names (verified against
+        # LinearRoadTopology.java directly, 2026-09-02) -- Q2's
+        # "accident-notification"/"accident-notification-formatter" were
+        # missing here entirely before this fix, meaning a Q2 (accident-
+        # detection) run would have silently collected metrics for only
+        # "vehicleEvent-parser-bolt" (the one bolt common to every query)
+        # and nothing else, since getTopologyMetrics only creates an
+        # operatorMetrics entry for bolt names that are actually found in
+        # the live topology (substring match against the real registered
+        # boltIds) -- harmless to list every variant's names together like
+        # this, same reasoning as the existing ClickAnalytics/SmartGrid/
+        # LogProcessing entries below.
         bolts = ["vehicleEvent-parser-bolt", "toll-notification-mapper",
-                 "toll-notification-formatter", "daily-expenditure-bolt"]
+                 "toll-notification-formatter", "accident-notification",
+                 "accident-notification-formatter", "daily-expenditure-bolt",
+                 "vehicle-report-mapper", "logger-bolt"]
     elif jobName == "MachineOutlier":
         spouts = ["spout"]
         bolts = ["machine-usage-parser-bolt", "machine-outlier-bolt"]

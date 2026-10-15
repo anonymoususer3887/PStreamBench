@@ -5,16 +5,16 @@ scrape_configs:
   - targets: ['localhost:9250']
 - job_name: taskmanager
   static_configs:
-  - targets: ['ms1310.utah.cloudlab.us:9250', 'ms1137.utah.cloudlab.us:9250', 'ms1126.utah.cloudlab.us:9250',
-      'ms1317.utah.cloudlab.us:9250', 'ms1118.utah.cloudlab.us:9250']
+  - targets: ['ms0822.utah.cloudlab.us:9250', 'ms0843.utah.cloudlab.us:9250', 'ms0830.utah.cloudlab.us:9250',
+      'ms0817.utah.cloudlab.us:9250', 'ms0825.utah.cloudlab.us:9250']
 - job_name: kafka
   static_configs:
-  - targets: ['localhost:7075', 'ms1310:7075', 'ms1137:7075', 'ms1126:7075', 'ms1317:7075',
-      'ms1118:7075']
+  - targets: ['localhost:7075', 'ms0822:7075', 'ms0843:7075', 'ms0830:7075', 'ms0817:7075',
+      'ms0825:7075']
 - job_name: node_exporter
   static_configs:
-  - targets: ['ms1310.utah.cloudlab.us:9100', 'ms1137.utah.cloudlab.us:9100', 'ms1126.utah.cloudlab.us:9100',
-      'ms1317.utah.cloudlab.us:9100', 'ms1118.utah.cloudlab.us:9100']
+  - targets: ['ms0822.utah.cloudlab.us:9100', 'ms0843.utah.cloudlab.us:9100', 'ms0830.utah.cloudlab.us:9100',
+      'ms0817.utah.cloudlab.us:9100', 'ms0825.utah.cloudlab.us:9100']
 - job_name: push_gateway
   static_configs:
   - targets: ['localhost:9091']
@@ -24,4 +24,13 @@ scrape_configs:
 - job_name: spark_driver
   metrics_path: /metrics/prometheus/
   static_configs:
-  - targets: ['ms1122:4040']
+  - targets: ['ms0807:4040']
+- job_name: kafkastreams_app
+  static_configs:
+  - targets: ['localhost:7076', 'ms0822:7076', 'ms0843:7076', 'ms0830:7076', 'ms0817:7076',
+      'ms0825:7076']
+- job_name: risingwave
+  static_configs:
+  - targets: ['ms0807.utah.cloudlab.us:1250', 'ms0807.utah.cloudlab.us:2222', 'ms0822.utah.cloudlab.us:1222',
+      'ms0843.utah.cloudlab.us:1222', 'ms0830.utah.cloudlab.us:1222', 'ms0817.utah.cloudlab.us:1222',
+      'ms0825.utah.cloudlab.us:1222']

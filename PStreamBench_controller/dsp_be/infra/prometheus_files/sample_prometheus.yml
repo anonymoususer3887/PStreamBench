@@ -55,3 +55,25 @@ scrape_configs:
     metrics_path: "/metrics/prometheus/"
     static_configs:
       - targets: ["localhost:4040"]
+
+  # Kafka Streams' own JMX metrics (kafka.streams:*), exposed via the same
+  # jmx_prometheus_javaagent attached to the app's `java` command line (see
+  # kafkastreams-provide-job.yaml), on a port distinct from the Kafka
+  # broker's own JMX exporter (7075) since both run on the same nodes.
+  # Unlike Spark's single driver target, one Kafka Streams instance runs per
+  # worker node (see KAFKA_STREAMS_RISINGWAVE_PLAN.md Part A.1), so targets
+  # are populated per-node, not a fixed localhost -- see
+  # _prometheus_config_manipulation().
+  - job_name: "kafkastreams_app"
+    static_configs:
+      - targets: []
+
+  # RisingWave's own metrics endpoints -- one compute node per worker node
+  # (:1222) plus the master's fused meta+frontend endpoints (:1250 for meta,
+  # :2222 for frontend), per KAFKA_STREAMS_RISINGWAVE_PLAN.md Part B.1.
+  # Populated per-node the same way kafkastreams_app_nodes is, since there's
+  # one compute-node process per worker rather than a single fixed target --
+  # see _prometheus_config_manipulation().
+  - job_name: "risingwave"
+    static_configs:
+      - targets: []
