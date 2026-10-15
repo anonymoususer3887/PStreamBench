@@ -307,4 +307,4 @@ Matches vehicle locations to road segments (map matching) and computes average s
 ## Notes on Interpretation
 
 - This classification reflects the **dominant** bottleneck under typical configurations. Under different rates, key cardinalities, and DoP settings, workloads may **shift** bottlenecks.
-- The taxonomy is intended to guide scaling studies, heterogeneous resource selection, and comparisons across Flink vs Storm.
+- The taxonomy is intended to guide scaling studies, heterogeneous resource selection, and comparisons across all five supported engines (Flink, Storm, Spark, Kafka Streams, RisingWave) — see the `flink/`, `storm/`, `spark/`, `kafkastreams/`, and `risingwave/` subfolders for each engine's job implementations.

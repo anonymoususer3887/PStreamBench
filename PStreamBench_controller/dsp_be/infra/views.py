@@ -35,7 +35,7 @@ from yaml.loader import SafeLoader
 
 from infra.models import Cluster, Nodes
 from infra.runner import JobRunner
-from utils import constants_flink, constants_storm, constants_spark
+from utils import constants_flink, constants_storm, constants_spark, constants_kafkastreams
 
 
 def getprom_manipulataion(configs, getprompath):
@@ -199,6 +199,14 @@ def _storm_config_manipulation(configs, nimbus, node):
     storm_config["storm.local.hostname"] = node
     storm_config["supervisor.slots.ports"] = ports
     storm_config["nimbus.seeds"] = [nimbus]
+    # sample-storm.yaml's default ("localhost") is wrong for a real
+    # multi-node cluster -- every node would try to reach its OWN local
+    # ZooKeeper, which only the master actually runs (same class of bug
+    # fixed for RisingWave's multi-node ZK ensemble this session; here
+    # Storm just reuses the single ZK instance already running for Kafka
+    # on the master, standard practice since Storm and Kafka use separate
+    # znode namespaces under the same ensemble).
+    storm_config["storm.zookeeper.servers"] = [nimbus]
 
     with open(target, 'w') as f:
         yaml.dump(storm_config, f, sort_keys=False, default_flow_style=False)
@@ -239,6 +247,94 @@ def _spark_config_manipulation(configs, master, worker):
     return conf_target
 
 
+def _risingwave_job_manipulation(job_program, kafka_bootstrap_server,
+                                 window_size_ms=None, window_slide_ms=None,
+                                 threshold=None, query_number=None):
+    """ Substitute the __KAFKA_BOOTSTRAP_SERVER__ / __WINDOW_SIZE_SEC__ /
+        __WINDOW_SLIDE_SEC__ / __THRESHOLD__ placeholders in a workload's
+        .sql file with real values, mirroring
+        _spark_config_manipulation()'s "copy sample -> substitute -> write"
+        pattern. job_program is a path like "wordcount/word_count.sql",
+        relative to PStreamBench_workload_generator/risingwave/
+        dsp_risingwave_jobs/ (see constants_risingwave.py's *_PROGRAM
+        values) -- unlike Flink/Spark/Kafka Streams' jars (pre-built and
+        pre-copied into infra/<engine>_files/ as a one-time build step),
+        RisingWave's .sql source needs no build step, so it's read directly
+        from the workload_generator tree at job-submission time.
+
+        window_size_ms/window_slide_ms/threshold are only present in the
+        workloads whose .sql files actually use them (e.g. smart_grid.sql's
+        HOP window, bargain_index.sql's __THRESHOLD__) -- passing None for
+        a workload whose file has no such placeholder is harmless since
+        .replace() on a missing substring is a no-op.
+
+        Window sizes come in as milliseconds (matching every other engine's
+        millisecond-based windowing API) but are converted to whole seconds
+        here before substitution: confirmed live (2026-07-24) that
+        RisingWave's HOP() window-function arguments only accept a LITERAL
+        interval of the form INTERVAL '<int> second' -- not
+        INTERVAL '<n>' MILLISECOND (fails to parse inside HOP's argument
+        list specifically, though it parses -- silently wrong -- as a
+        bare SELECT expression), not INTERVAL '<n> millisecond'/'ms' (unit
+        not recognized at all), and not a computed expression like
+        (n/1000)*INTERVAL '1 second' (HOP requires a literal, rejects
+        computed intervals). This means sub-second window precision isn't
+        achievable at all right now -- ms values are rounded to the nearest
+        whole second (minimum 1s) -- which is an acceptable trade-off since
+        every workload's actual test windows are seconds-to-minutes, not
+        sub-second, in practice.
+
+        query_number selects between multiple query variants of the same
+        workload -- unlike Flink/Kafka Streams (one Java class branches at
+        runtime on a "-query N" CLI arg), a single .sql file can't
+        conditionally execute different DDL, so a second query variant is
+        its own file named "<base>_q<N>.sql" (e.g. smart_grid_q2.sql
+        alongside smart_grid.sql, which implicitly is query 1). Falls back
+        to job_program unchanged if query_number is "1"/None/not given, or
+        if no such variant file exists yet (keeps this backwards-compatible
+        with every workload that only has one query implemented so far).
+    """
+    if query_number and str(query_number) != "1":
+        base, ext = os.path.splitext(job_program)
+        variant_program = "{}_q{}{}".format(base, query_number, ext)
+        variant_source = os.path.join(str(settings.BASE_DIR), '..', '..',
+                                      'PStreamBench_workload_generator', 'risingwave',
+                                      'dsp_risingwave_jobs', variant_program)
+        if os.path.exists(variant_source):
+            job_program = variant_program
+
+    source = os.path.join(str(settings.BASE_DIR), '..', '..',
+                          'PStreamBench_workload_generator', 'risingwave',
+                          'dsp_risingwave_jobs', job_program)
+    target_dir = 'infra/risingwave_files'
+    os.makedirs(target_dir, exist_ok=True)
+    target = os.path.join(target_dir, os.path.basename(job_program))
+
+    with open(source) as f:
+        content = f.read()
+    content = content.replace('__KAFKA_BOOTSTRAP_SERVER__', kafka_bootstrap_server)
+    if window_size_ms is not None:
+        window_size_sec = max(1, round(int(window_size_ms) / 1000))
+        content = content.replace('__WINDOW_SIZE_SEC__', str(window_size_sec))
+        # Click Analytics Q3 reuses __WINDOW_SIZE_MS__ as a plain row-count
+        # bucket divisor (count-window approximation via ROW_NUMBER()), not
+        # as a time interval -- so it still needs the raw millisecond value,
+        # not the seconds-converted one used for HOP() interval literals.
+        content = content.replace('__WINDOW_SIZE_MS__', str(window_size_ms))
+    if window_slide_ms is not None:
+        window_slide_sec = max(1, round(int(window_slide_ms) / 1000))
+        content = content.replace('__WINDOW_SLIDE_SEC__', str(window_slide_sec))
+        content = content.replace('__WINDOW_SLIDE_MS__', str(window_slide_ms))
+    if threshold is not None:
+        content = content.replace('__THRESHOLD__', str(threshold))
+    with open(target, 'w') as f:
+        f.write(content)
+
+    return job_program
+
+    return target
+
+
 def _prometheus_config_manipulation(nodes, main_node=None):
     """ Edit and save the configs
     """
@@ -252,6 +348,11 @@ def _prometheus_config_manipulation(nodes, main_node=None):
     tm_nodes = ['{0}:9250'.format(node) for node in nodes]
     kafka_nodes = ['localhost:7075'] + ['{0}:7075'.format(node.split(".")[0]) for node in nodes]
     exporter_nodes = ['{0}:9100'.format(node) for node in nodes]
+    # One Kafka Streams instance runs per node -- master included, per the
+    # fixed-replica deployment in KAFKA_STREAMS_RISINGWAVE_PLAN.md Part A.1 --
+    # each with its own JMX exporter on 7076. "localhost" covers the master
+    # (where Prometheus itself runs), same trick kafka_nodes above uses.
+    kafkastreams_app_nodes = ['localhost:7076'] + ['{0}:7076'.format(node.split(".")[0]) for node in nodes]
 
     # Open and load the temporary flink conf yaml file
     with open(source) as f:
@@ -261,6 +362,7 @@ def _prometheus_config_manipulation(nodes, main_node=None):
     prometheus_configs['scrape_configs'][1]['static_configs'][0]['targets'] = tm_nodes
     prometheus_configs['scrape_configs'][2]['static_configs'][0]['targets'] = kafka_nodes
     prometheus_configs['scrape_configs'][3]['static_configs'][0]['targets'] = exporter_nodes
+    prometheus_configs['scrape_configs'][7]['static_configs'][0]['targets'] = kafkastreams_app_nodes
 
     if main_node is not None:
         # Spark's driver UI/metrics servlet binds to the node's own
@@ -268,6 +370,13 @@ def _prometheus_config_manipulation(nodes, main_node=None):
         # can't be a static "localhost" target like kafka/push_gateway.
         main_node_short = main_node.split(".")[0]
         prometheus_configs['scrape_configs'][6]['static_configs'][0]['targets'] = ['{0}:4040'.format(main_node_short)]
+
+        # RisingWave: one compute-node target per worker (nodes) plus the
+        # master's meta (:1250) and frontend (:2222) targets -- see
+        # KAFKA_STREAMS_RISINGWAVE_PLAN.md Part B.1/B.4.
+        risingwave_nodes = ['{0}:1250'.format(main_node), '{0}:2222'.format(main_node)] + \
+                           ['{0}:1222'.format(node) for node in nodes]
+        prometheus_configs['scrape_configs'][8]['static_configs'][0]['targets'] = risingwave_nodes
 
     # Dump the new configs
     with open(target, 'w') as f:
@@ -449,6 +558,44 @@ class AnsibleClusterCreate(View):
                 _configure_and_run_playbooks("/cluster-complex-spark-worker-create.yaml",
                                              extravar={"main_ip": nodes_free[0].domain_name.split(".")[0]},
                                              distributed=True)
+        elif configs["cluster_type"] == "Apache Kafka Streams":
+            # No per-node engine daemon to install/config here (unlike
+            # Flink/Storm/Spark) -- Kafka Streams has no coordinator process
+            # and no persistent cluster of its own; every node just runs the
+            # shared Kafka broker (started unconditionally above/below for
+            # every engine) and launches its own job JVM at job-submit time,
+            # see KAFKA_STREAMS_RISINGWAVE_PLAN.md Part A.1 and
+            # runner.py::_run_kafkastreams_job. Prometheus/Grafana/
+            # node_exporter setup is NOT shared infra, though -- every other
+            # engine bundles it into its own complex-cluster create
+            # playbooks, so this still needs its own (monitoring-only)
+            # equivalent.
+            _configure_and_run_playbooks("/cluster-complex-kafkastreams-master-create.yaml",
+                                         distributed=True)
+
+            for count in range(1, int(configs['cluster_num_tm'])+1):
+                hosts = {'betas': [{'host_name': nodes_free[count].domain_name,
+                                    'user': nodes_free[count].user}]}
+                _inventory_manipulation(hosts)
+                _configure_and_run_playbooks("/cluster-complex-kafkastreams-worker-create.yaml",
+                                             distributed=True)
+        elif configs["cluster_type"] == "RisingWave":
+            # meta+frontend on the master node, one compute node per worker
+            # -- mirrors Flink's JobManager/TaskManager placement for fair
+            # resource comparison, per KAFKA_STREAMS_RISINGWAVE_PLAN.md Part
+            # B.1. No per-node config template to render (unlike Flink/
+            # Spark/Storm) -- RisingWave's CLI flags are self-sufficient, so
+            # hostnames are passed straight through as Ansible extravars.
+            _configure_and_run_playbooks("/cluster-complex-risingwave-master-create.yaml",
+                                         distributed=True)
+
+            for count in range(1, int(configs['cluster_num_tm'])+1):
+                hosts = {'betas': [{'host_name': nodes_free[count].domain_name,
+                                    'user': nodes_free[count].user}]}
+                _inventory_manipulation(hosts)
+                _configure_and_run_playbooks("/cluster-complex-risingwave-worker-create.yaml",
+                                             extravar={"main_ip": nodes_free[0].domain_name},
+                                             distributed=True)
 
         Cluster.objects.create(name=configs["cluster_name"],
                                main_node_ip=nodes_free[0].domain_name,
@@ -517,6 +664,17 @@ class AnsibleClusterStart(View):
             _configure_and_run_playbooks('/cluster-complex-spark-worker-start.yaml',
                                          extravar={"main_ip": main_domain_name.split(".")[0]},
                                          distributed=True)
+        elif cluster.cluster_type == "Apache Kafka Streams":
+            # No standing engine daemon of its own to (re)start -- the
+            # shared Kafka/Zookeeper playbook above already brought that up.
+            # Prometheus/Grafana still need restarting here though, exactly
+            # like Spark's master-start.yaml does.
+            _configure_and_run_playbooks('/cluster-complex-kafkastreams-master-start.yaml', distributed=True)
+        elif cluster.cluster_type == "RisingWave":
+            _configure_and_run_playbooks('/cluster-complex-risingwave-master-start.yaml', distributed=True)
+            _configure_and_run_playbooks('/cluster-complex-risingwave-worker-start.yaml',
+                                         extravar={"main_ip": main_domain_name},
+                                         distributed=True)
         else:
             raise Exception
         response_status = 200
@@ -558,6 +716,12 @@ class AnsibleClusterStop(View):
         elif cluster.cluster_type == "Apache Spark":
             _configure_and_run_playbooks('/cluster-complex-spark-master-stop.yaml', distributed=True)
             _configure_and_run_playbooks('/cluster-complex-spark-worker-stop.yaml', distributed=True)
+        elif cluster.cluster_type == "Apache Kafka Streams":
+            # See the matching AnsibleClusterStart branch.
+            _configure_and_run_playbooks('/cluster-complex-kafkastreams-master-stop.yaml', distributed=True)
+        elif cluster.cluster_type == "RisingWave":
+            _configure_and_run_playbooks('/cluster-complex-risingwave-master-stop.yaml', distributed=True)
+            _configure_and_run_playbooks('/cluster-complex-risingwave-worker-stop.yaml', distributed=True)
         else:
             raise Exception
         response_status = 200
@@ -634,6 +798,26 @@ class AnsibleClusterGetAllCluster(View):
                     requests.get("http://" + data['main_node_ip'] + ":8080")
                 elif cluster_instance.cluster_type == "Apache Spark":
                     requests.get("http://" + data['main_node_ip'] + ":8087")
+                elif cluster_instance.cluster_type == "Apache Kafka Streams":
+                    # Kafka Streams has no cluster-level daemon/REST API of
+                    # its own to poll (it only runs as a process for the
+                    # duration of a job, see runner.py::_run_kafkastreams_job)
+                    # -- "Running" here means the shared Kafka broker this
+                    # engine depends on is up, via its own JMX exporter
+                    # (already started for every engine by
+                    # cluster-complex-kafka-start.yaml). Explicit timeout:
+                    # requests.get() has no default one, and this whole view
+                    # loops over every registered cluster on one
+                    # --nothreading dev server -- a single unresponsive
+                    # target (e.g. the long-running JMX exporter hanging
+                    # after extended scraping) would otherwise freeze every
+                    # cluster's status check, not just this one.
+                    requests.get("http://" + data['main_node_ip'] + ":7075", timeout=5)
+                elif cluster_instance.cluster_type == "RisingWave":
+                    # No REST job-overview API (Part B.3) -- hit the meta
+                    # node's own dashboard (:5691), which serves a real HTTP
+                    # page (confirmed live) and only runs while meta is up.
+                    requests.get("http://" + data['main_node_ip'] + ":5691", timeout=5)
                 else:
                     raise Exception
 
@@ -674,6 +858,12 @@ class AnsibleClusterGetCluster(View):
                 requests.get("http://" + data.main_node_ip + ":8080")
             elif data.cluster_type == "Apache Spark":
                 requests.get("http://" + data.main_node_ip + ":8087")
+            elif data.cluster_type == "Apache Kafka Streams":
+                # See the identical branch in AnsibleClusterGetAllCluster.
+                requests.get("http://" + data.main_node_ip + ":7075", timeout=5)
+            elif data.cluster_type == "RisingWave":
+                # See the identical branch in AnsibleClusterGetAllCluster.
+                requests.get("http://" + data.main_node_ip + ":5691", timeout=5)
             else:
                 raise Exception
 
@@ -724,6 +914,15 @@ def _config_manipulation_ansible(configurations, constants = constants_flink):
     ansible_vars["job_run_time"] = int(configurations['job_run_time'])*60
     #ansible_vars["main_node_ip"] = configurations["main_node_ip"]
     #ansible_vars["job_class"] = configurations["job_class"]
+
+    if constants is constants_kafkastreams:
+        # -graceMs, consumed by com.kom.dsp.utils.WindowConfig (see
+        # kafkastreams-provide-job.yaml) -- -1 (the default) means "let
+        # WindowConfig pick its own default", not "zero grace". Set once
+        # here rather than in each of the ~14 job_class branches below,
+        # since grace period is a Kafka-Streams-specific concept the other
+        # engines' constants modules have no equivalent field for.
+        ansible_vars["job_grace_period_ms"] = configurations.get('job_grace_period_ms', -1)
 
     print(configurations)
     
@@ -1077,7 +1276,28 @@ def _config_manipulation_ansible(configurations, constants = constants_flink):
             ansible_vars["job_input"] = constants.TRAFFIC_MONITORING_INPUT
             ansible_vars["job_output"] = constants.TRAFFIC_MONITORING_OUTPUT
 
-        
+    elif configurations['job_class'] == getattr(constants, 'LINEAR_QUERY', None):
+        # Synthetic workload: the topology generates its own tuples in-process
+        # (-source synthetic), so no Kafka producer runs for it (skip_producer).
+        # Sink still writes to Kafka, same as the real workloads.
+        ansible_vars["job_name"] = constants.LINEAR_QUERY.replace(" ", "")
+        ansible_vars["job_program"] = constants.LINEAR_QUERY_PROGRAM
+        ansible_vars["google_lateness"] = configurations['job_google_lateness']
+        ansible_vars["job_parallelization"] = ','.join(configurations['job_pds'])
+        ansible_vars["job_query_number"] = configurations['job_query_name']
+        ansible_vars["job_mode"] = constants.KAFKA
+        ansible_vars["job_event_rate"] = int(configurations['job_class_input'])
+        ansible_vars["job_window_size"] = configurations['job_window_size']
+        ansible_vars["job_window_slide_size"] = configurations['job_window_slide_size']
+        ansible_vars["job_threshold"] = configurations['job_threshold']
+        ansible_vars["num_workers"] = configurations["num_workers"] \
+            if "num_workers" in configurations else 0
+        ansible_vars["synthetic_job"] = True
+        ansible_vars["producer_bootstrap_server"] = configurations['main_node_ip'].split(".")[0] + ':9092'
+        ansible_vars["main_ip"] = configurations['main_node_ip'].split(".")[0]
+        ansible_vars["job_input"] = constants.LINEAR_QUERY_INPUT
+        ansible_vars["job_output"] = constants.LINEAR_QUERY_OUTPUT
+
     print(ansible_vars)
     return ansible_vars
 

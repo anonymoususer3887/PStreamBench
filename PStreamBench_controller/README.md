@@ -7,6 +7,9 @@ The **PStreamBench Controller** is the backend service of PStreamBench. It expos
 - deploy a selected **System Under Test (SUT)**:
   - **Apache Flink**
   - **Apache Storm**
+  - **Apache Spark**
+  - **Kafka Streams**
+  - **RisingWave**
 - execute jobs/topologies and manage experiment lifecycle
 - collect experiment artifacts and metrics for analysis/visualization
 
@@ -20,7 +23,7 @@ The controller is implemented in **Django (Python)** and uses **Ansible playbook
 - [Run the Controller](#run-the-controller)
 - [CloudLab SSH Access](#cloudlab-ssh-access)
 - [Controller Structure](#controller-structure)
-- [SUT Support: Flink, Storm, and Spark](#sut-support-flink-storm-and-spark)
+- [SUT Support: Flink, Storm, Spark, Kafka Streams, and RisingWave](#sut-support-flink-storm-spark-kafka-streams-and-risingwave)
 - [Job Binaries](#job-binaries)
 - [Monitoring and Metrics Collection](#monitoring-and-metrics-collection)
 - [Related Components](#related-components)
@@ -91,15 +94,19 @@ Common framework asset paths:
 
 - `dsp_be/infra/flink_files/` — Flink job jar and related files
 - `dsp_be/infra/storm_files/` — Storm topology jar and related files
+- `dsp_be/infra/spark_files/` — Spark job jar and related files
+- `dsp_be/infra/kafkastreams_files/` — Kafka Streams app jar and related files
 - `dsp_be/infra/reporting_scripts/` — scripts for parsing/collecting metrics/artifacts
+
+RisingWave has no jar to upload — its jobs are `.sql` files submitted via `psql`, read directly from `PStreamBench_workload_generator/risingwave/dsp_risingwave_jobs/`.
 
 Job execution is abstracted through:
 
-- `runner.py` — framework-independent execution wrapper (routes Flink vs Storm execution based on cluster SUT)
+- `runner.py` — framework-independent execution wrapper (routes execution based on `cluster.cluster_type`: Flink, Storm, Spark, Kafka Streams, or RisingWave)
 
 ---
 
-## SUT Support: Flink, Storm, and Spark
+## SUT Support: Flink, Storm, Spark, Kafka Streams, and RisingWave
 
 When creating a cluster in the Web UI, the controller deploys the selected SUT.
 
@@ -124,6 +131,22 @@ When creating a cluster in the Web UI, the controller deploys the selected SUT.
 - **Execution:** `spark-submit --master spark://<main>:7077 --name <job> --total-executor-cores <n> --class <program> dsp_spark_jobs-1.0-SNAPSHOT.jar ...`
 - **Monitoring:** Spark's built-in Prometheus servlet + Prometheus/Grafana; query-level throughput is read from Kafka's own topic metrics (SUT-agnostic) rather than Spark-internal streaming-query metrics, since Structured Streaming does not expose an operator/vertex REST API the way Flink does.
 - **Status:** all 14 real-world workloads are implemented, build cleanly against Spark 3.5.1, and have been run end-to-end on a live CloudLab cluster (see [PStreamBench_workload_generator/spark/dsp_spark_jobs](https://github.com/anonymoususer3887/PStreamBench/tree/main/PStreamBench_workload_generator/spark/dsp_spark_jobs#readme) for how DoP vectors are approximated via `repartition()`/`spark.sql.shuffle.partitions`, per-workload deviations, and notes on two real bugs the live-validation pass surfaced and fixed: a `flatMapGroupsWithState` state-bean encoding issue affecting Machine Outlier/Linear Road, and a Gson/Guava classpath conflict with Spark's own bundled versions affecting Click Analytics/Sentiment Analysis).
+
+### Kafka Streams
+
+- **Cluster roles:** no master/worker split — Kafka Streams is a library, and each worker node runs an independent app instance (a `Topology`, Kafka Streams' equivalent of a Flink job/Storm topology) that connects straight to the shared Kafka cluster. Instances coordinate scaling among themselves via Kafka's own consumer-group rebalancing protocol, not via anything PStreamBench manages.
+- **Execution:** submit the app jar to each worker node; the app registers as `NUM_STREAM_THREADS` threads against the input topic's consumer group.
+- **Parallelism:** job-level only (`NUM_STREAM_THREADS`) — there's no way to give one pipeline stage more parallelism than another, unlike Flink/Storm/Spark's per-operator vectors.
+- **Monitoring:** JMX exporter per app instance (port 7076, separate from the shared Kafka broker's own JMX port).
+- **Status:** Word Count is implemented and validated through this full controller + Ansible path. Collected results (`PStreamBench_benchmark_data/query_performance_data.csv`) already cover more workloads than just Word Count, but — unlike Spark's dedicated live-validation pass above — those haven't been individually re-confirmed against the current job code workload by workload; treat results beyond Word Count as not yet re-verified, not as unavailable.
+
+### RisingWave
+
+- **Cluster roles:** a real distributed deployment: **meta** node (metadata + coordination), **compute** nodes (actual stream execution), **frontend** (the Postgres-wire SQL endpoint jobs are submitted through), and **MinIO** (S3-compatible object storage backing state) — see `utils/playbook/tasks/risingwave/`.
+- **Execution:** jobs are `.sql` files (`CREATE SOURCE` / `CREATE MATERIALIZED VIEW` / `CREATE SINK`), not compiled programs, run via `psql` against the frontend node.
+- **Parallelism:** job-level only (`JobParallelism`), same constraint as Kafka Streams.
+- **Monitoring:** RisingWave's own Prometheus endpoint + Prometheus/Grafana.
+- **Status:** same as Kafka Streams — Word Count fully validated through the controller; wider workload coverage exists in collected data but hasn't been individually re-verified since.
 
 ---
 
@@ -157,7 +180,20 @@ cd dsp_spark_jobs
 mvn package
 cp ./target/dsp_spark_jobs-1.0-SNAPSHOT.jar ../dsp_be/infra/spark_files/
 ```
-> Tip: All three directories include Makefiles that run these commands directly.
+
+### Build Kafka Streams app jar
+
+```bash
+cd dsp_kafkastreams_jobs
+mvn package
+cp ./target/dsp_kafkastreams_jobs-1.0-SNAPSHOT.jar ../dsp_be/infra/kafkastreams_files/
+```
+
+### RisingWave — no build step
+
+RisingWave jobs are plain `.sql` files, not compiled binaries — nothing to build or copy; the controller reads them directly from `PStreamBench_workload_generator/risingwave/dsp_risingwave_jobs/`.
+
+> Tip: all four JVM-based directories (Flink/Storm/Spark/Kafka Streams) include Makefiles that run these commands directly.
 
 ## Monitoring and Metrics Collection
 
@@ -180,6 +216,10 @@ Storm metrics are collected through Storm-specific scripts/exporter and are prim
 - `getprom_storm.py` — Storm metrics collection  
 - Storm exporter script on main node (restart if needed):  
   - `/home/playground/apache-storm-2.6.2/bin/storm_exporter.sh`
+
+### Kafka Streams & RisingWave Metrics
+
+Query-level throughput for both is read from Kafka's own topic metrics (SUT-agnostic), same approach as Spark above, since neither exposes a Flink-style operator/vertex REST API. Kafka Streams additionally exposes per-instance JMX metrics (port 7076); RisingWave exposes its own Prometheus endpoint from the meta/compute nodes.
 
 ---
 
