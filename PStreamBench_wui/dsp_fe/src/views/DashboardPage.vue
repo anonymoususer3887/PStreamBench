@@ -65,7 +65,7 @@
   
           
           <v-spacer></v-spacer>
-          
+
           <v-img class="mx-2" :src="df_logo" max-width="100" max-height="40"></v-img>
           <v-img class="mx-2" :src="tud_logo" max-width="100" max-height="40"></v-img>
           <v-img class="mx-2" :src="maki_logo" max-width="110" max-height="40"></v-img>
@@ -158,8 +158,8 @@ export default {
 			}]
       }
     },
-  
-  
+
+
 }
 </script>
 <style>

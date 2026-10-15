@@ -102,7 +102,7 @@ export default {
             crestype: '',
             parallelizationDegree: '',
             cnumoftmslots: '',
-            ctypes: ['Apache Flink', 'Apache Storm'],
+            ctypes: ['Apache Flink', 'Apache Storm', 'Apache Spark', 'Apache Kafka Streams', 'RisingWave'],
             ctype: 'Apache Flink',
             cnumoftm: '',
             showProgress: false,

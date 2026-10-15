@@ -41,6 +41,9 @@
 
     <v-img v-if="cluster.cluster_type == 'Apache Flink'" height="250" src="../../assets/flink.png"></v-img>
     <v-img v-if="cluster.cluster_type == 'Apache Storm'" height="250" src="../../assets/storm.png"></v-img>
+    <v-img v-if="cluster.cluster_type == 'Apache Spark'" height="250" src="../../assets/spark.png"></v-img>
+    <v-img v-if="cluster.cluster_type == 'Apache Kafka Streams'" height="250" src="../../assets/kafkastreams.png"></v-img>
+    <v-img v-if="cluster.cluster_type == 'RisingWave'" height="250" src="../../assets/risingwave.svg"></v-img>
 
     <v-card-title>
       <span>{{cluster.name }}</span>
@@ -56,8 +59,21 @@
     <v-card-text>
       <v-chip-group column>
         <v-chip color="primary">{{ cluster.cluster_type }}</v-chip>
-        <v-chip v-if="cluster.status == 'Running'"  color="success">Running</v-chip>
-        <v-chip v-if="cluster.status == 'Stopped'">Stopped</v-chip>
+        <!-- Status chip previously had no color at all for "Stopped" --
+             identical flat grey to every other chip, so nothing on screen
+             signaled that a cluster was down. Explicit color + icon per
+             state now, with a fallback for anything that isn't exactly
+             "Running"/"Stopped" (e.g. a future "Partial" state) so it
+             never silently falls back to uncolored again. -->
+        <v-chip v-if="cluster.status == 'Running'" color="success" text-color="white">
+          <v-icon left small>mdi-check-circle</v-icon>Running
+        </v-chip>
+        <v-chip v-else-if="cluster.status == 'Stopped'" color="error" text-color="white">
+          <v-icon left small>mdi-alert-circle</v-icon>Stopped
+        </v-chip>
+        <v-chip v-else color="warning" text-color="white">
+          <v-icon left small>mdi-help-circle</v-icon>{{ cluster.status || 'Unknown' }}
+        </v-chip>
       </v-chip-group>
     </v-card-text>
 
