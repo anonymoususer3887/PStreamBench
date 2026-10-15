@@ -1,0 +1,131 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.kom.dsp</groupId>
+	<artifactId>dsp_kafkastreams_jobs</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Kafka Streams Jobs</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Matches the broker version installed by install_all_tools.sh /
+		     install_spark_only.sh (kafka_2.12-3.8.0), so the Streams client's
+		     protocol/metrics-group shapes line up with what's actually
+		     running. Kafka Streams metric group names have shifted across
+		     versions (KIP-613's e2e-latency metric rolled out over 2.6 to 2.7),
+		     so this pin matters more than it would for a typical dependency. -->
+		<kafka.version>3.8.0</kafka.version>
+		<target.java.version>11</target.java.version>
+		<maven.compiler.source>${target.java.version}</maven.compiler.source>
+		<maven.compiler.target>${target.java.version}</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-streams</artifactId>
+			<version>${kafka.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${kafka.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+		<!-- Used by TrendingTopics/ClickAnalytics/SentimentAnalysis/TrafficMonitoring
+		     for JSON/GeoJSON parsing (same version as dsp_flink_jobs/dsp_spark_jobs' pom.xml). -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.10.1</version>
+		</dependency>
+		<!-- Used by SentimentAnalysis's classifier (Splitter/Resources/Maps/Lists). -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>31.0.1-jre</version>
+		</dependency>
+		<!-- Used by ClickAnalytics's geography lookup (MaxMind GeoIP2). -->
+		<dependency>
+			<groupId>com.maxmind.geoip2</groupId>
+			<artifactId>geoip2</artifactId>
+			<version>2.15.0</version>
+		</dependency>
+		<!-- geoip2 (via maxmind-db) pulls in jackson-core 2.11.3 transitively,
+		     while kafka-streams pulls jackson-databind/annotations 2.16.2.
+		     jackson-databind's own conflict resolution bumps it to 2.16.2,
+		     but nothing forces jackson-core to follow, leaving an
+		     incompatible 2.11.3/2.16.2 mix shaded into the fat jar. That
+		     mismatch crashes every job at KafkaStreams construction time
+		     (ClassNotFoundException: com.fasterxml.jackson.core.util.JacksonFeature,
+		     a class 2.11.3's jackson-core doesn't have), confirmed via a
+		     live cluster run, not a hypothetical. Pinning jackson-core
+		     explicitly to match keeps the whole Jackson family consistent. -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.16.2</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>${target.java.version}</source>
+					<target>${target.java.version}</target>
+				</configuration>
+			</plugin>
+			<!-- Fat jar, same reasoning as dsp_spark_jobs/dsp_flink_jobs: no
+			     "packages"-flag/internet access assumed on the cluster nodes
+			     at launch time. Unlike spark-submit, there is no cluster
+			     runtime providing kafka-streams/kafka-clients on the
+			     classpath: this jar is run with a plain `java -cp`, so
+			     those two are shaded in as well (not "provided"). -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.5.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.kom.dsp.wordcount.WordCountTopology</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
