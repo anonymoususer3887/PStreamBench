@@ -29,25 +29,34 @@ METRICS = [
     "network_efficiency",
 ]
 
-FRAMEWORK_ALPHA = {"flink": 1.0, "storm": 0.55}
+FRAMEWORK_ALPHA = {"flink": 1.0, "storm": 0.55, "spark": 0.80, "kafkastream": 0.80, "risingwave": 0.80}
 
 # Used by LOW/MED/HIGH across HW plots (two legends)
-FRAMEWORK_ALPHA_LMH = {"flink": 1.0, "storm": 0.90}
-FRAMEWORK_HATCH_LMH = {"flink": "", "storm": "xx"}
+FRAMEWORK_ALPHA_LMH = {"flink": 1.0, "storm": 0.90, "spark": 0.75, "kafkastream": 0.75, "risingwave": 0.75}
+FRAMEWORK_HATCH_LMH = {"flink": "", "storm": "xx", "spark": "..", "kafkastream": "//", "risingwave": "\\\\"}
 
 # (Dual-axis) framework colors/linestyles
 FRAMEWORK_COLORS = {
     "flink": "#1f77b4",
     "storm": "#ff7f0e",
+    "spark": "#2ca02c",
+    "kafkastream": "#d62728",
+    "risingwave": "#9467bd",
 }
 FRAMEWORK_LINESTYLE = {
     "flink": "-",
     "storm": "--",
+    "spark": ":",
+    "kafkastream": "-.",
+    "risingwave": (0, (3, 1, 1, 1)),
 }
 
 FRAMEWORK_MARKER = {
     "flink": "o",
     "storm": "s",
+    "spark": "^",
+    "kafkastream": "D",
+    "risingwave": "v",
 }
 
 def darken_color(color: str, factor: float = 0.65) -> str:
@@ -459,10 +468,13 @@ def _save_figure_multi(fig, save_path: str, all_formats: bool):
     if not root:
         root = save_path
 
-    fig.savefig(root + ".png", dpi=300)
+    # bbox_inches="tight" expands the saved canvas to fit everything
+    # (title, legend, labels) instead of clipping at the figure's nominal
+    # size -- fixes titles/legends getting cut off at the edges.
+    fig.savefig(root + ".png", dpi=300, bbox_inches="tight")
     if all_formats:
-        fig.savefig(root + ".pdf")
-        fig.savefig(root + ".svg")
+        fig.savefig(root + ".pdf", bbox_inches="tight")
+        fig.savefig(root + ".svg", bbox_inches="tight")
 
 
 # -----------------------------
@@ -644,9 +656,14 @@ def plot_dual_axis_tp_latency_compare_frameworks(
         if fw not in tp_pivot.columns:
             continue
 
-        # Bars: query color + framework alpha
+        # Bars: query color + framework alpha/hatch -- alpha alone collides
+        # once >2 frameworks share a value (e.g. spark/kafkastream/
+        # risingwave all default to 0.80), so hatch is the real
+        # per-framework visual differentiator here (color still encodes
+        # the query, matching this file's convention everywhere else).
         bar_color = base_color
         alpha = FRAMEWORK_ALPHA.get(fw, 0.85)
+        fw_hatch = FRAMEWORK_HATCH_LMH.get(fw, "")
 
         # Lines: darker query color + framework linestyle/marker
         ls = FRAMEWORK_LINESTYLE.get(fw, "-")
@@ -665,6 +682,7 @@ def plot_dual_axis_tp_latency_compare_frameworks(
             capsize=3,
             color=bar_color,
             edgecolor="black",
+            hatch=fw_hatch,
             alpha=alpha,
             label=None,
         )
@@ -707,7 +725,12 @@ def plot_dual_axis_tp_latency_compare_frameworks(
         prefix = f"{q_label} | " if q_label else ""
         title = f"{prefix}{throughput_metric} (bars) + {latency_metric} (lines) vs {x_dim} ({agg})"
         #title = f"{prefix}"
-    ax1.set_title(title)
+    # Pushes the title above the two legend boxes -- the legend boxes are
+    # anchored (via bbox_to_anchor) at y=1.02 with loc="lower left"/"lower
+    # right", meaning that's their BOTTOM edge, so the box itself extends
+    # upward past y=1.25; the title needs to clear that extent, not just
+    # the anchor point.
+    ax1.set_title(title, y=1.55)
 
     ax1.grid(axis="y", linestyle="--", alpha=0.35)
     ax1.spines["top"].set_visible(False)
@@ -718,6 +741,7 @@ def plot_dual_axis_tp_latency_compare_frameworks(
         Patch(
             facecolor=base_color,
             edgecolor="black",
+            hatch=FRAMEWORK_HATCH_LMH.get(fw, ""),
             alpha=FRAMEWORK_ALPHA.get(fw, 0.85),
             label=fw,
         )
@@ -740,9 +764,15 @@ def plot_dual_axis_tp_latency_compare_frameworks(
         )
         for fw in frameworks
     ]
-    leg1 = ax1.legend(handles=bar_handles, title="Throughput (bars)", loc="upper left", frameon=True)
+    # Place both legends above the axes (not "upper left"/"upper right"
+    # *inside* the axes) -- with dense bar/line data spanning the full
+    # plot width, an in-axes legend box sits directly on top of the middle
+    # data points and hides them.
+    leg1 = ax1.legend(handles=bar_handles, title="Throughput (bars)",
+                       loc="lower left", bbox_to_anchor=(0.0, 1.02), frameon=True)
     ax1.add_artist(leg1)
-    ax2.legend(handles=line_handles, title="Latency (lines)", loc="upper right", frameon=True)
+    ax2.legend(handles=line_handles, title="Latency (lines)",
+               loc="lower right", bbox_to_anchor=(1.0, 1.02), frameon=True)
 
     if show_values:
         add_value_labels(ax1, spacing=3, fontsize=8, rotation=90, max_bars=250)
@@ -758,7 +788,12 @@ def plot_dual_axis_tp_latency_compare_frameworks(
     apply_auto_log_ymin(ax2, y2_scale, y2min, lat_all)
     apply_axis_limits(ax2, ymin=y2min, ymax=y2max)
 
-    plt.tight_layout()
+    # rect reserves the top ~30% of the figure for the title + the two
+    # above-axes legends -- plain tight_layout() doesn't know about
+    # artists placed outside the axes via bbox_to_anchor and will
+    # re-expand the axes to fill that space, pushing the title back up
+    # into the legends.
+    plt.tight_layout(rect=[0, 0, 1, 0.70])
     if save_path:
         _save_figure_multi(fig, save_path, all_formats)
     plt.show() if show else plt.close(fig)
@@ -1256,7 +1291,10 @@ def plot_scaling_compare_frameworks(
     par_values = list(pivot_val.index)
     frameworks = list(pivot_val.columns)
 
-    fig, ax = plt.subplots()
+    # Explicit, wider figure -- the rcParams default (5,3) clips the
+    # auto-generated title once there are 3 frameworks in the legend text
+    # instead of 2 (confirmed visually: title text got cut off at top).
+    fig, ax = plt.subplots(figsize=(7, 4))
 
     qid = df["query_id"].iloc[0] if "query_id" in df.columns and not df["query_id"].isna().all() else None
     qbase = df["query_base"].iloc[0] if "query_base" in df.columns and not df["query_base"].isna().all() else (get_base_query_name(qid) if qid else None)
@@ -1280,11 +1318,12 @@ def plot_scaling_compare_frameworks(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
+            fw_hatch = FRAMEWORK_HATCH_LMH.get(str(fw).lower(), "")
             x_pos = x + (i - (num_fw - 1) / 2) * bar_width
 
             ax.bar(
                 x_pos, vals, width=bar_width, yerr=errs, capsize=3,
-                label=str(fw), color=base_color, edgecolor="black", hatch=hatch, alpha=alpha
+                label=str(fw), color=base_color, edgecolor="black", hatch=fw_hatch, alpha=alpha
             )
 
         ax.set_xticks(x)
@@ -1302,7 +1341,7 @@ def plot_scaling_compare_frameworks(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
-            ls = linestyle_map.get(str(fw).lower(), "-")
+            ls = FRAMEWORK_LINESTYLE.get(str(fw).lower(), linestyle_map.get(str(fw).lower(), "-"))
 
             plot_series(
                 ax, x_labels=x_labels, y_values=vals, chart="line",
@@ -1317,7 +1356,8 @@ def plot_scaling_compare_frameworks(
     ax.set_ylabel(metric)
 
     if title is None:
-        title = f"{(qid + ': ') if qid else ''}{metric} vs parallelism_avg (Flink vs Storm, {agg})"
+        fw_label = " vs ".join(str(fw).capitalize() for fw in frameworks)
+        title = f"{(qid + ': ') if qid else ''}{metric} vs parallelism_avg ({fw_label}, {agg})"
     ax.set_title(title)
 
     ax.grid(axis="y", linestyle="--", alpha=0.4)
@@ -1464,11 +1504,12 @@ def plot_eventrate_compare_frameworks(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
+            fw_hatch = FRAMEWORK_HATCH_LMH.get(str(fw).lower(), "")
             x_pos = x + (i - (num_fw - 1) / 2) * bar_width
 
             ax.bar(
                 x_pos, vals, width=bar_width, yerr=errs, capsize=3,
-                label=str(fw), color=base_color, edgecolor="black", hatch=hatch, alpha=alpha
+                label=str(fw), color=base_color, edgecolor="black", hatch=fw_hatch, alpha=alpha
             )
 
         ax.set_xticks(x)
@@ -1486,7 +1527,7 @@ def plot_eventrate_compare_frameworks(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
-            ls = linestyle_map.get(str(fw).lower(), "-")
+            ls = FRAMEWORK_LINESTYLE.get(str(fw).lower(), linestyle_map.get(str(fw).lower(), "-"))
 
             plot_series(
                 ax, x_labels=x_labels, y_values=vals, chart="line",
@@ -1636,6 +1677,7 @@ def plot_queries_compare_frameworks(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
+            fw_hatch = FRAMEWORK_HATCH_LMH.get(str(fw).lower(), "")
             x_pos = x + (i - (num_fw - 1) / 2) * bar_width
             bars = ax.bar(x_pos, vals, width=bar_width, label=str(fw), alpha=alpha)
 
@@ -1643,7 +1685,10 @@ def plot_queries_compare_frameworks(
                 qbase = qid_to_base.get(qid, get_base_query_name(qid))
                 bar.set_edgecolor("black")
                 bar.set_color(QUERY_COLORS.get(qbase, "#333333"))
-                bar.set_hatch(QUERY_HATCHES.get(qbase, ""))
+                # framework hatch (not query hatch, which is empty for
+                # every query -- see QUERY_HATCHES) is the real
+                # differentiator here since color already encodes query
+                bar.set_hatch(fw_hatch)
 
         if show_values:
             add_value_labels(ax, spacing=2, fontsize=7, max_bars=120)
@@ -1657,8 +1702,9 @@ def plot_queries_compare_frameworks(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
-            ls = linestyle_map.get(str(fw).lower(), "-")
-            ax.plot(x, vals, marker="o", linestyle=ls, label=str(fw), alpha=alpha)
+            ls = FRAMEWORK_LINESTYLE.get(str(fw).lower(), linestyle_map.get(str(fw).lower(), "-"))
+            mk = FRAMEWORK_MARKER.get(str(fw).lower(), "o")
+            ax.plot(x, vals, marker=mk, linestyle=ls, label=str(fw), alpha=alpha)
 
         ax.legend(title="framework")
 
@@ -1906,10 +1952,11 @@ def plot_app_scaling_all_hw(
                 offset = (group_index - (num_groups - 1) / 2) * bar_width
                 color = HARDWARE_COLORS.get(hw, DEFAULT_HW_COLOR)
                 alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
+                fw_hatch = FRAMEWORK_HATCH_LMH.get(str(fw).lower(), "")
 
                 ax.bar(
                     x + offset, vals, width=bar_width, yerr=errs, capsize=3,
-                    label=f"{hw} | {fw}", color=color, edgecolor="black", alpha=alpha
+                    label=f"{hw} | {fw}", color=color, edgecolor="black", hatch=fw_hatch, alpha=alpha
                 )
                 group_index += 1
 
@@ -1932,10 +1979,11 @@ def plot_app_scaling_all_hw(
                 plotted_vals_all.append(np.nan_to_num(vals, nan=np.nan))
 
                 alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
-                ls = linestyle_map.get(str(fw).lower(), "-")
+                ls = FRAMEWORK_LINESTYLE.get(str(fw).lower(), linestyle_map.get(str(fw).lower(), "-"))
+                mk = FRAMEWORK_MARKER.get(str(fw).lower(), "o")
 
                 ax.errorbar(
-                    x, vals, yerr=errs, marker="o", linestyle=ls,
+                    x, vals, yerr=errs, marker=mk, linestyle=ls,
                     color=color, alpha=alpha, capsize=3, label=f"{hw} | {fw}"
                 )
 
@@ -2025,10 +2073,11 @@ def plot_app_eventrate_all_hw(
                 offset = (group_index - (num_groups - 1) / 2) * bar_width
                 color = HARDWARE_COLORS.get(hw, DEFAULT_HW_COLOR)
                 alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
+                fw_hatch = FRAMEWORK_HATCH_LMH.get(str(fw).lower(), "")
 
                 ax.bar(
                     x + offset, vals, width=bar_width, yerr=errs, capsize=3,
-                    label=f"{hw} | {fw}", color=color, edgecolor="black", alpha=alpha
+                    label=f"{hw} | {fw}", color=color, edgecolor="black", hatch=fw_hatch, alpha=alpha
                 )
                 group_index += 1
 
@@ -2052,10 +2101,11 @@ def plot_app_eventrate_all_hw(
                 plotted_vals_all.append(np.nan_to_num(vals, nan=np.nan))
 
                 alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
-                ls = linestyle_map.get(str(fw).lower(), "-")
+                ls = FRAMEWORK_LINESTYLE.get(str(fw).lower(), linestyle_map.get(str(fw).lower(), "-"))
+                mk = FRAMEWORK_MARKER.get(str(fw).lower(), "o")
 
                 ax.errorbar(
-                    x, vals, yerr=errs, marker="o", linestyle=ls,
+                    x, vals, yerr=errs, marker=mk, linestyle=ls,
                     color=color, alpha=alpha, capsize=3, label=f"{hw} | {fw}"
                 )
 
@@ -2156,11 +2206,13 @@ def plot_cpu_efficiency_across_hardware(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
+            fw_hatch = FRAMEWORK_HATCH_LMH.get(str(fw).lower(), "")
+            fw_color = FRAMEWORK_COLORS.get(str(fw).lower())
             x_pos = x + (i - (num_fw - 1) / 2) * bar_width
 
             ax.bar(
                 x_pos, vals, width=bar_width, yerr=errs, capsize=3,
-                label=str(fw), edgecolor="black", alpha=alpha
+                label=str(fw), color=fw_color, edgecolor="black", hatch=fw_hatch, alpha=alpha
             )
 
         ax.set_xticks(x)
@@ -2178,8 +2230,10 @@ def plot_cpu_efficiency_across_hardware(
             plotted_vals_all.append(vals)
 
             alpha = FRAMEWORK_ALPHA.get(str(fw).lower(), 0.8)
-            ls = linestyle_map.get(str(fw).lower(), "-")
-            ax.errorbar(x, vals, yerr=errs, marker="o", linestyle=ls, alpha=alpha, capsize=3, label=str(fw))
+            ls = FRAMEWORK_LINESTYLE.get(str(fw).lower(), linestyle_map.get(str(fw).lower(), "-"))
+            mk = FRAMEWORK_MARKER.get(str(fw).lower(), "o")
+            fw_color = FRAMEWORK_COLORS.get(str(fw).lower())
+            ax.errorbar(x, vals, yerr=errs, marker=mk, linestyle=ls, color=fw_color, alpha=alpha, capsize=3, label=str(fw))
 
         ax.set_xticks(x)
         ax.set_xticklabels(x_labels)
@@ -2451,7 +2505,8 @@ def plot_workload_fw_hw_parallelism(
 
     for fw in sorted(grouped["framework"].unique()):
         fw_lc = str(fw).lower()
-        ls = linestyle_map.get(fw_lc, "-")
+        ls = FRAMEWORK_LINESTYLE.get(fw_lc, linestyle_map.get(fw_lc, "-"))
+        mk = FRAMEWORK_MARKER.get(fw_lc, "o")
         alpha = FRAMEWORK_ALPHA.get(fw_lc, 0.9)
 
         for hw in hw_fixed:
@@ -2464,7 +2519,7 @@ def plot_workload_fw_hw_parallelism(
             ax.plot(
                 sub["parallelism_avg"],
                 sub["val"],
-                marker="o",
+                marker=mk,
                 linestyle=ls,
                 label=f"{fw.capitalize()} | {hw}",
                 color=HARDWARE_COLORS.get(hw, DEFAULT_HW_COLOR),

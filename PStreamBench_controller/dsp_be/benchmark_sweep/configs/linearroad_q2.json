@@ -21,7 +21,7 @@
   "job_selectivities": [],
   "job_window_size": 10,
   "job_window_size_min": 10,
-  "job_window_size_max": 1000,
+  "job_window_size_max": 100,
   "job_window_slide_size": 10,
   "job_window_slide_size_min": 5,
   "job_window_slide_size_max": 20,
