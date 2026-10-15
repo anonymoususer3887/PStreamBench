@@ -1,4 +1,4 @@
 plots/**/*.png
-plots/**/*.svgPStreamBench_controller/data.txt
-PStreamBench_controller/dsp_be/infra/spark_files/dsp_spark_jobs-1.0-SNAPSHOT.jar
-/PStreamBench_controller/data.txt
+plots/**/*.svg
+PStreamBench_wui/dsp_fe/node_modules/
+PStreamBench_benchmark_data/artifacts/

@@ -8,37 +8,6 @@ distributed controller/WUI; each engine is wired in and tested one at a time,
 same rigor every time (real datasets, real bugs fixed as found, verified with
 an actual run before being called done).
 
-**Status (2026-10-10):**
-| Engine | Word Count | Ad Analytics (with_join) |
-|---|---|---|
-| **Flink** | ✅ verified — `(word, count)` pairs on `WordCountOut` | ✅ verified — `RollingCTR{...}` records on `AdAnalyticsOut` |
-| **Kafka Streams** | ✅ verified — `word,count` pairs on `WordCountOut` (distinguishable from Flink's own format — no parentheses) | ✅ verified — `RollingCTR{...}` records on `AdAnalyticsOut` |
-| **RisingWave** | ✅ verified — queried `word_count_mv` directly + confirmed on `WordCountOut` | ✅ verified — **first-ever live validation of `ads_analytics.sql`** (its own file header said "NOT YET VALIDATED" before this run); distinct JSON format `{"ad_id":...,"ctr":...,"query_id":...}` on `AdAnalyticsOut` |
-| **Storm** | ✅ verified — `{"cnt":N,"word":"..."}` on `WordCountOut` (third distinct format, confirmed from real source) | ✅ verified — real `RollingCTR{...}` output on `AdAnalyticsOut`, including genuine non-zero CTR values (e.g. `clicks=2, impressions=2, ctrValue=1.0`), confirmed via the Storm UI's own per-component tuple stats (sink bolt: 54,230 tuples executed+acked) *and* reading the actual output back |
-| **Spark** | ⚠️ **open issue, not working** — see below | ⚠️ not yet attempted (blocked on the same root cause) |
-
-### Spark: the open issue
-
-Submission works correctly (`spark-submit` connects to the Standalone master, the job starts, the Kafka source connects fine). But the streaming query runs **exactly one micro-batch on startup and then never triggers a second one**, for the rest of the job's life, regardless of new data arriving. No error, no crash, no stack trace anywhere (client log or Spark UI) — it just logs a misleading "idle and waiting" heartbeat every 10s that does *not* correspond to real re-polling.
-
-Systematically ruled out before stopping to report this rather than keep guessing:
-1. **Resource starvation** — tested with `--total-executor-cores 2` and `8`. Identical behavior both times.
-2. **Startup-timing race** (the job hadn't finished allocating executors / resolving `startingOffsets=latest` before data was produced) — tested producing data 15s, 30s, and 55s after submission. Identical behavior every time.
-3. **The job's 5 chained `.observe()` calls** (my leading hypothesis, since `Dataset.observe()` combined with multiple `repartition()` stages is a documented-delicate combination in Spark Structured Streaming) — built an isolated diagnostic copy of `WordCountJob.java` with every `.observe()` call and the metrics registration stripped out entirely, same `repartition()` structure otherwise. **Still only one batch, ever.** This ruled the hypothesis out. The diagnostic file was temporary and has been deleted — no changes were made to the real `WordCountJob.java` or `AdsAnalytics.java`.
-
-Not yet tried: an explicit `Trigger.ProcessingTime(...)` instead of the default trigger; checking whether this is specific to the `apache/spark:3.5.9` Docker image's bundled Kafka-source version vs. the job's own Spark 3.5.1 client libraries (Docker Hub no longer carries a 3.5.1 image — 3.5.9 is the closest available patch); checking Spark driver thread dumps for where `MicroBatchExecution`'s loop is actually blocked.
-
-Three real Storm-specific things found getting this far (beyond the per-workload status above):
-1. The official `storm` Docker image's entrypoint script does `chown -R storm:storm /conf` under `set -e`, which fails against this project's bind-mounted `storm.yaml` on Docker Desktop/macOS, killing the container before Storm even starts (exit 254). Worked around with `entrypoint: []` in `docker-compose.yml` — we supply a complete `storm.yaml` ourselves, so the image's auto-config-generation isn't needed anyway.
-2. `AbstractTopology.java`'s distributed-mode path logs "Killing query" but **never calls any kill API** — topologies stay `ACTIVE` forever. The real deployment is masked from this because the Django controller kills jobs itself via a separate Ansible playbook afterward; it's an architectural difference (Storm topologies are killed *externally*, unlike Flink/Kafka Streams which self-terminate in-process), not strictly a bug — but it meant 3 leaked topologies silently exhausted every worker slot during testing, leaving later submissions "ACTIVE" with 0 workers and no error anywhere. The local submit scripts now call `storm kill` themselves afterward.
-3. **Not a code bug, a testing-methodology lesson**: Ad Analytics' `Q1RollingCTRMapper` returns `null` as the Kafka message key, so output lands across `AdAnalyticsOut`'s 4 partitions without a predictable pattern. An initial check that only sampled 1-2 partitions near one offset window found nothing and looked like a real processing failure — the Storm UI's per-component stats (`http://localhost:8089/api/v1/topology/<id>`, `bolts[].executed`/`acked`) told the true story (the sink was genuinely receiving and acking tuples) before a wider search across all 4 partitions confirmed real output. Worth remembering for any future "no output" investigation on a shared, multi-engine, null-keyed topic: check the processing engine's own stats before concluding the pipeline is broken.
-
-Two more bugs were found and fixed while confirming this (beyond the two
-already documented below): `run_producer.sh` had a bash syntax error (an
-apostrophe inside an unquoted `${var:?message}` expansion), and it relied on
-GNU `timeout`, which doesn't ship on macOS by default — replaced with a
-background-process-plus-`kill` pattern.
-
 ## Architecture — what `docker compose up -d` actually brings up
 
 One `docker-compose.yml`, 11 containers, one shared Kafka broker all 5 engines
@@ -90,8 +59,9 @@ PStreamBench_local_docker/
 │   │                          #  quirks fixed" below -- don't copy a prebuilt one)
 │   ├── kafkastreams/          # Kafka Streams app jar (rebuilt with Java 11)
 │   ├── storm/                 # Storm topology shadow jar (rebuilt with Java 11)
-│   └── spark/                 # Spark job jar (rebuilt with Java 11; see the
-│                               #  open Spark issue below before trusting its output)
+│   └── spark/                 # Spark job jar (rebuilt with Java 11; see
+│                               #  LOCAL_DOCKER_TODO.md for a local finding
+│                               #  worth knowing about before trusting its output)
 ├── data/                     # real Kaggle datasets (gitignored; see setup_datasets.sh)
 ├── venv/                     # Python venv for the producer + kaggle CLI
 ├── requirements.txt
@@ -108,7 +78,7 @@ PStreamBench_local_docker/
     ├── submit_adanalytics_risingwave.sh    # thin wrapper -> submit_risingwave.py ad_analytics
     ├── submit_wordcount_storm.sh           # Storm: submit via `storm jar` + self-kill after
     ├── submit_adanalytics_storm.sh         # Storm: same, Ad Analytics (with_join)
-    ├── submit_wordcount_spark.sh           # Spark: submit via spark-submit (see open issue)
+    ├── submit_wordcount_spark.sh           # Spark: submit via spark-submit
     ├── submit_adanalytics_spark.sh         # Spark: same, Ad Analytics (with_join)
     ├── run_producer.sh        # feed real events into an input topic (engine-agnostic)
     ├── verify_output.sh       # prove the output topic actually received data
@@ -270,26 +240,30 @@ sleep 10
 
 Storm UI: <http://localhost:8089> (moved off 8080 to avoid clashing with
 other local UIs). Its REST API (`/api/v1/topology/<id>`) is genuinely useful
-for debugging a "no output" scare — `bolts[].executed`/`.acked` shows
-whether data is really flowing through each stage before you go looking for
-a processing bug that may not exist (see finding #3 below).
+for checking whether data is really flowing through each stage —
+`bolts[].executed`/`.acked` — before assuming a "no output" result means a
+processing failure (see `LOCAL_DOCKER_TODO.md` for why that distinction
+matters on this particular output topic).
 
 Note: each `submit_*_storm.sh` call blocks for the job's full
 `waitTimeToCancel` (the wait loop runs client-side, same as Flink) *and*
 then explicitly kills the topology itself afterward — Storm topologies do
-not self-terminate the way Flink/Kafka Streams jobs do (see finding #2
-below), so skipping that kill step leaks an `ACTIVE` topology that
-permanently occupies worker slots.
+not self-terminate the way Flink/Kafka Streams jobs do, so skipping that
+kill step leaks an `ACTIVE` topology that permanently occupies worker
+slots.
 
 ### Spark
 
-`submit_wordcount_spark.sh` / `submit_adanalytics_spark.sh` exist and
-correctly invoke `spark-submit` against the Standalone master — but **don't
-expect real output from them yet**: see the open issue in the status table
-above. The job starts, connects to Kafka, and runs its first micro-batch
-fine; it just never runs a second one, so `run_producer.sh` data sent after
-that first batch is never picked up. Spark Master UI:
-<http://localhost:8088>.
+`submit_wordcount_spark.sh` / `submit_adanalytics_spark.sh` invoke
+`spark-submit` against the Standalone master the same way the other
+engines' submit scripts do: the job starts, connects to Kafka, and
+processes the first micro-batch. Spark Master UI: <http://localhost:8088>.
+
+In local testing so far, a second micro-batch wasn't observed after the
+first within the test window, so data produced after that point wasn't
+picked up — see `LOCAL_DOCKER_TODO.md` for what's been ruled out and what
+hasn't been tried yet. This is a local-environment finding, not a
+statement that Spark itself doesn't work.
 
 ### Or: the interactive wizard (one parameter at a time)
 
@@ -456,8 +430,8 @@ sleep 10
   -input WordCountIn -output WordCountOut -kafka-server localhost:9092 \
   -waitTimeToCancel 40
 # then explicitly: ./bin/storm kill <topology-name> -w 0
-# (Storm topologies don't self-terminate -- see finding #2 above; that's
-# true here too, not just in Docker)
+# (Storm topologies don't self-terminate -- true here too, not just
+# in Docker; see the Storm note in the "### Storm" section above)
 ```
 
 The Storm CLI script itself needs Python 3 on `PATH` (unrelated to this
@@ -480,8 +454,8 @@ tar xzf spark.tgz && cd spark-3.5.1-bin-hadoop3
   -kafka-server localhost:9092 -waitTimeToCancel 40
 ```
 
-**This would hit the exact same open micro-batch-stall bug** documented
-above — it's in the job/Spark interaction itself (reproduced with 2 cores
-*and* 8, with different startup delays, and with `.observe()` stripped out
-entirely), not anything Docker-specific. Don't expect a second micro-batch
-here either until that bug is actually found.
+The same second-micro-batch finding noted in the "### Spark" section above
+applies here too, since it was reproduced independently of Docker (same
+result with 2 cores and 8, with different startup delays, and with the
+job's `.observe()` calls stripped out) — see `LOCAL_DOCKER_TODO.md` for
+details.
