@@ -25,7 +25,11 @@ public class BasicClassifier implements SentimentClassifier {
         
         try {
             String path = DEFAULT_PATH;
-
+            // Loaded via this class's own classloader (not Guava's Resources helper,
+            // which resolves against Resources.class's classloader -- on Spark that
+            // is Spark's own bundled Guava, whose classloader has no visibility into
+            // this job's shaded jar, so the resource "isn't found" even though it is
+            // present here -- confirmed live on a Spark executor).
             final InputStream stream = BasicClassifier.class.getClassLoader().getResourceAsStream(path);
             if (stream == null) {
                 throw new IOException("Classpath resource not found: " + path);

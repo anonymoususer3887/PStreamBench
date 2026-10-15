@@ -1,5 +1,11 @@
 package com.kom.dsp.MachineOutlier;
 
+/**
+ * Static BFPRT (median-of-medians) selection helpers, ported verbatim from
+ * flink/dsp_flink_jobs/.../MachineOutlier/MachineOutlierWindowFunction.java
+ * (and its near-duplicate BFRTAlgorithm.java) -- plain Java, no Flink APIs,
+ * so it carries over unchanged.
+ */
 public class BFPRTAlgorithm {
 
     public static MachineUsage bfprt(MachineUsage[] arr, int left, int right, int k) {

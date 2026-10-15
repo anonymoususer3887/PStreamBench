@@ -19,6 +19,22 @@ import static org.apache.spark.sql.functions.count;
 import static org.apache.spark.sql.functions.current_timestamp;
 import static org.apache.spark.sql.functions.lit;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../TPCH/TPCH.java.
+ *
+ * Query 2's FilterCalculator is a windowed ProcessWindowFunction keyed by
+ * discount that re-applies the exact same "orderPriority > 2" condition as
+ * query 1's stateless filter, one event at a time, without aggregating --
+ * i.e. it is query 1's filter plus an extra keyed/windowed shuffle, not a
+ * different result. This reproduces that shuffle cost with a repartition by
+ * discount rather than a true windowed pass-through (Structured Streaming's
+ * window() is an aggregation primitive, not a stateful pass-through), since
+ * what matters for the DoP study is the added communication cost of keying
+ * by discount, not the exact per-window grouping mechanics.
+ * Stage shape: [0] source, [1] tpch-event-parser, [2] tpch-data-filter,
+ * [3] tpch-flat-mapper, [4] priority-counter, [5] sink -- same as Flink.
+ */
 public class TPCH {
 
     public static void main(String[] args) throws Exception {

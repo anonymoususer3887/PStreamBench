@@ -10,6 +10,19 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQuery;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../GoogleCloudMonitoring/GoogleCloudMonitoring.java.
+ *
+ * Only timestamp/jobId/category/cpu are needed downstream (taskId,
+ * machineId, eventType, userId, priority, ram, disk, constraints are parsed
+ * by TaskEventParser.java but never read by either query), so only those
+ * fields are extracted here. Query 1 sums cpu per category per window,
+ * query 2 averages cpu per jobId per window -- both emit
+ * (minTimestamp, key, value) the same way the Flink calculators do.
+ * Stage shape: [0] source, [1] parser, [2] average-cpu-per-category/job,
+ * [3] sink -- same as Flink for both queries.
+ */
 public class GoogleCloudMonitoring {
 
     public static void main(String[] args) throws Exception {

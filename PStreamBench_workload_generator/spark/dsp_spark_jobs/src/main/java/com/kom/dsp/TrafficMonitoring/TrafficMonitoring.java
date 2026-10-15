@@ -24,6 +24,23 @@ import static org.apache.spark.sql.functions.count;
 import static org.apache.spark.sql.functions.current_timestamp;
 import static org.apache.spark.sql.functions.lit;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../TrafficMonitoring/TrafficMonitoring.java (query 1
+ * only, matching what the Flink job itself implements).
+ *
+ * Helper.java's map-matching (exact lookup of rounded lat/lon against a
+ * GeoJSON road map fetched from a fixed GitLab URL) is plain Java + Gson, so
+ * it's reused unchanged. RoadMatcher there loads the map once per parallel
+ * subtask via RichMapFunction.open(); this loads it once per Spark
+ * partition inside mapPartitions, which is the same "once per parallel
+ * task, not once per record" granularity. Only vehicleId (unused
+ * downstream), lat, lon, speed matter -- timestamp/bearing are parsed by
+ * TrafficEventParser.java but never read further.
+ * Stage shape: [0] source, [1] traffic-event-parser, [2] road-matcher
+ * (map+filter combined, same parallelism index as Flink), [3] avg-speed,
+ * [4] sink -- same as Flink.
+ */
 public class TrafficMonitoring {
 
     public static void main(String[] args) throws Exception {

@@ -18,6 +18,25 @@ import org.apache.spark.sql.streaming.StreamingQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../MachineOutlier/MachineOutlier.java.
+ *
+ * MachineOutlierWindowFunction there is a hand-rolled keyed ProcessWindowFunction
+ * that caps accumulated readings per machineId at 4 ("count==4, break"), runs
+ * BFPRT median-of-medians selection, and flags readings whose Euclidean
+ * distance from the pivot exceeds a hardcoded 0.5 threshold (note: the CLI
+ * "popularityThreshold" argument is parsed in main() but never actually
+ * passed to the window function in the Flink source -- 0.5 is what really
+ * runs, so 0.5 is what this uses too). flatMapGroupsWithState is Structured
+ * Streaming's equivalent of a keyed function with manual state; it replaces
+ * the window here since Structured Streaming's declarative window()
+ * aggregation only supports built-in aggregate functions, not arbitrary
+ * per-group algorithms like BFPRT.
+ * Stage shape: [0] source, [1] machine-usage-parser, [2] outlier-detector,
+ * [4] sink (parallelism_degree[3] is unused, matching the Flink source,
+ * which has a dead commented-out separate BFPRT flatMap stage at that index).
+ */
 public class MachineOutlier {
 
     public static void main(String[] args) throws Exception {

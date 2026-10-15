@@ -21,6 +21,16 @@ import static org.apache.spark.sql.functions.count;
 import static org.apache.spark.sql.functions.current_timestamp;
 import static org.apache.spark.sql.functions.lit;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../TrendingTopics/TrendingTopics.java (query 1 only,
+ * matching what the Flink job itself implements).
+ *
+ * Stage -> parallelism_degree[] mapping, same convention as WordCountJob:
+ *   [0] source, [1] twitter-parser, [2] topic-extractor + rolling-counter
+ *   (shared, matching Flink's own reuse of parallelism_degree[2] for both),
+ *   [3] popularity-detector, [4] sink.
+ */
 public class TrendingTopics {
 
     public static void main(String[] args) throws Exception {

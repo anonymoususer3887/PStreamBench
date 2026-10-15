@@ -12,6 +12,12 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Ported verbatim from flink/dsp_flink_jobs/.../TrafficMonitoring/Helper.java
+ * -- plain Java + Gson, no Flink dependency, so it carries over unchanged.
+ * Each Spark task that calls loadShapeFile() re-fetches/re-parses the
+ * GeoJSON, same as each parallel Flink RoadMatcher subtask does in open().
+ */
 public class Helper {
 
     public static Map<Long, Double[][]> roadMap = new HashMap<>();

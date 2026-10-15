@@ -11,6 +11,21 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQuery;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../BargainIndex/BargainIndex.java.
+ *
+ * QuoteDataParser.java parses 8 fields (symbol, date, open, high, low,
+ * close, adjClose, volume) but VWAPCalculator only ever reads close/volume,
+ * so only symbol/close/volume are carried downstream here. VWAPCalculator
+ * already aggregates to one row per (window, symbol) -- no per-event
+ * multiplication concern the way Spike Detection had. "quotePrice" there is
+ * simply the last close price seen in the window; this uses last(close),
+ * which is an approximation since Spark does not guarantee arrival order
+ * within a micro-batch the way Flink's window Iterable does.
+ * Stage shape: [0] source, [1] quote-parser, [2] VWAP-operator, [3]
+ * bargain-index-calculator, [4] sink -- same as Flink.
+ */
 public class BargainIndex {
 
     public static void main(String[] args) throws Exception {
@@ -42,6 +57,8 @@ public class BargainIndex {
         SparkSession spark = SparkSession.builder().getOrCreate();
         spark.conf().set("spark.sql.shuffle.partitions", vwapPar);
 
+        // Per-stage row counts + end-to-end lag (Tier 3 operator metrics --
+        // see MetricsUtils / WordCountJob.java for the full explanation).
         MetricsUtils.registerOperatorMetrics(spark, "source", "parser", "vwap", "bargain", "sink",
                 "end_to_end_lag");
 
@@ -52,6 +69,8 @@ public class BargainIndex {
                 .option("startingOffsets", "latest")
                 .load();
 
+        // End-to-end lag: see WordCountJob.java for why current_timestamp()
+        // must be materialized into its own column before being observed.
         Dataset<Row> sourceLagColumn = source.withColumn("lag_seconds",
                 functions.current_timestamp().cast("double").minus(functions.col("timestamp").cast("double")));
         Dataset<Row> sourceWithLag = sourceLagColumn.observe("end_to_end_lag",

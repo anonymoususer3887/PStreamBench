@@ -2,6 +2,7 @@ package com.kom.dsp.LinearRoad;
 
 import java.io.Serializable;
 
+/** JavaBean mirror of flink/dsp_flink_jobs/.../LinearRoad/VehicleEvent.java. */
 public class VehicleEvent implements Serializable {
     private int type;
     private long time;

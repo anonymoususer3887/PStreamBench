@@ -11,6 +11,22 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQuery;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../smartgrid/SmartGridJob.java.
+ *
+ * Note on HouseEvent.getValue() in the Flink source: it returns
+ * `this.index`, not `this.value` (setValue()/getValue() disagree) --
+ * an evident getter bug there, not a deliberate query semantic. This
+ * uses the actual energy-consumption value field, since replicating that
+ * bug serves no benchmarking purpose. Query 2's window uses Time.seconds
+ * (not milliseconds like every other job/query) in the Flink source --
+ * that IS preserved here, since it looks like a deliberate per-query choice.
+ * Query 2 also skips parallelism_degree[3] (sink uses index 4), matching
+ * the Flink source's own indexing exactly.
+ * Stage shape: [0] source, [1] house-event-parser, [2] window aggregation,
+ * [3] sink (query 1) / [4] sink (query 2).
+ */
 public class SmartGridJob {
 
     public static void main(String[] args) throws Exception {

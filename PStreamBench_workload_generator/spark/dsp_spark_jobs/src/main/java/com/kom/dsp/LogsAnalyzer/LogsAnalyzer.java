@@ -17,6 +17,21 @@ import static org.apache.spark.sql.functions.count;
 import static org.apache.spark.sql.functions.current_timestamp;
 import static org.apache.spark.sql.functions.lit;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../LogsAnalyzer/LogsAnalyzer.java.
+ *
+ * Simplification vs. the Flink source: VolumeCounter/StatusCounter there use
+ * a hand-rolled per-key ValueState/MapState counter that increments once per
+ * input event (shared across overlapping sliding windows, since Flink keyed
+ * state is not itself window-scoped) and emits one output line per event.
+ * That is an artifact of manual state management, not a deliberate query
+ * semantic -- the natural Structured Streaming equivalent (and what this
+ * class implements) is a per-key sliding-window COUNT aggregation, emitting
+ * one "key: count" line per window firing. Stage/parallelism_degree[] shape
+ * is unaffected: [0] source, [1] Log-parser, [2] volume/status counter,
+ * [3] sink -- same as Flink.
+ */
 public class LogsAnalyzer {
 
     public static void main(String[] args) throws Exception {

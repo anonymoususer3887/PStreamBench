@@ -1,5 +1,9 @@
 package com.kom.dsp.SentimentAnalysis;
 
+/**
+ *
+ * @author mayconbordin
+ */
 public class SentimentResult {
     public static enum Sentiment {
         Positive, Negative, Neutral

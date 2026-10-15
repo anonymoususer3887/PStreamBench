@@ -18,6 +18,22 @@ import org.apache.spark.sql.streaming.StreamingQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../LinearRoad/LinearRoad.java.
+ *
+ * Queries 1, 3, and 4 are per-vehicle keyed RichMapFunctions with manual
+ * MapState -- flatMapGroupsWithState keyed by vehicleId is Structured
+ * Streaming's equivalent (see VehicleState.java for a note on Query 1/3's
+ * segment-occupancy tracking, which is siloed per vehicle in the Flink
+ * source too, not truly cross-vehicle). Query 2 (accident detection) has no
+ * per-vehicle state at all in the Flink source -- it flags any group of
+ * events sharing (segment, lane, position) within a window as a collision,
+ * which maps directly onto a builtin groupBy+count.
+ * Stage shape: query 1/2 use [0] source+parser, [1] mapper, [2] formatter;
+ * query 3/4 use only [0], [1] (no separate formatter stage) -- same as
+ * Flink.
+ */
 public class LinearRoad {
 
     public static void main(String[] args) throws Exception {

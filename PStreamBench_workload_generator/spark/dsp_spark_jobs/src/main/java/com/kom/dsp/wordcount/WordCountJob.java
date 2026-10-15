@@ -18,6 +18,18 @@ import static org.apache.spark.sql.functions.count;
 import static org.apache.spark.sql.functions.current_timestamp;
 import static org.apache.spark.sql.functions.lit;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../wordcount/WordCountJob.java, kept as close as
+ * possible to the same CLI contract, topics, and per-stage tokenization
+ * so the same job_pds vector / enumeration strategies apply unmodified.
+ *
+ * Spark has no per-operator setParallelism(): the closest native controls
+ * are repartition() (fixes the task count of a stage) and
+ * spark.sql.shuffle.partitions (fixes the width of a groupBy shuffle).
+ * parallelism_degree[0..3] is mapped the same way Flink maps it:
+ *   [0] source, [1] tokenizer, [2] counter (shuffle partitions), [3] sink.
+ */
 public class WordCountJob {
 
     public static void main(String[] args) throws Exception {
@@ -42,6 +54,10 @@ public class WordCountJob {
                     "Spark word count job currently only supports mode=KAFKA");
         }
 
+        // App name intentionally not set here -- it comes from spark-submit's
+        // --name flag (job_name in the controller), so the Spark master's
+        // JSON status API reports the same name JobRunner.is_terminated()
+        // looks for, mirroring how Storm topologies are matched by name.
         SparkSession spark = SparkSession.builder()
                 .getOrCreate();
 
@@ -60,6 +76,19 @@ public class WordCountJob {
                 .option("startingOffsets", "latest")
                 .load();
 
+        // End-to-end lag: average seconds between Kafka's own ingestion
+        // timestamp for each record and "now" (when this batch is being
+        // processed) -- the closest Spark equivalent to Flink's latency
+        // markers, though it measures ingestion-to-processing lag rather
+        // than a marker traveling the whole pipeline to the sink. Observed
+        // here, before the CAST(value AS STRING) below drops every column
+        // except "value" (including Kafka's "timestamp").
+        //
+        // current_timestamp() must be materialized into its own column
+        // first: Spark's observe() rejects a non-deterministic expression
+        // (current_timestamp()/current_batch_timestamp()) unless it's a
+        // *direct* argument to the aggregate function, and nesting it one
+        // level deeper inside the subtraction below doesn't qualify.
         Dataset<Row> sourceWithLagColumn = source.withColumn("lag_seconds",
                 current_timestamp().cast("double").minus(col("timestamp").cast("double")));
         Dataset<Row> sourceWithLag = sourceWithLagColumn.observe("end_to_end_lag",

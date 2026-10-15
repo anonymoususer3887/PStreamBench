@@ -21,6 +21,24 @@ import static org.apache.spark.sql.functions.count;
 import static org.apache.spark.sql.functions.current_timestamp;
 import static org.apache.spark.sql.functions.lit;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../SentimentAnalysis/SentimentAnalysis.java.
+ *
+ * BasicClassifier.java/SentimentResult.java/SentimentClassifier.java are
+ * reused unchanged (plain Java + Guava, no Flink dependency) --
+ * AFINN-111.txt is copied into this module's resources under the same
+ * classpath path they expect. TwitterAnalyser.java's map() constructs a
+ * brand new SentimentClassifier (re-reading and re-parsing the AFINN
+ * lexicon from the classpath) for every single tweet; this loads it once
+ * per Spark partition via mapPartitions instead. That avoids the Flink
+ * source's per-record file re-read, which is pure object/IO overhead, not
+ * the CPU classification cost the workload is meant to stress -- the
+ * per-tweet word-lookup classification work itself is unchanged.
+ * No windowing/keying in either version -- this is the simplest job in the
+ * suite to port. Stage shape: [0] source, [1] twitter-parser,
+ * [2] twitter-analyser, [3] sink -- same as Flink.
+ */
 public class SentimentAnalysis {
 
     public static void main(String[] args) throws Exception {

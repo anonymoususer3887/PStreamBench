@@ -13,6 +13,29 @@ import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.types.StructType;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../SpikeDetection/SpikeDetection.java.
+ *
+ * Simplification vs. the Flink source: AverageValueCalculator there emits
+ * one output row per input measurement (pairing that single measurement's
+ * voltage with the just-computed per-key window average), then filters rows
+ * where the individual voltage exceeds the window average. Structured
+ * Streaming's windowed aggregation collapses a window to one row per key, so
+ * this implements the same spike condition (peak voltage in a window
+ * exceeding the window's average voltage) at window granularity instead of
+ * per-event granularity. Only sensorId and voltage are needed downstream
+ * (temperature/humidity/light are parsed by SensorParser.java but never
+ * used by average-calculator/spike-detector), so this job only extracts
+ * those two fields. The real Intel Berkeley Research Lab sensors.dat has 8
+ * space-separated fields (date, time, epoch, moteid, temperature, humidity,
+ * light, voltage) -- moteid is fields[3] and voltage is fields[7], not
+ * fields[2]/fields[6] -- and a non-trivial fraction of lines are truncated
+ * (sensor dropouts), so lines with fewer than 8 fields are skipped rather
+ * than indexed blindly.
+ * Stage shape: [0] source, [1] parser, [2]
+ * average-calculator, [3] spike-detector, [4] sink -- same as Flink.
+ */
 public class SpikeDetection {
 
     public static void main(String[] args) throws Exception {
@@ -78,6 +101,20 @@ public class SpikeDetection {
         // the moteid column to float64 (since other rows elsewhere in the
         // file have a missing moteid, forcing the whole column to float to
         // hold NaN), so moteid arrives on the wire as e.g. "1.0", not "1".
+        //
+        // `data.txt` (PStreamBench_controller/data.txt) is this project's
+        // designated-authoritative 8-column source for this workload (per
+        // explicit user direction -- see BUGS_AND_FIXES.md bug #8 from the
+        // RisingWave translation), NOT the 7-column file the shared
+        // download_datasets.sh/Kaggle path produces under the same
+        // spikeDetection_sensors.dat filename. Confirmed live (2026-08-26):
+        // the Spark cluster's copy of that file had the *wrong*, 7-column
+        // Kaggle variant on it (every line missing the epoch column this
+        // parser expects), which silently dropped every single line here
+        // -- not a bug in this field-index logic itself. Fixed by
+        // rederiving spikeDetection_sensors.dat from data.txt on the
+        // cluster (matching what setup_local.sh already does for local
+        // runs), not by changing these indices.
         StructType sensorSchema = new StructType()
                 .add("sensorId", "integer").add("voltage", "float");
         Dataset<Row> parsed = lines

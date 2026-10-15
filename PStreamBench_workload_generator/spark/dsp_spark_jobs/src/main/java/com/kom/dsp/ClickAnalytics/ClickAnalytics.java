@@ -17,10 +17,42 @@ import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.types.StructType;
 
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Spark Structured Streaming counterpart of
+ * flink/dsp_flink_jobs/.../ClickAnalytics/ClickAnalytics.java.
+ *
+ * Query 1/3's RepeatVisitOperator/RepeatVisitCountOperator track "have I
+ * seen this (url, clientKey) before" via a HashMap that is scoped to the
+ * operator instance, not reset per window -- an artifact of manual state
+ * management like LogsAnalyzer's VolumeCounter, not a deliberate semantic.
+ * This computes total visits and *distinct* clientKeys per URL per window
+ * directly (count / approx_count_distinct -- confirmed live that plain
+ * count_distinct is rejected on streaming DataFrames with "Distinct
+ * aggregations are not supported on streaming DataFrames/Datasets"), which
+ * is a cleaner, in-window-scoped reading of "total vs. unique visits" than
+ * the original's cross-window leaking state. The Flink source's separate "reduce" stage then sums that
+ * result again with a running total -- Structured Streaming does not
+ * support chaining a second streaming aggregation on top of a first, so
+ * that stage is folded into the same windowed aggregation (repartition
+ * only, to keep the same stage/parallelism_degree[] shape).
+ * Query 3 uses a Flink count-window (countWindow); Structured Streaming has
+ * no count-window primitive in the DataFrame API, so this uses the same
+ * time-based window as query 1 -- a real capability gap, not a stylistic
+ * choice.
+ * Query 2's GeoIP2 city/country lookup (com.maxmind.geoip2) is a plain Java
+ * library, so it is reused directly, loaded once per partition the same
+ * way TrafficMonitoring loads its road map. Unlike the Flink source (which
+ * fetches the .mmdb from a live URL, harmless there since a Flink operator
+ * only opens it once for the task's entire lifetime), this loads it from a
+ * copy bundled into the jar's resources: mapPartitions's closure re-runs on
+ * every micro-batch under Structured Streaming's re-planned-per-batch
+ * execution model, so a live HTTP fetch here would mean dozens of
+ * concurrent downloads from the same URL every few seconds at higher
+ * parallelism -- confirmed to cause real job failures under load.
+ */
 public class ClickAnalytics {
 
     public static void main(String[] args) throws Exception {
@@ -135,8 +167,8 @@ public class ClickAnalytics {
                     (MapPartitionsFunction<Row, Row>) it -> {
                         DatabaseReader reader;
                         try {
-                            URL databaseURL = new URL("https://git.io/GeoLite2-City.mmdb");
-                            reader = new DatabaseReader.Builder(databaseURL.openStream()).build();
+                            reader = new DatabaseReader.Builder(
+                                    ClickAnalytics.class.getResourceAsStream("/GeoLite2-City.mmdb")).build();
                         } catch (Exception e) {
                             reader = null;
                         }

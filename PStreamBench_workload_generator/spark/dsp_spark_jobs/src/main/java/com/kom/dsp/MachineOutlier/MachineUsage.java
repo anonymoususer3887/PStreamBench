@@ -2,6 +2,11 @@ package com.kom.dsp.MachineOutlier;
 
 import java.io.Serializable;
 
+/**
+ * JavaBean mirror of flink/dsp_flink_jobs/.../MachineOutlier/MachineUsage.java
+ * (public no-arg constructor + get/set pairs, required for Spark's
+ * Encoders.bean() to serialize it across the flatMapGroupsWithState shuffle).
+ */
 public class MachineUsage implements Serializable {
 
     private String machineId;
