@@ -47,7 +47,7 @@ public class SmartGridJob {
         env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
         ParameterTool params = ParameterTool.fromArgs(args);
 
-        String bootstrapServer ;
+        String bootstrapServer = null;
 
         // Command line parameters
 
@@ -167,8 +167,35 @@ public class SmartGridJob {
             //    .name("output")
             //    .setParallelism(Integer.parseInt(parallelism_degree[3]));
 
+            // Q2 needs its own correctly-typed sink -- `sink` above was
+            // built as KafkaSink<ProcessOutputQ1> with
+            // ProcessOutputQ1SerializationSchema, but processedOutputQ2
+            // emits ProcessOutputQ2 records. Passing a ProcessOutputQ2
+            // stream through a Sink<ProcessOutputQ1> compiles fine because
+            // `sink` above is declared with the raw (unparameterized)
+            // `Sink` type, but at runtime the generated bridge method for
+            // SerializationSchema<ProcessOutputQ1>.serialize(Object) does
+            // an explicit cast to ProcessOutputQ1, throwing
+            // ClassCastException on every single record -- confirmed live
+            // (2026-09-15): the source and window operators processed real
+            // data correctly, but zero records ever reached the Kafka sink
+            // topic for Q2, regardless of window/slide timing.
+            KafkaSink<ProcessOutputQ2> kafkaSinkQ2 = KafkaSink.<ProcessOutputQ2>builder()
+                    .setBootstrapServers(bootstrapServer)
+                    .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                            .setTopic(output)
+                            .setValueSerializationSchema(new ProcessOutputQ2SerializationSchema())
+                            .build()
+                    )
+                    .setProperty("batch.size", "200000")
+                    .setProperty("batch.num.messages", "200000")
+                    .setProperty("linger.ms", "10")
+                    .setProperty("compression.type", "lz4")
+                    .setProperty("acks", "1")
+                    .build();
+
             processedOutputQ2
-                .sinkTo(sink)
+                .sinkTo(kafkaSinkQ2)
                 .name("kafka-sink")
                 .setParallelism(Integer.parseInt(parallelism_degree[4]));
         }

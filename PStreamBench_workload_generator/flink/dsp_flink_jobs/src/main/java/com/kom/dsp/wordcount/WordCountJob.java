@@ -77,8 +77,7 @@ public class WordCountJob {
 
 		// Input Mode
 		if(mode.equalsIgnoreCase(Constants.KAFKA)){
-			//bootstrapServer = params.get("kafka-server");
-			bootstrapServer = "localhost:9092";
+			bootstrapServer = params.get("kafka-server");
 			System.out.println("[main] Arguments parsed.");
 
 
