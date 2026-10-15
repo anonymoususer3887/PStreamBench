@@ -1,11 +1,11 @@
-# PStreamBench — CloudLab Cluster Setup (Apache Flink + Apache Storm)
+# PStreamBench — CloudLab Cluster Setup (Flink, Storm, Spark, Kafka Streams, RisingWave)
 
-This README describes how to provision **CloudLab** nodes for **PStreamBench** and prepare them for benchmarking **Apache Flink** and **Apache Storm** on a multi-node cluster. The CloudLab profile installs all required system dependencies and bootstrap services so that PStreamBench can later deploy and run Flink/Storm jobs from the controller/UI.
+This README describes how to provision **CloudLab** nodes for **PStreamBench** and prepare them for benchmarking **Apache Flink**, **Apache Storm**, **Apache Spark**, **Kafka Streams**, and **RisingWave** on a multi-node cluster. The CloudLab profile installs all required system dependencies and bootstrap services so that PStreamBench can later deploy and run jobs for any of the five on the same provisioned nodes, from the controller/UI.
 
 > Scope of this README  
 > ✅ CloudLab profile setup + node preparation  
 > ✅ Kafka + ZooKeeper cluster bootstrapping across all nodes  
-> ✅ Dependencies for both **Flink** and **Storm**  
+> ✅ Dependencies for **Flink**, **Storm**, **Spark**, **Kafka Streams**, and **RisingWave** (including RisingWave's own binary download — see `install_all_tools.sh`)  
 > ✅ Prometheus/Grafana + Node Exporter preparation  
 > ❌ Controller/UI setup (see `PStreamBench_controller/` and `PStreamBench_wui/` READMEs)
 
@@ -32,7 +32,7 @@ CloudLab is a research testbed that provides **bare-metal servers** for building
 - provision a multi-node cluster (e.g., 4–10 nodes),
 - prepare each node with required dependencies,
 - ensure foundational services (Kafka, ZooKeeper, monitoring) can run reliably,
-- support benchmarking of **Flink** and **Storm** using PStreamBench orchestration (controller + UI).
+- support benchmarking of **Flink**, **Storm**, **Spark**, **Kafka Streams**, and **RisingWave** using PStreamBench orchestration (controller + UI).
 
 ---
 
@@ -133,8 +133,22 @@ This setup extends PStreamBench to form Kafka and ZooKeeper clusters across all 
 - `node0:` Nimbus + Storm UI (and typically a ZooKeeper endpoint)
 - `node1..n:` Supervisors
 
+### Spark Cluster (Deployed later by PStreamBench)
+
+- `node0:` Standalone Master (UI on port 8087, not Spark's default 8080, which collides with Storm UI on this same node role)
+- `node1..n:` Workers
+
+### Kafka Streams (Deployed later by PStreamBench)
+
+- No master node — each worker node runs an independent app instance against the shared Kafka cluster; instances coordinate scaling among themselves via Kafka's consumer-group protocol, not a role PStreamBench assigns.
+
+### RisingWave Cluster (Deployed later by PStreamBench)
+
+- `node0:` meta + frontend + MinIO roles
+- `node1..n:` compute nodes
+
 > Important
-The CloudLab profile prepares dependencies and service scaffolding. Actual Flink/Storm cluster deployment and job execution is performed by PStreamBench (controller/playbooks) when you create a cluster in the UI.
+The CloudLab profile prepares dependencies and service scaffolding (including RisingWave's binary, downloaded by `install_all_tools.sh`). Actual cluster deployment and job execution for any of the five engines is performed by PStreamBench (controller/playbooks) when you create a cluster in the UI.
 
 ## Essential Setup Scripts
 
@@ -160,7 +174,7 @@ Installs and prepares services/tools used during benchmarking, including:
 - Kafka (multi-node cluster support)
 - ZooKeeper (multi-node cluster support)
 - Monitoring stack prerequisites (Prometheus/Grafana and/or exporters)
-- Dependencies needed for both Flink and Storm runtime deployments
+- Dependencies needed for Flink, Storm, Spark, Kafka Streams, and RisingWave runtime deployments (including RisingWave's self-contained binary and `libpython3.12`, which its binary dynamically links against)
 
 `download_dataset.sh (optional)`
 
@@ -200,7 +214,7 @@ From node0, ping another node:
     ```   
 
 
-> Note: Flink/Storm processes may not be running yet if you deploy them later via PStreamBench UI. That is expected.
+> Note: engine processes (Flink/Storm/Spark/Kafka Streams/RisingWave) may not be running yet if you deploy them later via PStreamBench UI. That is expected.
 
 ## Ports
 
@@ -210,6 +224,8 @@ Common ports:
 
 - 8086 — Apache Flink Dashboard
 - 8080 — Apache Storm UI
+- 8087 — Apache Spark Master UI (moved off the default 8080, which collides with Storm UI on the same node role)
+- 7076 — Kafka Streams JMX (per app instance, on each worker node)
 - 3000 — Grafana
 - 9090 — Prometheus
 
@@ -278,5 +294,5 @@ After CloudLab nodes are provisioned and ready:
 3. In the UI:
     - add your CloudLab nodes in **Explore Nodes**
     - go to **Create Cluster**
-    - select the **SUT (Flink or Storm)**
+    - select the **SUT (Flink, Storm, Spark, Kafka Streams, or RisingWave)**
     - deploy and execute jobs/topologies

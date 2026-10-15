@@ -27,22 +27,21 @@ sudo apt-get -f install --yes
 sudo apt install software-properties-common --yes
 sudo add-apt-repository ppa:deadsnakes/ppa --yes
 sudo apt install  python3.10 --yes
-sudo apt-get install python3-pip --yes 
+sudo apt-get install python3-pip python3-venv --yes
 sudo apt install unzip --yes
 # Install java
-sudo apt-get install openjdk-11-jdk --yes 
-# Install setuptools
-sudo pip3 install -U setuptools
-# Upgrade pip3
-sudo pip3 install --upgrade pip
-# Install kafka-producer dependencies 
-# Install click
-yes | pip3 install click
-# Install openpyxl
-yes | pip3 install openpyxl
-# Install confluent kafka
-yes | pip install confluent-kafka 
-# Install pandas
-yes | pip3 install pandas
-# Install Kaggle
-yes | pip3 install kaggle
+sudo apt-get install openjdk-11-jdk --yes
+# Kafka-producer + Kaggle dependencies always go into a dedicated venv at
+# /home/playground/venv, never system/global pip (see
+# feedback_use_venv_for_python project memory) -- referenced by its full
+# path wherever custom_producer.py or kaggle is invoked on this node (see
+# tasks/producer/producer-run.yaml and download_datasets.sh).
+python3 -m venv /home/playground/venv
+/home/playground/venv/bin/pip install --quiet --upgrade pip setuptools
+/home/playground/venv/bin/pip install --quiet click openpyxl confluent-kafka pandas kaggle
+# This whole script runs under one `sudo`, so the venv just created above is
+# root-owned like everything else was before the earlier chown -- hand it
+# back too, same reasoning as that step.
+if [ -n "$SUDO_USER" ]; then
+    sudo chown -R "$SUDO_USER" /home/playground/venv
+fi

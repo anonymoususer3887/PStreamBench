@@ -1,7 +1,8 @@
 #!/bin/bash
 # Provisions a set of raw CloudLab nodes for PStreamBench and creates a
-# Spark cluster from them via the controller API -- everything that was
-# previously done by hand, one node reallocation at a time.
+# cluster from them via the controller API (Apache Spark by default; set
+# CLUSTER_TYPE for any other engine) -- everything that was previously done
+# by hand, one node reallocation at a time.
 #
 # Usage:
 #   ./setup_new_cluster.sh <master_host> <worker_host> [<worker_host> ...]
@@ -13,14 +14,20 @@
 # Env vars (all optional, shown with their defaults):
 #   SSH_USER=pagnih03
 #   CONTROLLER_URL=http://localhost:8000
-#   CLUSTER_NAME=spark-cluster-<timestamp>
+#   CLUSTER_TYPE=Apache Spark   # set to "Apache Kafka Streams" (or any other
+#                               # cluster_type the controller understands) to
+#                               # provision a different engine
+#   CLUSTER_NAME=spark-cluster-<timestamp>   # (prefix follows CLUSTER_TYPE
+#                                             # once set -- see below)
 #   CLUSTER_SLOTS=8
 #   HARDWARE_TYPE=m510
 #   DATASET_BATCH_SIZE=3   # nodes per batch when running download_datasets.sh,
 #                          # to avoid Kaggle API rate limiting
-#   INSTALL_SCRIPT=install_all_tools.sh  # set to install_spark_only.sh to
+#   INSTALL_SCRIPT=install_all_tools.sh  # set to install_spark_only.sh or
+#                                         # install_kafkastreams_only.sh to
 #                                         # skip the slow Flink/Storm/Grafana
-#                                         # downloads when only Spark is needed
+#                                         # downloads when only one engine is
+#                                         # needed
 #
 # What it does, per node, in order:
 #   1. rsync this directory to /local/repository (resumable on network drops)
@@ -32,8 +39,10 @@
 # Then, once every node is done:
 #   5. Register each node with the controller (POST /infra/create/node/0)
 #   6. Create the cluster (POST /infra/create) -- this is what actually
-#      triggers Kafka+Zookeeper start, Spark master/worker install+start,
-#      Prometheus+Grafana on the master, node_exporter on the workers.
+#      triggers Kafka+Zookeeper start, the chosen engine's per-node
+#      start/deploy (or, for Kafka Streams, nothing beyond Kafka/Zookeeper --
+#      see the Part A.1 no-op cluster-create branch in views.py), Prometheus
+#      +Grafana on the master, node_exporter on the workers.
 #
 # Safe to re-run: rsync/pre_conditioning.sh/install_all_tools.sh/
 # download_datasets.sh are all idempotent-ish (they overwrite in place),
@@ -44,6 +53,7 @@ set -uo pipefail
 
 SSH_USER="${SSH_USER:-pagnih03}"
 CONTROLLER_URL="${CONTROLLER_URL:-http://localhost:8000}"
+CLUSTER_TYPE="${CLUSTER_TYPE:-Apache Spark}"
 CLUSTER_NAME="${CLUSTER_NAME:-spark-cluster-$(date +%s)}"
 CLUSTER_SLOTS="${CLUSTER_SLOTS:-8}"
 HARDWARE_TYPE="${HARDWARE_TYPE:-m510}"
@@ -146,11 +156,32 @@ for host in "${ALL_HOSTS[@]}"; do
 done
 wait
 for host in "${ALL_HOSTS[@]}"; do
-    if ! ssh "${ssh_opts[@]}" "$SSH_USER@$host" "test -d /home/playground/spark-3.5.1-bin-hadoop3 && test -d /home/playground/kafka_2.12"; then
-        fail "$host: Spark/Kafka not found after install_all_tools.sh -- check $LOG_DIR/${host}_installtools.log"
+    # kafka_2.12 is installed by every *_only.sh variant (Kafka is shared
+    # broker infra for every engine). install_kafkastreams_only.sh and
+    # install_risingwave_only.sh are the two variants that do NOT also
+    # install Spark (Kafka Streams is a library, not a cluster binary --
+    # see KAFKA_STREAMS_RISINGWAVE_PLAN.md Part A.1; RisingWave needs no
+    # JVM/Maven toolchain at all, see install_risingwave_only.sh's own
+    # header comment) -- confirmed live (2026-08-10) this branch was
+    # missing install_risingwave_only.sh, causing a false-negative FATAL
+    # on an otherwise-successful install (kafka_2.12 and risingwave were
+    # both present, spark-3.5.1-bin-hadoop3 was correctly absent). Every
+    # other script, including the default install_all_tools.sh, does
+    # install Spark, so this must default to checking for it and only skip
+    # that check for the variants that truly don't produce it -- and for
+    # RisingWave specifically, check for its own binary dir instead of
+    # just skipping the Spark check with no positive check at all.
+    check="test -d /home/playground/kafka_2.12"
+    case "$INSTALL_SCRIPT" in
+        install_kafkastreams_only.sh) ;;
+        install_risingwave_only.sh) check="$check && test -d /home/playground/risingwave" ;;
+        *) check="$check && test -d /home/playground/spark-3.5.1-bin-hadoop3" ;;
+    esac
+    if ! ssh "${ssh_opts[@]}" "$SSH_USER@$host" "$check"; then
+        fail "$host: expected install output missing after $INSTALL_SCRIPT -- check $LOG_DIR/${host}_installtools.log"
     fi
 done
-echo "Kafka/Spark/Flink/Storm/Prometheus/Grafana installed on all nodes."
+echo "$INSTALL_SCRIPT completed on all nodes."
 
 # ---------------------------------------------------------------------------
 # Step 4: download_datasets.sh, in small batches (Kaggle rate-limits
@@ -202,7 +233,7 @@ step_header "Creating cluster '$CLUSTER_NAME'"
 num_workers="${#WORKERS[@]}"
 resp=$(curl -s -X POST "$CONTROLLER_URL/infra/create" \
     -H "Content-Type: application/json" \
-    -d "{\"cluster_name\": \"$CLUSTER_NAME\", \"cluster_type\": \"Apache Spark\", \"cluster_num_tm\": $num_workers, \"cluster_tm_slots\": $CLUSTER_SLOTS, \"hardware_cloudlab\": \"$HARDWARE_TYPE\"}" \
+    -d "{\"cluster_name\": \"$CLUSTER_NAME\", \"cluster_type\": \"$CLUSTER_TYPE\", \"cluster_num_tm\": $num_workers, \"cluster_tm_slots\": $CLUSTER_SLOTS, \"hardware_cloudlab\": \"$HARDWARE_TYPE\"}" \
     --max-time 1800)
 echo "$resp"
 

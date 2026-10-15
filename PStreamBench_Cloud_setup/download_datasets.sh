@@ -1,3 +1,9 @@
+# kaggle CLI lives in the dedicated venv created by pre_conditioning.sh/
+# setup_remote.sh, never system/global pip (see feedback_use_venv_for_python
+# project memory) -- prepend it to PATH here so the bare `kaggle` calls
+# below resolve to the venv's copy without rewriting every call site.
+export PATH="/home/playground/venv/bin:$PATH"
+
 cd /home/playground/zip
 # Download Ad analytics
 kaggle datasets download -d shubhamsumalya/wordcount

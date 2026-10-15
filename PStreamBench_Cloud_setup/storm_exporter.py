@@ -49,8 +49,18 @@ STORM_TOPOLOGY_BOLTS_EXECUTED = Gauge('bolts_executed','of tuples executed by th
 def getMetric(metric):
 	if metric == None:
 		return 0
-	else:
-		return metric
+	if isinstance(metric, str):
+		# Storm's REST API formats large numbers with thousands
+		# separators (e.g. "120,762") -- confirmed live (2026-07-27)
+		# this crashes prometheus_client's Gauge.set(), which calls
+		# float() directly and can't parse the comma. Non-numeric
+		# strings ("", "0" is fine as-is) fall back to 0 rather than
+		# raising, same spirit as the None case above.
+		try:
+			return float(metric.replace(",", ""))
+		except ValueError:
+			return 0
+	return metric
 
 
 def statsMetric(stat,tn,tid):
@@ -74,8 +84,8 @@ def spoutMetric(spout,tn,tid):
 
 def boltMetric(bolt,tn,tid):
 	bid = bolt['boltId']
-	STORM_TOPOLOGY_BOLTS_CAPACITY.labels(tn,tid,bid).set(getMetric(bolt['processLatency']))
-	STORM_TOPOLOGY_BOLTS_PROCESS_LATENCY.labels(tn,tid,bid).set(getMetric(bolt['capacity']))
+	STORM_TOPOLOGY_BOLTS_CAPACITY.labels(tn,tid,bid).set(getMetric(bolt['capacity']))
+	STORM_TOPOLOGY_BOLTS_PROCESS_LATENCY.labels(tn,tid,bid).set(getMetric(bolt['processLatency']))
 	STORM_TOPOLOGY_BOLTS_EXECUTE_LATENCY.labels(tn,tid,bid).set(getMetric(bolt['executeLatency']))
 	STORM_TOPOLOGY_BOLTS_EXECUTORS.labels(tn,tid,bid).set(getMetric(bolt['executors']))
 	STORM_TOPOLOGY_BOLTS_TASKS.labels(tn,tid,bid).set(getMetric(bolt['tasks']))
@@ -118,7 +128,7 @@ def topologySummaryMetric(topology_summary,stormUiHost):
 	try:
 		r = requests.get('http://'+ stormUiHost +'/api/v1/topology/' + tid)
 		topologyMetric(r.json())
-	except:
+	except Exception as e:
 	    print(e)
 	    #sys.exit(1)
 

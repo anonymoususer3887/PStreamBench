@@ -25,8 +25,11 @@ TRAFFIC = "Traffic_Monitoring"
 TPC = "Tpch"
 TPCX = "Tpcx"
 LRB ="LRB"
-# Definig the path of the directory where data files are stored
-BASE_DIR = "/home/playground/"
+# Definig the path of the directory where data files are stored.
+# Overridable via PSTREAMBENCH_DATA_DIR so local (non-CloudLab) runs don't
+# need sudo to create /home/playground -- remote behavior is unchanged
+# since that env var is never set there.
+BASE_DIR = os.environ.get("PSTREAMBENCH_DATA_DIR", "/home/playground/")
 #"/home/legion/dsps/dsp_be/infra/producer_files/"
 #/home/playground/
 #/home/legion/Desktop/dsp_cloudlab_profile/

@@ -118,14 +118,41 @@ cp /local/repository/server.properties /home/playground/kafka_2.12/config
 # Copy prometheus exporter library
 cp /local/repository/jmx_prometheus_javaagent.jar /home/playground/kafka_2.12/libs/jmx_prometheus_javaagent.jar
 
-# Copy prometheus exporter config
+# Copy prometheus exporter config (broker exporter, port 7075). Per-job
+# Kafka Streams instances (port 7076) use a separate minimal config -- see
+# jmx_exporter_kafkastreams_app.yml and install_kafkastreams_only.sh.
 cp /local/repository/jmx_exporter.yml /home/playground/kafka_2.12/config/jmx_exporter.yml
+cp /local/repository/jmx_exporter_kafkastreams_app.yml /home/playground/kafka_2.12/config/jmx_exporter_kafkastreams_app.yml
 
 # Enable Spark's own PrometheusServlet (spark.metrics.conf on the shared
 # spark-submit command points here) -- powers both the built-in
 # spark_streaming_* query metrics and the custom OperatorMetricsSource
 # gauges, scraped by the "spark_driver" Prometheus target.
 cp /local/repository/spark-metrics.properties /home/playground/spark-3.5.1-bin-hadoop3/conf/metrics.properties
+
+# libpython3.12 -- RisingWave's binary dynamically links against it (Python
+# UDF support), confirmed live even for the "plain" release tarball, on a
+# stock Ubuntu 22.04 node (ships Python 3.10, not 3.12). See
+# install_risingwave_only.sh for the full explanation.
+sudo add-apt-repository -y ppa:deadsnakes/ppa
+sudo apt-get update -qq
+sudo apt-get install -y -qq libpython3.12
+
+# Download RisingWave (single self-contained binary, no JVM/Maven toolchain
+# needed, unlike Flink/Storm/Spark -- see
+# KAFKA_STREAMS_RISINGWAVE_PLAN.md Part B.1).
+curl -L https://github.com/risingwavelabs/risingwave/releases/download/v3.0.1/risingwave-v3.0.1-x86_64-unknown-linux.tar.gz > /home/playground/zip/risingwave.tar.gz
+mkdir -p /home/playground/risingwave
+tar zxf /home/playground/zip/risingwave.tar.gz -C /home/playground/risingwave
+
+# MinIO + mc -- shared object store for Hummock across a real multi-node
+# RisingWave cluster (local-filesystem storage only works single-node, see
+# risingwave-minio-start.yaml and install_risingwave_only.sh for the full
+# explanation).
+curl -L https://dl.min.io/server/minio/release/linux-amd64/minio -o /home/playground/minio
+chmod +x /home/playground/minio
+curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /home/playground/mc
+chmod +x /home/playground/mc
 
 #rm -r /local/repository
 
