@@ -1,0 +1,175 @@
+# Minimal local stack to prove a job actually runs end-to-end: Zookeeper + Kafka
+# (shared across every engine we add here) plus a single-node Flink cluster.
+# Scope is deliberately narrow -- Word Count + Ad Analytics, "did data flow
+# through", nothing else (no Prometheus/Grafana/controller/frontend).
+#
+# Kafka exposes two listeners on purpose:
+#   - BROKER (kafka:9092)      -- used by anything running INSIDE this compose
+#                                  network (the Flink containers' --kafka-server)
+#   - HOST (localhost:9092)    -- used by anything running on the HOST machine
+#                                  (the producer script, the verify script)
+# This matters because the project's own producer script
+# (scripts/custom_producer.py, for Word Count specifically) hardcodes
+# "localhost:9092" regardless of what you pass it -- see README.md "Known
+# upstream quirks". Publishing Kafka's host listener on exactly 9092 means
+# that hardcoded value works without needing to patch the producer further.
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: pstreambench-local-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: pstreambench-local-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:29092"  # host-facing listener -- matches the producer's hardcoded localhost:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: BROKER:PLAINTEXT,HOST:PLAINTEXT
+      KAFKA_LISTENERS: BROKER://0.0.0.0:9092,HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: BROKER://kafka:9092,HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  flink-jobmanager:
+    image: apache/flink:1.16.0-java11
+    container_name: pstreambench-local-flink-jm
+    command: jobmanager
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8081"  # Flink Web UI
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 8
+    volumes:
+      - ./jars/flink:/opt/flink-jobs
+
+  flink-taskmanager:
+    image: apache/flink:1.16.0-java11
+    container_name: pstreambench-local-flink-tm
+    command: taskmanager
+    depends_on:
+      - flink-jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 8
+    volumes:
+      - ./jars/flink:/opt/flink-jobs
+
+  # Kafka Streams has no separate cluster software -- it's a client library,
+  # so "deploying" it locally is just a plain JVM container with the app jar
+  # mounted in, idling until a job is submitted via `docker compose exec`
+  # (mirrors how flink-jobmanager sits idle until `flink run` is called).
+  kafkastreams-app:
+    image: eclipse-temurin:11-jre
+    container_name: pstreambench-local-kafkastreams
+    depends_on:
+      - kafka
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./jars/kafkastreams:/opt/kafkastreams-jobs
+
+  # RisingWave: single self-contained binary, no JVM. "playground" mode runs
+  # meta+compute+frontend+an embedded (non-shared) state store all in one
+  # process -- exactly what the project's own word_count.sql comment says
+  # was already confirmed working for single-node testing (shared/MinIO
+  # storage only matters for genuine multi-node deployments, not this).
+  # Version matches PStreamBench_Cloud_setup/install_all_tools.sh's binary.
+  risingwave:
+    image: risingwavelabs/risingwave:v3.0.1
+    container_name: pstreambench-local-risingwave
+    depends_on:
+      - kafka
+    command: ["playground"]
+    ports:
+      - "4566:4566"  # Postgres-wire SQL endpoint -- psql connects here from the host
+
+  # Storm: real Nimbus + Supervisor (reusing the Zookeeper above), matching
+  # the project's actual distributed deployment model -- the job jars call
+  # StormSubmitter.submitTopology() directly (runTopology() hardcodes
+  # clusterMode="distributed" in AbstractTopology.java), so this needs a
+  # real Nimbus to submit to, not Storm's in-process LocalCluster mode.
+  # Version pinned to 2.6.2, matching PStreamBench_Cloud_setup's own binary.
+  # entrypoint: [] bypasses the official image's docker-entrypoint.sh on
+  # purpose -- it does `chown -R storm:storm /conf` under `set -e`, which
+  # fails (exit 254, whole container dies before Storm even starts) against
+  # this bind-mounted storm.yaml on Docker Desktop/macOS. We supply a
+  # complete storm.yaml ourselves anyway, so none of that script's
+  # auto-chown/auto-generate-config behavior is needed -- confirmed by
+  # running `storm nimbus` directly without it, which starts cleanly.
+  storm-nimbus:
+    image: storm:2.6.2
+    container_name: pstreambench-local-storm-nimbus
+    entrypoint: []
+    command: ["storm", "nimbus"]
+    depends_on:
+      - zookeeper
+    ports:
+      - "6627:6627"  # Thrift port `storm jar` submits to
+    volumes:
+      - ./storm_conf/storm.yaml:/conf/storm.yaml
+      - ./jars/storm:/opt/storm-jobs
+
+  storm-supervisor:
+    image: storm:2.6.2
+    container_name: pstreambench-local-storm-supervisor
+    entrypoint: []
+    command: ["storm", "supervisor"]
+    depends_on:
+      - storm-nimbus
+    volumes:
+      - ./storm_conf/storm.yaml:/conf/storm.yaml
+
+  storm-ui:
+    image: storm:2.6.2
+    container_name: pstreambench-local-storm-ui
+    entrypoint: []
+    command: ["storm", "ui"]
+    depends_on:
+      - storm-nimbus
+    ports:
+      - "8089:8080"  # avoid clashing with other local UIs on 8080/8081
+    volumes:
+      - ./storm_conf/storm.yaml:/conf/storm.yaml
+
+  # Spark: Standalone Master + Worker. The official image's entrypoint is
+  # Kubernetes-oriented (driver/executor sub-commands) but falls through to
+  # a plain `exec "$@"` for anything else, so passing the standalone
+  # spark-class commands directly works with no entrypoint override needed
+  # (unlike Storm's image, this one was checked first before trusting it).
+  # Version matches dsp_spark_jobs/pom.xml's spark.version (3.5.1) at the
+  # closest available patch release with a Java 11 image (3.5.9 -- Docker
+  # Hub only keeps recent patch tags; 3.5.x is binary-compatible).
+  spark-master:
+    image: apache/spark:3.5.9-scala2.12-java11-ubuntu
+    container_name: pstreambench-local-spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    depends_on:
+      - kafka
+    ports:
+      - "7077:7077"  # master RPC -- spark-submit --master spark://... connects here
+      - "8088:8080"  # Master UI (avoid clashing with other local UIs)
+    volumes:
+      - ./jars/spark:/opt/spark-jobs
+
+  spark-worker:
+    image: apache/spark:3.5.9-scala2.12-java11-ubuntu
+    container_name: pstreambench-local-spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    depends_on:
+      - spark-master
+    volumes:
+      - ./jars/spark:/opt/spark-jobs

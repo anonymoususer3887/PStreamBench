@@ -1,0 +1,21 @@
+# Minimal single-node Storm config for the local Docker smoke test --
+# matches the official storm image's expected /conf/storm.yaml mount point.
+storm.zookeeper.servers:
+  - "zookeeper"
+nimbus.seeds:
+  - "storm-nimbus"
+storm.local.dir: "/storm-local"
+# 6 slots (not 2): each topology here uses -numWorkers 2, and a just-killed
+# topology's slots don't free up instantly -- 2 slots meant every submission
+# after the first silently sat pending forever (accepted by Nimbus, never
+# actually scheduled, no error anywhere) once the first topology's workers
+# were still winding down. Confirmed live: `storm list` showed topologies
+# running fine, but their worker log directories never appeared on the
+# supervisor at all.
+supervisor.slots.ports:
+  - 6700
+  - 6701
+  - 6702
+  - 6703
+  - 6704
+  - 6705
