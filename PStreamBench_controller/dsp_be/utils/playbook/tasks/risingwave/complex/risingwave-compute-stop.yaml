@@ -1,0 +1,7 @@
+---
+# See risingwave-meta-stop.yaml's comment for why the pattern is
+# '[r]isingwave compute', not 'risingwave compute' -- without the bracket,
+# pkill -f self-matches its own invoking command line and kills itself
+# before it can signal the real process.
+- name: Stop RisingWave compute node
+  shell: "pkill -f '[r]isingwave compute' || true"

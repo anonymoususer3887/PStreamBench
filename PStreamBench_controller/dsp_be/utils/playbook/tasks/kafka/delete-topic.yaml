@@ -10,3 +10,23 @@
   ignore_errors: true
   tags:
     - delete-topic-out
+
+# Kafka Streams' own internal topics (changelog/repartition) are NEVER
+# covered by the two tasks above -- they're named after application.id
+# (which embeds a fresh timestamp every run, e.g.
+# "WordCount-1784281793-KSTREAM-AGGREGATE-STATE-STORE-...-changelog"), so
+# every single job run leaves a brand new pair behind forever. Confirmed
+# live: after ~150 accumulated leftover topics, the broker's JMX exporter
+# (port 7075) started hanging/going unresponsive within minutes of every
+# restart -- not one bad regex match, just the ever-growing MBean count
+# (one per topic/partition) overwhelming every scrape. Deleting anything
+# ending in -changelog or -repartition after each run keeps the topic
+# count bounded to what one job actually needs.
+- name: Delete Kafka Streams internal changelog/repartition topics
+  shell: >
+    {{ INSTALLATION_DIR }}/kafka_2.12/bin/kafka-topics.sh --bootstrap-server {{ producer_bootstrap_server }}
+    --list | grep -E -- '-changelog$|-repartition$' |
+    xargs -I{} {{ INSTALLATION_DIR }}/kafka_2.12/bin/kafka-topics.sh --delete --topic {} --bootstrap-server {{ producer_bootstrap_server }}
+  ignore_errors: true
+  tags:
+    - delete-topic-internal

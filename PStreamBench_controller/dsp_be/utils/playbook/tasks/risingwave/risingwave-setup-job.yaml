@@ -1,0 +1,9 @@
+---
+# Copy the already-substituted .sql file (see
+# views.py::_risingwave_job_manipulation, called from
+# runner.py::_run_risingwave_job before this playbook runs) to the master
+# node, where the frontend (psql listener, :4566) lives.
+- name: Copy RisingWave job SQL file to remote machine.
+  ansible.builtin.copy:
+    src: "{{ BASE_DIR }}/infra/risingwave_files/{{ risingwave_sql_file }}"
+    dest: "{{ INSTALLATION_DIR }}/{{ risingwave_sql_file }}"

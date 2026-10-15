@@ -1,0 +1,14 @@
+---
+
+# Kafka Streams has no cancel-by-id API (Part A.1) -- every instance
+# self-terminates via streams.close() after -waitTimeToCancel elapses (see
+# WordCountTopology), so is_terminated() already reports "finished" by the
+# time this would run. Kept as a safety net, same reasoning as Spark's
+# spark-kill-job.yaml; matches on the application id passed as a CLI arg to
+# every launched instance.
+- name: Kill Kafka Streams instance on this node
+  shell: "sudo pkill -f 'dsp_kafkastreams_jobs.*{{ kafkastreams_application_id }}' || true"
+  ignore_errors: true
+  timeout: 10
+  tags:
+    - stop

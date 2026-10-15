@@ -1,0 +1,16 @@
+---
+# Runs on the master (alpha) only -- unlike Kafka Streams (one JVM per
+# node), a RisingWave "job" is submitted once against the frontend's
+# Postgres-wire listener (:4566), which fans the query plan out to whatever
+# compute nodes are registered. "Job submission" = running the workload's
+# SQL file via psql, not launching a per-node process (Part B.3).
+- name: Submit RisingWave job via psql
+  command: >
+    psql -h localhost -p 4566 -d dev -U root
+    -f {{ INSTALLATION_DIR }}/{{ risingwave_sql_file }}
+  register: risingwave_submit_result
+  failed_when: false
+
+- name: Show psql output (for debugging failed submissions)
+  debug:
+    var: risingwave_submit_result.stdout_lines

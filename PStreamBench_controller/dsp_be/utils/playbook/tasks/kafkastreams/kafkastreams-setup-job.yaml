@@ -1,0 +1,6 @@
+---
+
+- name: Copy Kafka Streams job JAR to remote machine.
+  ansible.builtin.copy:
+    src: "{{ BASE_DIR }}/infra/kafkastreams_files/dsp_kafkastreams_jobs-1.0-SNAPSHOT.jar"
+    dest: "{{ INSTALLATION_DIR }}/dsp_kafkastreams_jobs-1.0-SNAPSHOT.jar"

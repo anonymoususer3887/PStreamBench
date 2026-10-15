@@ -1,28 +1,28 @@
 alpha:
   hosts:
-    ms1122.utah.cloudlab.us:
+    ms0807.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 0
 betas:
   hosts:
-    ms1310.utah.cloudlab.us:
+    ms0822.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 0
-    ms1137.utah.cloudlab.us:
+    ms0843.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 1
-    ms1126.utah.cloudlab.us:
+    ms0830.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 2
-    ms1317.utah.cloudlab.us:
+    ms0817.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 3
-    ms1118.utah.cloudlab.us:
+    ms0825.utah.cloudlab.us:
       ansible_user: pagnih03
       ansible_ssh_private_key_file: ~/.ssh/id_rsa
       id: 4

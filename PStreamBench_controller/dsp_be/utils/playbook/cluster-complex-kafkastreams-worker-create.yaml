@@ -1,0 +1,11 @@
+---
+- name: Set up monitoring on a Kafka Streams worker node
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    # No worker daemon of its own either (Part A.1) -- just node_exporter,
+    # matching cluster-complex-spark-worker-create.yaml minus the
+    # spark-config-setup/spark-start steps.
+    - include_tasks: "./tasks/node-exporter/node-exporter-start.yaml"

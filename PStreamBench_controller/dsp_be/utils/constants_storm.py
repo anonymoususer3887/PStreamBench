@@ -72,4 +72,9 @@ TRAFFIC_MONITORING_OUTPUT = "TMOut"
 
 
 
+LINEAR_QUERY = "Linear Query"
+LINEAR_QUERY_PROGRAM = "com.kom.dsp.synthetic.LinearQueryTopology"
+LINEAR_QUERY_INPUT = "LinearQueryIn"
+LINEAR_QUERY_OUTPUT = "LinearQueryOut"
+
 KAFKA = "Kafka"

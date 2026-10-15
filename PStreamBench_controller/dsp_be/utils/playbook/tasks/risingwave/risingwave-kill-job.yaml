@@ -1,0 +1,35 @@
+---
+# Unlike every other engine here, there's no process to pkill (Part B.3) --
+# the streaming pipeline lives inside the meta/compute nodes, not as a
+# separate client process. "Killing a job" means dropping its SQL objects.
+# Requires every workload's .sql file to follow the
+# <risingwave_object_prefix>_source/_mv/_sink naming convention (see
+# runner.py::_run_risingwave_job / word_count.sql). CASCADE handles any
+# downstream objects; IF EXISTS makes this safe to run even if a prior
+# attempt partially failed.
+    # Split into 3 separate psql invocations (not one "-c "stmt1; stmt2;
+    # stmt3"" call) -- confirmed live (2026-07-25) that a single hung DROP
+    # (e.g. DROP SOURCE waiting on a Kafka client/consumer-group teardown)
+    # blocks the whole combined statement, leaving EVERY object undropped,
+    # not just the slow one. Since meta only allows ONE concurrent
+    # streaming-job creation cluster-wide (max_concurrent_creating_streaming_jobs
+    # = 1), a single stuck cleanup here doesn't just affect this job -- it
+    # permanently blocks every subsequent job's CREATE from ever proceeding,
+    # which is exactly what caused the whole test batch to silently stall.
+    # Running each DROP independently means a slow SOURCE drop no longer
+    # prevents the SINK/MV drops (the ones that actually free up the
+    # concurrent-creation slot) from completing.
+- name: Drop RisingWave job's sink
+  command: psql -h localhost -p 4566 -d dev -U root -c "DROP SINK IF EXISTS {{ risingwave_object_prefix }}_sink;"
+  ignore_errors: true
+  timeout: 180
+
+- name: Drop RisingWave job's materialized view
+  command: psql -h localhost -p 4566 -d dev -U root -c "DROP MATERIALIZED VIEW IF EXISTS {{ risingwave_object_prefix }}_mv CASCADE;"
+  ignore_errors: true
+  timeout: 180
+
+- name: Drop RisingWave job's source
+  command: psql -h localhost -p 4566 -d dev -U root -c "DROP SOURCE IF EXISTS {{ risingwave_object_prefix }}_source CASCADE;"
+  ignore_errors: true
+  timeout: 180

@@ -1,0 +1,42 @@
+---
+
+# Runs on every node in the play (alpha:betas -- see
+# cluster-simple-kafkastreams-job.yaml), one independent JVM per node, all
+# sharing kafkastreams_application_id so they join the same consumer group
+# (see runner.py::_run_kafkastreams_job and Part A.1). The jmx-exporter
+# javaagent is the same jar already used for the Kafka broker's own JMX
+# (see install_kafkastreams_only.sh), attached on port 7076 -- distinct from
+# the broker's own exporter (7075) since both run on this node.
+- name: Launch Kafka Streams instance
+  # -size/-slide/-query/-popularityThreshold added to match every workload
+  # beyond Word Count, which all read these via ArgParser (see e.g.
+  # LogsAnalyzerTopology.java/GoogleCloudMonitoringTopology.java/
+  # MachineOutlierTopology.java) -- this task previously only passed the
+  # subset Word Count itself needs, so every other workload crashed at
+  # startup with a NumberFormatException from Integer.parseInt(null) on
+  # the missing "query" (and, for windowed jobs, "size"/"slide") argument.
+  # Mirrors spark-provide-job.yaml's equivalent argument list exactly;
+  # job_window_size/job_window_slide_size/job_query_number/job_threshold
+  # are already computed by every branch of _config_manipulation_ansible.
+  # -javaagent config points at jmx_exporter_kafkastreams_app.yml, NOT the
+  # broker's jmx_exporter.yml -- a per-job instance is a Kafka Streams
+  # *client* JVM, never a broker, so it can never expose any kafka.server /
+  # kafka.coordinator bean the broker-oriented rules in jmx_exporter.yml
+  # match against. Carrying those unused rules here was pure dead weight
+  # AND a real bug: confirmed live, this port's JMX HTTP server went
+  # completely unresponsive (connection refused after the first scrape)
+  # within ~15-20s of every job's start, even though the Kafka Streams
+  # app itself ran and shut down cleanly -- the hang was entirely inside
+  # jmx_exporter's own bean-matching loop churning through irrelevant
+  # rules, not the application. See jmx_exporter_kafkastreams_app.yml's
+  # own header comment for the full story.
+  # -graceMs added (2026-09-25) so the grace period used by WindowConfig
+  # (see com.kom.dsp.utils.WindowConfig javadoc) is controllable per job
+  # rather than hard-coded -- defaults to job_grace_period_ms=-1 (meaning
+  # "use WindowConfig's own default: max(windowSizeMs, 500)") unless a
+  # sweep script explicitly overrides it for a specific comparison run.
+  command: "sudo /bin/bash -c 'java -javaagent:{{ INSTALLATION_DIR }}/kafka_2.12/libs/jmx_prometheus_javaagent.jar=7076:{{ INSTALLATION_DIR }}/kafka_2.12/config/jmx_exporter_kafkastreams_app.yml -cp {{ INSTALLATION_DIR }}/dsp_kafkastreams_jobs-1.0-SNAPSHOT.jar {{ job_program }} -parallelism {{ job_parallelization }} -mode {{ job_mode }} -input {{ job_input }} -output {{ job_output }} -kafka-server {{ producer_bootstrap_server }} -waitTimeToCancel {{ job_run_time }} -size {{ job_window_size }} -slide {{ job_window_slide_size }} -graceMs {{ job_grace_period_ms | default(-1) }} -query {{ job_query_number }} -popularityThreshold {{ job_threshold }} -application-id {{ kafkastreams_application_id }} > /tmp/kafkastreams-{{ job_name }}-{{ inventory_hostname }}.log 2>&1'"
+  async: 45000
+  poll: 0
+  tags:
+    - start

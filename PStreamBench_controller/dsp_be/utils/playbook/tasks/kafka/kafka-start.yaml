@@ -40,7 +40,22 @@
     seconds: 30
 
 - name: Kafka start
-  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/kafka_2.12/bin/kafka-server-start.sh {{ INSTALLATION_DIR }}/kafka_2.12/config/server.properties --override broker.id={{ id }}"
+  # advertised.listeners MUST be set per-broker (each of the N nodes needs
+  # its own address here) so it can't live in the shared server.properties
+  # template -- overridden via CLI instead, same mechanism as broker.id.
+  # Left unset (or set to a public hostname), a client that reaches any
+  # broker via ANY address gets told via this value to reconnect for all
+  # subsequent traffic -- the actual root cause of a real CloudLab
+  # control-network abuse warning this project hit during the Storm
+  # strategy-sweep phase (2026-09-06/07): every broker was silently
+  # advertising its public control-network address instead of the
+  # internal-LAN one. No extra extravar needed here -- `id` is already
+  # available per-host (_inventory_manipulation() in infra/views.py
+  # assigns it as each host's position in the caller's node list), and
+  # every cluster this project stands up lists master-first, so id
+  # 0/1/2... already lines up with CloudLab's own internal-LAN short names
+  # node0/node1/node2 (see server.properties' matching comment).
+  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/kafka_2.12/bin/kafka-server-start.sh {{ INSTALLATION_DIR }}/kafka_2.12/config/server.properties --override broker.id={{ id }} --override advertised.listeners=PLAINTEXT://node{{ id }}:9092 --override listeners=PLAINTEXT://0.0.0.0:9092"
   environment:
     KAFKA_OPTS: "-javaagent:/home/playground/kafka_2.12/libs/jmx_prometheus_javaagent.jar=7075:/home/playground/kafka_2.12/config/jmx_exporter.yml"
   async : 45000

@@ -1,11 +1,11 @@
 ---
 - name: Stop all existing Taskmanagers
-  shell: "{{ INSTALLATION_DIR }}/flink-1.16.0/bin/taskmanager.sh stop-all"
+  shell: "{{ INSTALLATION_DIR }}/flink-1.16.2/bin/taskmanager.sh stop-all"
   tags:
     - stop-all
     
 - name: Stop the flink cluster 
-  shell: "{{ INSTALLATION_DIR }}/flink-1.16.0/bin/stop-cluster.sh"
+  shell: "{{ INSTALLATION_DIR }}/flink-1.16.2/bin/stop-cluster.sh"
   tags:
     - start
 

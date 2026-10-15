@@ -1,0 +1,31 @@
+---
+- name: Create Kafka topic
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/kafka/kafka-create-topic.yaml"
+      tags:
+        - "kafka-create-topic"
+- name: Submit the RisingWave job (frontend lives on the master only)
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/risingwave/risingwave-setup-job.yaml"
+      tags:
+        - "risingwave-setup-job"
+    - include_tasks: "tasks/risingwave/risingwave-provide-job.yaml"
+      tags:
+        - "risingwave-provide-job"
+- name: Run producer
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/producer/producer-run.yaml"
+      tags:
+        - "producer-run"

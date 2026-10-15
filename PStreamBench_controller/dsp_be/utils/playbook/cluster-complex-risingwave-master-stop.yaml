@@ -1,0 +1,22 @@
+---
+- name: Stop RisingWave meta + frontend on the master node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/risingwave/complex/risingwave-frontend-stop.yaml"
+      tags:
+        - "risingwave-stop"
+    - include_tasks: "tasks/risingwave/complex/risingwave-meta-stop.yaml"
+      tags:
+        - "risingwave-stop"
+    - include_tasks: "tasks/risingwave/complex/risingwave-minio-stop.yaml"
+      tags:
+        - "risingwave-stop"
+    - include_tasks: "tasks/prometheus/prometheus-stop.yaml"
+      tags:
+        - "prometheus-stop"
+    - include_tasks: "tasks/grafana/grafana-stop.yaml"
+      tags:
+        - "grafana-stop"

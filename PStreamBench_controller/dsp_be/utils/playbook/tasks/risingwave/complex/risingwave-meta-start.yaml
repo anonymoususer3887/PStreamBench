@@ -1,0 +1,28 @@
+---
+# Meta node (metadata management + barrier/checkpoint coordination) --
+# RisingWave's analog of Flink's JobManager, placed on the master node per
+# KAFKA_STREAMS_RISINGWAVE_PLAN.md Part B.1. Uses the `mem` metadata backend
+# (no Postgres needed) + hummock+minio:// for the Hummock state store --
+# see risingwave-minio-start.yaml (which must run before this task) for why
+# a shared object store is required, not a local-filesystem path.
+- name: Start RisingWave meta node
+  # Redirected to a persistent log file (not just Ansible's async result,
+  # which vanishes once the fire-and-forget job is reaped) -- needed to
+  # diagnose crashes after the fact, e.g. the meta/MinIO/compute-cascade
+  # crash seen 2026-07-23 partway through a live test batch, where every
+  # RisingWave process on every node was gone with no surviving output to
+  # explain why.
+  shell: >
+    {{ INSTALLATION_DIR }}/risingwave/risingwave meta
+    --listen-addr 0.0.0.0:5690
+    --advertise-addr {{ inventory_hostname }}:5690
+    --dashboard-host 0.0.0.0:5691
+    --prometheus-listener-addr 0.0.0.0:1250
+    --backend mem
+    --state-store hummock+minio://hummockadmin:hummockadmin@{{ inventory_hostname }}:9301/hummock001
+    --data-directory hummock_001
+    > {{ INSTALLATION_DIR }}/risingwave-meta.log 2>&1
+  environment:
+    RUST_BACKTRACE: "1"
+  async: 45000
+  poll: 0

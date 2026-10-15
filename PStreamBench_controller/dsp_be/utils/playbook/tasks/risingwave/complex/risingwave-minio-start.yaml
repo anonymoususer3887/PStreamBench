@@ -1,0 +1,62 @@
+---
+# MinIO -- shared, network-reachable object store for the Hummock state
+# store, running on the master node alongside meta+frontend. Runs BEFORE
+# meta node startup (meta connects to it immediately on boot).
+#
+# This is not optional for a genuine multi-node deployment. Confirmed live
+# (2026-07-22): an earlier version of this playbook used
+# `hummock+fs://{{ INSTALLATION_DIR }}/rw-data/hummock` (a path on each
+# node's own local disk) to avoid standing up MinIO. That works in
+# single-node `playground` mode (meta+frontend+compute share one
+# filesystem), but is fundamentally broken across real distributed nodes:
+# hummock+fs is not a shared/networked filesystem, so a compute node on a
+# different physical machine cannot read Hummock SST files written by
+# another node's local disk. Confirmed failure mode: sink/actor creation
+# succeeded on the same node as meta, but any actor scheduled onto a
+# different worker failed with
+# "risingwave_object_store::object: read failed error=NotFound ... entity
+# not found" trying to read a Hummock data file that only existed on a
+# different node's local disk. Switching to hummock+minio:// (this file +
+# the --state-store change in risingwave-meta-start.yaml) resolved it --
+# every node reaches the same object store over the network, matching
+# RisingWave's own docker-compose-distributed.yml reference architecture
+# (which uses MinIO for exactly this reason).
+- name: Ensure MinIO data directory exists
+  file:
+    path: "{{ INSTALLATION_DIR }}/minio-data"
+    state: directory
+    mode: '0755'
+
+- name: Start MinIO server
+  # See risingwave-meta-start.yaml's comment re: persistent log redirection
+  # (shell + > logfile 2>&1, not command:) -- needed to diagnose crashes
+  # after the fact.
+  shell: "{{ INSTALLATION_DIR }}/minio server {{ INSTALLATION_DIR }}/minio-data --address :9301 --console-address :9302 > {{ INSTALLATION_DIR }}/minio.log 2>&1"
+  environment:
+    MINIO_ROOT_USER: hummockadmin
+    MINIO_ROOT_PASSWORD: hummockadmin
+  async: 45000
+  poll: 0
+
+- name: Wait for MinIO to accept connections
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 9301
+    timeout: 30
+
+- name: Create the hummock001 bucket (idempotent -- mc mb --ignore-existing)
+  command: >
+    {{ INSTALLATION_DIR }}/mc mb --ignore-existing
+    local/hummock001
+  environment:
+    MC_HOST_local: "http://hummockadmin:hummockadmin@127.0.0.1:9301"
+
+# Same reasoning as wiping the old hummock+fs directory: the `mem` metadata
+# backend generates a fresh cluster_id every meta start, which will conflict
+# with any stale cluster_id already stamped in bucket objects left over from
+# a previous cluster-create using this same bucket.
+- name: Clear stale objects from a previous cluster (mem backend has no persistent cluster_id to match against them)
+  command: "{{ INSTALLATION_DIR }}/mc rm --recursive --force local/hummock001"
+  environment:
+    MC_HOST_local: "http://hummockadmin:hummockadmin@127.0.0.1:9301"
+  ignore_errors: true

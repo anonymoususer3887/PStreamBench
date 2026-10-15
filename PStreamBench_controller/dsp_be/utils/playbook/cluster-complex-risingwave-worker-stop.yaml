@@ -1,0 +1,10 @@
+---
+- name: Stop a RisingWave compute node on a worker node
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/risingwave/complex/risingwave-compute-stop.yaml"
+      tags:
+        - "risingwave-stop"

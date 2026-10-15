@@ -1,9 +1,31 @@
 ---
 
 - name: Run producer file in remote machines
-  shell: sudo timeout {{ job_run_time }} python3 {{ INSTALLATION_DIR }}/custom_producer.py --event_per_second {{ producer_event_per_second }} --app_type {{ producer_program }} --kafka_bootstrap_server {{ producer_bootstrap_server }} --kafka_input_topic {{ job_input }}
+  # {{ INSTALLATION_DIR }}/venv -- created by pre_conditioning.sh/setup_remote.sh,
+  # never system/global pip (see feedback_use_venv_for_python project memory).
+  #
+  # custom_producer.py's event_producer()/read_data_file() do a FULL
+  # pandas read + per-batch to_csv()/to_json() conversion of the entire
+  # dataset BEFORE the timed `while True` production loop even starts
+  # (see event_producer(), ~line 204) -- that setup time is ADDITIVE on
+  # top of the full job_run_time the production loop then runs for
+  # (the shell's own `timeout {{ job_run_time }}` only bounds the
+  # production loop's lifetime, not this task's total wall time). A
+  # 60-second buffer was enough when datasets were small/fast to load,
+  # but confirmed live (2026-09-28) to be too tight for larger datasets
+  # under real node load: Log Processing's now-correctly-sized 1.5GB/5M-row
+  # http.log takes ~75s just to read+batch on an otherwise-idle node
+  # (measured directly via the same venv/pandas calls), pushing total
+  # wall time to ~675s against a 660s ansible timeout -- Linear Road's
+  # 12M-row lrb.csv measured similarly at ~71s. Under real sweep
+  # conditions (a concurrently-running, possibly 40-thread Kafka Streams
+  # JVM competing for the same node's CPU) even nominally-fast datasets
+  # can plausibly run well past their idle-measured setup time. Bumped to
+  # a 300s buffer -- several times the slowest idle measurement above --
+  # rather than re-measuring under contention for every dataset.
+  shell: sudo timeout {{ job_run_time }} {{ INSTALLATION_DIR }}/venv/bin/python3 {{ INSTALLATION_DIR }}/custom_producer.py --event_per_second {{ producer_event_per_second }} --app_type {{ producer_program }} --kafka_bootstrap_server {{ producer_bootstrap_server }} --kafka_input_topic {{ job_input }}
   ignore_errors: true
-  timeout: "{{ (job_run_time | int) + 60 }}"
+  timeout: "{{ (job_run_time | int) + 300 }}"
   loop: "{{ producer_instances }}"
 
 - name: Delete content & directory

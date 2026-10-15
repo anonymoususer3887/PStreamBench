@@ -1,0 +1,15 @@
+---
+# RisingWave ships no stop-master.sh-style script (unlike Spark/Flink) --
+# kill by process pattern, same fallback Kafka Streams' job-kill task uses
+# when there's no cluster-level stop API.
+#
+# The bracket around the first letter ("[r]isingwave" not "risingwave") is
+# deliberate, not a typo: `pkill -f` matches full command lines, and without
+# it this task matches its OWN invoking shell command (which contains the
+# literal text "risingwave meta" as the pkill argument), sending itself
+# SIGTERM before pkill can signal the real target -- Ansible then reports
+# the task as failed with rc -15. The bracketed character class still
+# matches the real risingwave process's argv literally, but no longer
+# appears as that literal substring in this task's own command line.
+- name: Stop RisingWave meta node
+  shell: "pkill -f '[r]isingwave meta' || true"

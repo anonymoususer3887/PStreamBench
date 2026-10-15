@@ -1,0 +1,73 @@
+---
+# Frontend node (SQL parsing/planning, Postgres-wire listener on :4566) --
+# runs on the same master node as meta, per Part B.1. Depends on meta
+# already being up (risingwave-meta-start.yaml runs first in the master
+# create playbook) since it registers with meta on startup.
+- name: Start RisingWave frontend node
+  # See risingwave-meta-start.yaml's comment re: persistent log redirection
+  # (shell + > logfile 2>&1, not command:) -- needed to diagnose crashes
+  # after the fact.
+  shell: >
+    {{ INSTALLATION_DIR }}/risingwave/risingwave frontend
+    --listen-addr 0.0.0.0:4566
+    --meta-addr http://{{ inventory_hostname }}:5690
+    --advertise-addr {{ inventory_hostname }}:4566
+    --prometheus-listener-addr 0.0.0.0:2222
+    > {{ INSTALLATION_DIR }}/risingwave-frontend.log 2>&1
+  environment:
+    RUST_BACKTRACE: "1"
+  async: 45000
+  poll: 0
+
+- name: Wait for RisingWave frontend
+  ansible.builtin.wait_for:
+    port: 4566
+
+# RisingWave ships with a built-in default trial license
+# ("rw-default-all-4-core", capped at 4 CPU cores) that auto-activates the
+# moment meta detects more cores than that in the cluster -- every node in
+# this deployment is 16 cores, so any real multi-node cluster trips it
+# immediately. Once tripped, the license check disables the
+# DatabaseFailureIsolation feature used during barrier recovery. Clearing
+# license_key (below) does NOT fix this on its own -- confirmed live
+# (2026-08-14) that DatabaseFailureIsolation is unavailable either way
+# (over the trial limit, or with no license configured at all), so this
+# task alone still leaves recovery unable to complete under real
+# sustained load, still nesting recovery attempts 13+ deep before
+# eventually dying. Kept anyway since an empty license_key is still
+# correct config hygiene and removes one layer of noise from the logs.
+- name: Disable the default 4-core trial license (does not by itself fix recovery -- see per_database_isolation below)
+  delegate_to: localhost
+  become: false
+  command: >
+    /opt/homebrew/opt/libpq/bin/psql -h {{ inventory_hostname }} -p 4566 -d dev -U root
+    -c "ALTER SYSTEM SET license_key = '';"
+  register: license_clear_result
+  retries: 5
+  delay: 5
+  until: license_clear_result.rc == 0
+
+# The actual fix: `per_database_isolation` is what makes recovery *attempt*
+# to use DatabaseFailureIsolation in the first place -- an Enterprise-only
+# feature this deployment can never be licensed for (see above). With it
+# left on, every recovery cycle needing that feature fails to complete and
+# immediately re-triggers another nested `adhoc_recovery` attempt, forever
+# (nesting depth growing by 1 each time), until meta eventually dies with
+# no further log output -- the exact "every RisingWave process on every
+# node gone, no explanation" crash this file's own comment already
+# documented seeing on 2026-07-23, and the root cause of most of this
+# project's RisingWave instability since. Disabling it here means recovery
+# never attempts the unlicensed feature at all, so there's nothing to fail
+# on. Since meta's `--backend mem` resets every system param to its default
+# on every restart, this (like license_key above) has to run after every
+# single frontend start, not just once.
+- name: Disable per-database failure isolation (avoids the unlicensed-feature recovery loop entirely)
+  delegate_to: localhost
+  become: false
+  command: >
+    /opt/homebrew/opt/libpq/bin/psql -h {{ inventory_hostname }} -p 4566 -d dev -U root
+    -c "ALTER SYSTEM SET per_database_isolation = false;"
+  register: isolation_disable_result
+  retries: 5
+  delay: 5
+  until: isolation_disable_result.rc == 0

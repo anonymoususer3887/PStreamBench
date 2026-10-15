@@ -1,0 +1,7 @@
+---
+# See risingwave-meta-stop.yaml's comment for why the pattern is
+# '[m]inio server', not 'minio server' -- without the bracket, pkill -f
+# self-matches its own invoking command line and kills itself before it
+# can signal the real process.
+- name: Stop MinIO server
+  shell: "pkill -f '[m]inio server' || true"

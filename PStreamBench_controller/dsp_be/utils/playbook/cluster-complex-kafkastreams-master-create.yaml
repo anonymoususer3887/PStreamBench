@@ -1,0 +1,24 @@
+---
+- name: Set up monitoring on the Kafka Streams master node
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    # Kafka Streams has no master/coordinator daemon of its own to install
+    # here (Part A.1) -- unlike Flink/Storm/Spark's master-create playbooks,
+    # this only needs to bring up the shared monitoring stack, matching
+    # cluster-complex-spark-master-create.yaml minus the spark-config-setup/
+    # spark-start steps.
+    - include_tasks: "tasks/prometheus/prometheus-config-setup.yaml"
+      tags:
+        - "prometheus-config-setup"
+    - include_tasks: "tasks/prometheus/prometheus-start.yaml"
+      tags:
+        - "prometheus-start"
+    - include_tasks: "tasks/grafana/grafana-unzip.yaml"
+      tags:
+        - "grafana-unzip"
+    - include_tasks: "tasks/grafana/grafana-start.yaml"
+      tags:
+        - "grafana-start"

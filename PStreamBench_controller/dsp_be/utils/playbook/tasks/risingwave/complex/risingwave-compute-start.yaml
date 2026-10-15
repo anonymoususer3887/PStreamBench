@@ -1,0 +1,32 @@
+---
+# Compute node (executes the streaming dataflow actors) -- one per worker
+# node, per Part B.1, joining the master's meta node via --meta-address.
+# main_ip (the master's hostname) is passed as an extravar the same way
+# spark-worker-start.yaml's {{ main_ip }} is.
+#
+# No --state-store flag here -- compute nodes get the object store address
+# from meta on registration. Authoritative Hummock state lives in MinIO on
+# the master (see risingwave-minio-start.yaml); this directory is only a
+# local disk cache (RisingWave's "foyer" cache layer), not shared/
+# authoritative storage, so it's fine for it to be node-local.
+- name: Ensure local cache/scratch directory exists
+  file:
+    path: "{{ INSTALLATION_DIR }}/rw-data"
+    state: directory
+    mode: '0755'
+
+- name: Start RisingWave compute node
+  # See risingwave-meta-start.yaml's comment re: persistent log redirection
+  # (shell + > logfile 2>&1, not command:) -- needed to diagnose crashes
+  # after the fact.
+  shell: >
+    {{ INSTALLATION_DIR }}/risingwave/risingwave compute
+    --listen-addr 0.0.0.0:5688
+    --advertise-addr {{ inventory_hostname }}:5688
+    --prometheus-listener-addr 0.0.0.0:1222
+    --meta-address http://{{ main_ip }}:5690
+    > {{ INSTALLATION_DIR }}/risingwave-compute.log 2>&1
+  environment:
+    RUST_BACKTRACE: "1"
+  async: 45000
+  poll: 0

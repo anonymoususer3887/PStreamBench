@@ -6,12 +6,22 @@
   become_method: sudo
   tasks:
     - include_tasks: "tasks/storm/storm-setup-job.yaml"
+      when: not (synthetic_job | default(false))
+      tags:
+        - "storm-setup-job"
+    - include_tasks: "tasks/storm/storm-setup-synthetic-job.yaml"
+      when: synthetic_job | default(false)
       tags:
         - "storm-setup-job"
     - include_tasks: "tasks/kafka/kafka-create-topic.yaml"
       tags:
         - "kafka-create-topic"
     - include_tasks: "tasks/storm/storm-provide-job.yaml"
+      when: not (synthetic_job | default(false))
+      tags:
+        - "storm-provide-job"
+    - include_tasks: "tasks/storm/storm-provide-synthetic-job.yaml"
+      when: synthetic_job | default(false)
       tags:
         - "storm-provide-job"
 - name: Run producer
@@ -21,5 +31,6 @@
   become_method: sudo
   tasks:
     - include_tasks: "tasks/producer/producer-run.yaml"
+      when: not (synthetic_job | default(false))
       tags:
         - "producer-run"

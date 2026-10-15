@@ -1,0 +1,10 @@
+---
+- name: Kill job (drop SQL objects on the master, where the frontend lives)
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/risingwave/risingwave-kill-job.yaml"
+      tags:
+        - "risingwave-kill-job"

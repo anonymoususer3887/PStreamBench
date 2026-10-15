@@ -1,0 +1,31 @@
+---
+- name: Create Kafka topic
+  hosts: alpha
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/kafka/kafka-create-topic.yaml"
+      tags:
+        - "kafka-create-topic"
+- name: Launch Kafka Streams instance on every node
+  hosts: alpha:betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/kafkastreams/kafkastreams-setup-job.yaml"
+      tags:
+        - "kafkastreams-setup-job"
+    - include_tasks: "tasks/kafkastreams/kafkastreams-provide-job.yaml"
+      tags:
+        - "kafkastreams-provide-job"
+- name: Run producer
+  hosts: betas
+  gather_facts: yes
+  become: True
+  become_method: sudo
+  tasks:
+    - include_tasks: "tasks/producer/producer-run.yaml"
+      tags:
+        - "producer-run"

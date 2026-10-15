@@ -1,0 +1,7 @@
+
+- name: Provide synthetic job to storm
+  command: "nohup sudo /bin/bash {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm jar {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/dsp_storm_synthetic_jobs-1.0-SNAPSHOT-all.jar {{ job_program }} -name '{{ job_name }}' -parallelism {{ job_parallelization }} -mode {{ job_mode }} -input {{ job_input }} -output {{ job_output }} -query {{ job_query_number }} -kafka-server {{ producer_bootstrap_server }} -main-ip {{ main_ip }} -size {{ job_window_size }} -slide {{ job_window_slide_size }} -waitTimeToCancel {{ job_run_time }} -numWorkers {{ num_workers }} -eventRate {{ job_event_rate }} -cluster distributed &"
+  ignore_errors: true
+  timeout: 10
+  tags:
+    - start

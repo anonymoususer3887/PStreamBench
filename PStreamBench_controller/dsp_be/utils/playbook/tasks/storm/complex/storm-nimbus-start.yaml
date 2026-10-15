@@ -17,9 +17,15 @@
   pause:
     seconds: 5
 
-- name: Create Prometheus Storm Exporter Script 
+- name: Create Prometheus Storm Exporter Script
+  # bare "python" resolves to the system interpreter, not this project's
+  # venv (see feedback_use_venv_for_python project memory) -- prometheus_client
+  # is only installed in {{ INSTALLATION_DIR }}/venv, confirmed live
+  # (2026-09-02) that a bare "python" call here fails with
+  # ModuleNotFoundError, same class of wrong-interpreter bug already fixed
+  # in runner.py's get_logs() this session.
   copy:
-    content: "while true; do python {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm_exporter.py localhost:8080 9093 1; sleep 5; done"
+    content: "while true; do {{ INSTALLATION_DIR }}/venv/bin/python3 {{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm_exporter.py localhost:8080 9093 1; sleep 5; done"
     dest: "{{ INSTALLATION_DIR }}/apache-storm-2.6.2/bin/storm_exporter.sh"
     mode: "a+x"
 
