@@ -94,17 +94,36 @@ public abstract class SyntheticTopology {
 
     /** Sink for topologies whose last stage emits (key, avg). */
     protected IRichBolt getAvgSink() {
-        return getSink(new TupleToKafkaMapper<Object, Object>() {
-            @Override
-            public Object getKeyFromTuple(Tuple tuple) {
-                return tuple.getStringByField("key");
-            }
+        return getSink(new AvgTupleToKafkaMapper());
+    }
 
-            @Override
-            public Object getMessageFromTuple(Tuple tuple) {
-                return String.valueOf(tuple.getValueByField("avg"));
-            }
-        });
+    /**
+     * Was an anonymous TupleToKafkaMapper inline in getAvgSink() -- confirmed
+     * live, 2026-10-25: an anonymous class defined inside an INSTANCE method
+     * always captures an implicit reference to the enclosing instance (here,
+     * the whole SyntheticTopology/LinearQueryTopology object, including its
+     * non-serializable TopologyBuilder/Config fields) even though the mapper
+     * body never actually touches any of it -- only the tuple parameter.
+     * Storm serializes every bolt (KafkaBolt holds this mapper as a field)
+     * via plain Java serialization at submission time, so this threw
+     * NotSerializableException on every single submission attempt, which
+     * was ALSO silently swallowed by the finally{System.exit(0)} bug in
+     * every *Topology.main() (see LinearQueryTopology.main()) -- meaning
+     * every "storm jar" submission this project has ever run looked like a
+     * clean, silent success while actually never reaching Nimbus at all.
+     * A static nested class captures nothing from the enclosing instance,
+     * which is all this needs.
+     */
+    private static class AvgTupleToKafkaMapper implements TupleToKafkaMapper<Object, Object> {
+        @Override
+        public Object getKeyFromTuple(Tuple tuple) {
+            return tuple.getStringByField("key");
+        }
+
+        @Override
+        public Object getMessageFromTuple(Tuple tuple) {
+            return String.valueOf(tuple.getValueByField("avg"));
+        }
     }
 
     /** Windowed average of valueField, tumbling if slide is unset or equal to size. */

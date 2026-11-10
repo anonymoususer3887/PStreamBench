@@ -51,6 +51,19 @@ public class LinearQueryTopology extends SyntheticTopology {
             if (topology.isLocal()) {
                 topology.writeLocalMetrics(waitTimeToCancel);
             }
+        } catch (Throwable t) {
+            // Confirmed live, 2026-10-25: the old bare "finally { System.exit(0); }"
+            // below silently swallowed EVERY exception from runTopology() (e.g. a
+            // submission failure) -- Java runs finally before an exception can
+            // propagate to print its stack trace, and System.exit() inside that
+            // finally terminates the JVM right there, so the process always exited
+            // 0 with zero output regardless of whether submission actually
+            // succeeded. Several real "storm jar" submissions this session looked
+            // like silent no-ops (process vanished, exit code 0, nothing in any
+            // log) purely because of this -- there was no actual way to tell
+            // success from failure short of polling Nimbus's own topology list.
+            t.printStackTrace();
+            System.exit(1);
         } finally {
             // LocalCluster leaves non-daemon threads running after shutdown (and after a
             // rejected topology); exit explicitly so local runs terminate.

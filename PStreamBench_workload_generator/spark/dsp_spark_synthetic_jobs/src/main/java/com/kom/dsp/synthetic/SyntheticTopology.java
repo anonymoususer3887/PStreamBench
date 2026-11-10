@@ -81,9 +81,18 @@ public abstract class SyntheticTopology {
 
     /** Call once per job, right after construction and before building the
      * pipeline -- registers the observationNames this shape will call
-     * .observe() for (see MetricsUtils). */
+     * .observe() for (see MetricsUtils). Always appends "end_to_end_lag"
+     * -- sink() (below) observes it unconditionally for every shape, so no
+     * individual topology class's call site needs to list it explicitly
+     * (added 2026-10-20, confirmed live that forgetting to list an
+     * observation name here means MetricsUtils' listener never looks it
+     * up at all, even though the .observe() call itself fires correctly
+     * -- the gauge was simply never updated). */
     protected void registerMetrics(String... observationNames) {
-        MetricsUtils.registerOperatorMetrics(spark, observationNames);
+        String[] withLag = new String[observationNames.length + 1];
+        System.arraycopy(observationNames, 0, withLag, 0, observationNames.length);
+        withLag[observationNames.length] = "end_to_end_lag";
+        MetricsUtils.registerOperatorMetrics(spark, withLag);
     }
 
     /** Source: Spark's built-in "rate" format, independent rand()-derived
@@ -91,7 +100,25 @@ public abstract class SyntheticTopology {
      * the narrow-stage task-count control (no shuffle involved -- a plain
      * repartition(n) always forces exactly n partitions for its own
      * Exchange, unaffected by spark.sql.shuffle.partitions, which only
-     * governs shuffles Spark itself plans for groupBy/join). */
+     * governs shuffles Spark itself plans for groupBy/join).
+     *
+     * <b>Watermark and "bucket" are both declared here, once, for every
+     * shape -- redesigned 2026-10-15 after the Flink-vs-Spark join-semantics
+     * review (see SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md).</b> Flink's
+     * windowed join assigns every stream to the SAME discrete, globally
+     * epoch-aligned tumbling window and matches same-key tuples that landed
+     * in the same window instance -- a fundamentally different rule from
+     * this class's earlier design (a continuous +/-windowSize tolerance
+     * centered on each row's own timestamp, with no shared bucket at all;
+     * confirmed non-equivalent by hand-calculated cardinality mismatches).
+     * "bucket" (Spark's window(ts, windowSize) struct, the same bucketing
+     * primitive windowAvg's groupBy already used) is the closest Spark
+     * equivalent of "the same window instance" and is computed ONCE here,
+     * immediately after the watermark, then propagated unchanged through
+     * every filter/join/windowAvg call -- never recomputed downstream. This
+     * also eliminates the "Redefining watermark is disallowed" bug class
+     * entirely: the watermark is declared exactly once, at the earliest
+     * possible point, and nothing downstream calls .withWatermark() again. */
     protected Dataset<Row> source(String name, int keySpace, int parallelism) {
         Dataset<Row> raw = spark.readStream()
                 .format("rate")
@@ -101,12 +128,25 @@ public abstract class SyntheticTopology {
                 .withColumn("key", rand().multiply(lit((double) keySpace)).cast("long").cast("string"))
                 .withColumn("val", rand())
                 .select(col("timestamp").as("ts"), col("key"), col("val"))
+                .withWatermark("ts", (cfg.windowSize * 2) + " milliseconds")
+                .withColumn("bucket", window(col("ts"), cfg.windowSize + " milliseconds"))
                 .repartition(parallelism);
         return withKV.observe(name, count(lit(1)).cast("double").as("rows"));
     }
 
+    /** Keeps rows with val &lt; threshold -- matching Flink's
+     * FilterFunction exactly (dsp_flink_synthetic_jobs' SyntheticTopology:
+     * "t.f1 &lt; threshold"). Found live, 2026-10-15 during the join-semantics
+     * review: an earlier version of this method kept val &gt;= threshold, the
+     * OPPOSITE direction. For a 0.5 threshold against a uniform [0,1) value
+     * this happens to average out to the same ~50% selectivity, but
+     * ChainedFiltersTopology's THRESHOLDS {0.52,0.50,0.48,0.46} are chosen
+     * to make successive filters progressively more/less selective in a
+     * specific direction -- the wrong comparison direction silently
+     * inverted that selectivity trend, which would have produced
+     * misleading cross-engine comparisons without ever throwing an error. */
     protected Dataset<Row> filter(Dataset<Row> in, String name, double threshold, int parallelism) {
-        Dataset<Row> filtered = in.filter(col("val").geq(lit(threshold))).repartition(parallelism);
+        Dataset<Row> filtered = in.filter(col("val").lt(lit(threshold))).repartition(parallelism);
         return filtered.observe(name, count(lit(1)).cast("double").as("rows"));
     }
 
@@ -118,52 +158,87 @@ public abstract class SyntheticTopology {
      * bookkeeping -- JoinTopology overrides this by recording the value via
      * shuffleWidth instead of setting it immediately, since joins come
      * first in that shape and only the LAST .set() before .start() matters
-     * anyway). windowSize is also the slide (tumbling, not sliding),
-     * matching Flink/Storm's synthetic convention. */
+     * anyway).
+     *
+     * <b>Groups by the already-computed "bucket" column, not a fresh
+     * window(ts,...) call -- simplified 2026-10-15 (see source()'s
+     * javadoc).</b> "bucket" was computed once in source() and propagated
+     * unchanged through every filter/join call, so this is already exactly
+     * Flink's per-window aggregation grouping key; recomputing window(ts,
+     * windowSizeMs) here would be redundant (and the parameter is kept only
+     * so callers' intent still reads naturally at each call site -- the
+     * actual bucketing always traces back to source()'s single windowSize). */
     protected Dataset<Row> windowAvg(Dataset<Row> in, String name, int windowSizeMs, int parallelism) {
         applyShuffleWidth(parallelism);
+        // "ts" is derived from bucket.end (the window's own end boundary),
+        // NOT by aggregating the raw watermarked "ts" column directly
+        // (e.g. max("ts")) -- confirmed live, 2026-10-20: doing the latter
+        // silently stops this stage (and everything downstream) from ever
+        // emitting a single row in append mode, no error logged, even
+        // though the underlying streaming query keeps running and its
+        // state store keeps evicting rows normally. Root cause not
+        // confirmed beyond "aggregating the column Spark tracks as the
+        // watermark source inside the SAME groupBy that performs the
+        // window-eviction check confuses append-mode's emission-
+        // eligibility logic" -- but "bucket" (a plain struct derived from
+        // ts, not itself watermark-tracked) has safely survived every
+        // existing aggregation/join in this file already, so deriving "ts"
+        // from it sidesteps the issue entirely rather than explaining it
+        // further.
         Dataset<Row> windowed = in
-                .withWatermark("ts", (windowSizeMs * 2) + " milliseconds")
-                .groupBy(window(col("ts"), windowSizeMs + " milliseconds"), col("key"))
+                .groupBy(col("bucket"), col("key"))
                 .agg(avg("val").as("val"))
-                .select(col("key"), col("val"))
+                .select(col("key"), col("val"), col("bucket").getField("end").as("ts"))
                 .repartition(parallelism);
         return windowed.observe(name, count(lit(1)).cast("double").as("rows"));
     }
 
-    /** Stream-stream equi-join on "key", averaging the two "val" columns --
-     * same combine semantics as Flink's JoinFunction (x,y) -> (x.key,
-     * (x.val+y.val)/2). Both sides carry same-named "key"/"val"/"ts"
-     * columns, so each side is aliased before the join to avoid an
-     * ambiguous-column resolution error.
+    /** Stream-stream join on (key, bucket) EQUALITY -- same combine
+     * semantics as Flink's JoinFunction (x,y) -> (x.key, (x.val+y.val)/2).
+     * Both sides carry same-named "key"/"val"/"bucket" columns, so each
+     * side is aliased before the join to avoid an ambiguous-column
+     * resolution error.
      *
-     * <b>Watermarked time-range condition is required, not optional --
-     * found live, 2026-10-15.</b> An earlier version had the equi-join
-     * condition alone, reasoning that a time-range predicate is "only
-     * required to let Spark evict state, acceptable for short runs". That
-     * was wrong: a 2-way join survived a 25s local test, but 4-way/6-way
-     * joins (3-5 chained joins, each accumulating unbounded state with no
-     * eviction) OOM'd the local driver within ~20-25s -- i.e. well inside
-     * a single real sweep run's 5-minute window, not just a local-testing
-     * artifact. Added a watermark on each side plus a symmetric time-range
-     * join condition (matching rows must have timestamps within one
-     * windowSize of each other), which lets Spark's
-     * StreamingSymmetricHashJoinExec evict state outside that range --
-     * confirmed live afterwards: 6-way join ran its full local test
-     * without OOM (see SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md). */
+     * <b>Redesigned 2026-10-15, replacing an earlier +/-windowSize sliding
+     * time-range condition -- see SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md for
+     * the full Flink-vs-Spark semantics review that motivated this.</b> A
+     * sliding tolerance centered on each row's own timestamp is NOT the
+     * same rule as Flink's windowed join (which matches same-key tuples
+     * that landed in the SAME discrete, globally epoch-aligned tumbling
+     * window instance) -- confirmed non-equivalent by hand-calculated
+     * cardinality mismatches (a sliding join can match pairs Flink's rule
+     * would reject across a window boundary, and miss pairs Flink's rule
+     * would accept within the same window but >windowSize apart in raw
+     * time). Joining on "bucket" equality (the same window(ts,windowSize)
+     * struct windowAvg groups by) reproduces Flink's same-key,
+     * same-window-instance CARDINALITY RULE, instead of approximating it
+     * with a tolerance -- not Flink's windowing mechanism itself: this is
+     * still event-time/watermark-based bucketing, where Flink's is
+     * processing-time tumbling windows. See
+     * SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md §11 for that remaining
+     * difference. Verified against a hand-crafted deterministic dataset covering all
+     * four boundary cases (same-bucket match, cross-boundary non-match,
+     * multi-row cross-product, different-key non-match) via spark-shell
+     * before being ported here -- see SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md
+     * for the exact inputs/expected/actual cardinalities.
+     *
+     * No watermark bookkeeping needed here at all (contrast with the
+     * earlier version's leftAlreadyWatermarked flag): the watermark is
+     * declared exactly once, in source(), and this method never calls
+     * .withWatermark() -- "bucket" and the propagated watermark both just
+     * flow through unchanged. */
     protected Dataset<Row> pairwiseJoin(Dataset<Row> left, Dataset<Row> right, String name, int parallelism) {
         applyShuffleWidth(parallelism);
-        String watermarkDelay = (cfg.windowSize * 2) + " milliseconds";
-        Dataset<Row> l = left.select(col("key").as("lkey"), col("val").as("lval"), col("ts").as("lts"))
-                .withWatermark("lts", watermarkDelay);
-        Dataset<Row> r = right.select(col("key").as("rkey"), col("val").as("rval"), col("ts").as("rts"))
-                .withWatermark("rts", watermarkDelay);
-        org.apache.spark.sql.Column timeRange = r.col("rts").between(
-                l.col("lts").minus(expr("INTERVAL " + cfg.windowSize + " MILLISECONDS")),
-                l.col("lts").plus(expr("INTERVAL " + cfg.windowSize + " MILLISECONDS")));
-        org.apache.spark.sql.Column joinCondition = l.col("lkey").equalTo(r.col("rkey")).and(timeRange);
+        Dataset<Row> l = left.select(col("key").as("lkey"), col("val").as("lval"), col("bucket").as("lbucket"), col("ts").as("lts"));
+        Dataset<Row> r = right.select(col("key").as("rkey"), col("val").as("rval"), col("bucket").as("rbucket"), col("ts").as("rts"));
+        org.apache.spark.sql.Column joinCondition = l.col("lkey").equalTo(r.col("rkey"))
+                .and(l.col("lbucket").equalTo(r.col("rbucket")));
+        // "ts" is the max of both sides -- the joined row couldn't have been
+        // emitted until BOTH its contributing rows had arrived (same
+        // "latest contributor" reasoning as windowAvg()'s own comment).
         Dataset<Row> joined = l.join(r, joinCondition, "inner")
-                .select(col("lkey").as("key"), ((col("lval").plus(col("rval"))).divide(2.0)).as("val"), col("lts").as("ts"))
+                .select(col("lkey").as("key"), ((col("lval").plus(col("rval"))).divide(2.0)).as("val"),
+                        col("lbucket").as("bucket"), greatest(col("lts"), col("rts")).as("ts"))
                 .repartition(parallelism);
         return joined.observe(name, count(lit(1)).cast("double").as("rows"));
     }
@@ -180,8 +255,51 @@ public abstract class SyntheticTopology {
         spark.conf().set("spark.sql.shuffle.partitions", parallelism);
     }
 
+    /** True end-to-end latency (source row generation -> sink), unlike
+     * WordCountJob.java's real-workload convention (ingestion-to-processing
+     * lag measured immediately at the source, before any pipeline
+     * processing happens -- see that file's own comment on why it stops
+     * there). "ts" has been propagated through every filter/windowAvg/join
+     * call all the way to here (see each method's own comment), so this
+     * measures the SAME thing Flink's latency markers and Kafka Streams'
+     * KIP-613 metric measure -- added specifically so Spark's synthetic
+     * shapes are comparable to those two engines on this metric, not to
+     * match Spark's own real-workload approximation (see
+     * docs/14_issue_log.md SPARK-005's sibling finding: this metric was
+     * simply never collected for synthetic jobs before this).
+     *
+     * current_timestamp() must be materialized into its own column before
+     * observe() for the same non-deterministic-expression reason
+     * WordCountJob.java's own comment documents. Metric name/column alias
+     * ("end_to_end_lag"/"rows") matches that file's convention exactly, so
+     * getprom_spark.py's existing getEndToEndLatency() needed no query
+     * changes -- only wiring it into the synthetic dispatch path. */
     protected void sink(Dataset<Row> in, String name, int parallelism) {
-        Dataset<Row> observed = in.repartition(parallelism)
+        Dataset<Row> withLag = in.withColumn("lag_seconds",
+                current_timestamp().cast("double").minus(col("ts").cast("double")));
+        // Both observe() calls are now on the repartitioned Dataset (same
+        // post-shuffle stage), not split across the repartition boundary.
+        // Found live, 2026-10-31: for join shapes (which already have a
+        // join/window-agg shuffle upstream), an observe() placed BEFORE
+        // this repartition's shuffle was silently dropped -- confirmed via
+        // direct Prometheus query: the job's other operatorMetrics (filter/
+        // join/sink row counts, including this same repartition's own
+        // "name" observe placed after it) all reported correctly for the
+        // same run, but "end_to_end_lag" never appeared as a metric series
+        // at all, not just delayed. Single-input shapes never hit this
+        // because build() verified empirically that a Spark Catalyst
+        // optimization can report observed metrics from only the LAST
+        // distinct shuffle stage in a job that has more than one; the
+        // repartition() here is that last stage for a join shape, but was
+        // the ONLY stage (so the only reported one) for single-input
+        // shapes. Averaging/counting after a repartition is mathematically
+        // identical to before it -- repartition doesn't add, drop, or
+        // duplicate rows -- so this changes nothing about what either
+        // metric measures.
+        Dataset<Row> repartitioned = withLag.repartition(parallelism);
+        Dataset<Row> withLagObserved = repartitioned.observe("end_to_end_lag",
+                avg(col("lag_seconds")).cast("double").as("rows"));
+        Dataset<Row> observed = withLagObserved
                 .observe(name, count(lit(1)).cast("double").as("rows"));
         this.finalSink = observed;
     }
@@ -199,7 +317,27 @@ public abstract class SyntheticTopology {
         if (shuffleWidth != null) {
             spark.conf().set("spark.sql.shuffle.partitions", shuffleWidth);
         }
-        String checkpointLocation = "/tmp/spark-checkpoints/" + cfg.name + "-" + System.currentTimeMillis();
+        String checkpointLocation = cfg.checkpointRoot + "/" + cfg.name + "-" + System.currentTimeMillis();
+        // Pre-create the checkpoint subdirectories the driver would
+        // otherwise create lazily on first write, and pause briefly before
+        // .start() -- found live, 2026-10-16, first real distributed sweep
+        // run (not just a single manual test): on a shared NFS mount, a
+        // task running on a DIFFERENT physical node than the driver can
+        // still hit FileNotFoundException on "commits"/"offsets" even
+        // though the driver already created the parent checkpoint dir --
+        // an NFS attribute-cache visibility race (the directory's
+        // existence takes a moment to become visible cluster-wide), not
+        // fixed by moving off a node-local path alone. Creating the
+        // subdirectories here (from the driver, before any executor could
+        // possibly need them) and waiting lets that propagation happen
+        // ahead of time instead of racing the first micro-batch.
+        try {
+            java.nio.file.Files.createDirectories(java.nio.file.Paths.get(checkpointLocation, "offsets"));
+            java.nio.file.Files.createDirectories(java.nio.file.Paths.get(checkpointLocation, "commits"));
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            System.out.println("[main] WARNING: checkpoint pre-create failed (continuing anyway): " + e);
+        }
         // "append" (not "update") -- required by Spark for any query
         // containing a stream-stream join (confirmed live, 2026-10-15:
         // "update" throws AnalysisException "Join between two streaming

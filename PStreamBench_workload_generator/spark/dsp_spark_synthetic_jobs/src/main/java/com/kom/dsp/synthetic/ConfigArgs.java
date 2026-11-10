@@ -25,6 +25,14 @@ public class ConfigArgs {
     public final int eventRate; // total rows/sec across all source partitions
     public final int keySpace; // override; -1 = use shape default
     public final int targetMatches; // calibrated join output target per window
+    public final String checkpointRoot; // default "/tmp/spark-checkpoints" (local mode).
+    // Found live, 2026-10-16, first distributed run: a local path only works
+    // in local[*] mode, where driver and executors share one filesystem --
+    // on a real cluster, executors on OTHER worker nodes cannot see a path
+    // under the driver node's own /tmp, and the job fails with
+    // FileNotFoundException on the checkpoint's "commits" directory.
+    // Distributed sweeps must override this to a filesystem shared across
+    // every node (e.g. this cluster's NFS mount at /proj/<project>).
 
     private ConfigArgs(CommandLine cmd) {
         this.name = cmd.getOptionValue("name");
@@ -40,6 +48,7 @@ public class ConfigArgs {
         this.eventRate = Integer.parseInt(cmd.getOptionValue("eventRate", "100000"));
         this.keySpace = Integer.parseInt(cmd.getOptionValue("keySpace", "-1"));
         this.targetMatches = Integer.parseInt(cmd.getOptionValue("targetMatches", "1000"));
+        this.checkpointRoot = cmd.getOptionValue("checkpointRoot", "/tmp/spark-checkpoints");
     }
 
     public static ConfigArgs fromArgs(String[] args) throws ParseException {
@@ -53,6 +62,7 @@ public class ConfigArgs {
         options.addOption(Option.builder().longOpt("eventRate").hasArg().build());
         options.addOption(Option.builder().longOpt("keySpace").hasArg().build());
         options.addOption(Option.builder().longOpt("targetMatches").hasArg().build());
+        options.addOption(Option.builder().longOpt("checkpointRoot").hasArg().build());
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
         return new ConfigArgs(cmd);

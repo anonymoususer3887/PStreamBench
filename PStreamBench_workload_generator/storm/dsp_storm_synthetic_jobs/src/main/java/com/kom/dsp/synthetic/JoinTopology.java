@@ -144,6 +144,13 @@ public class JoinTopology extends SyntheticTopology {
             if (topology.isLocal()) {
                 topology.writeLocalMetrics(waitTimeToCancel);
             }
+        } catch (Throwable t) {
+            // See LinearQueryTopology.main() for why this is here: the bare
+            // "finally { System.exit(0); }" below used to swallow every
+            // submission exception silently (System.exit() in finally runs
+            // before Java ever gets to print an uncaught exception).
+            t.printStackTrace();
+            System.exit(1);
         } finally {
             // Storm's local cluster leaves non-daemon threads behind, including after a
             // rejected topology; exit explicitly so the process never hangs.

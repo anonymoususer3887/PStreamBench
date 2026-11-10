@@ -29,6 +29,7 @@ public class SyntheticSpout extends BaseRichSpout {
     private transient double perTaskRate;
     private transient long startNanos;
     private transient long emitted;
+    private transient long nextMessageId;
     private transient LocalMetrics.Stage stage;
 
     public SyntheticSpout(int eventRate) {
@@ -54,6 +55,7 @@ public class SyntheticSpout extends BaseRichSpout {
         this.perTaskRate = (double) eventRate / tasks;
         this.startNanos = System.nanoTime();
         this.emitted = 0;
+        this.nextMessageId = 0;
     }
 
     @Override
@@ -69,12 +71,42 @@ public class SyntheticSpout extends BaseRichSpout {
             for (int i = 0; i < owed; i++) {
                 String key = String.valueOf(random.nextInt(numKeys));
                 double value = random.nextDouble();
-                collector.emit(new Values(key, value));
+                // Reliable emit (with a message id) -- previously a bare
+                // emit(Values) with no id, which is Storm's UNRELIABLE mode:
+                // nothing is ever tracked for completion regardless of
+                // acker count or downstream ack() calls (FilterBolt/
+                // WindowAvgBolt/the Kafka sink all already anchor+ack
+                // correctly -- confirmed by reading each one -- so this was
+                // the only broken link). Root cause for both completeLatency
+                // always reading 0 and acked/failed counts always reading 0
+                // across every single collected Storm run this project has
+                // ever done (found 2026-10-25, via storm_spout_vs_bolt.csv
+                // audit). msgId only needs to be unique within this task,
+                // not globally, so a plain per-task counter is enough.
+                collector.emit(new Values(key, value), nextMessageId++);
             }
             emitted += owed;
             stage.out.addAndGet(owed);
             stage.busyNanos.addAndGet(System.nanoTime() - start);
         }
+    }
+
+    @Override
+    public void ack(Object msgId) {
+        // No retry state to clean up (the tuple's own data is regenerated
+        // randomly, not replayable from a durable source) -- this override
+        // exists only so Storm's ack bookkeeping has somewhere to land;
+        // BaseRichSpout's default no-op ack() is otherwise identical, but
+        // being explicit here makes the reliable-emit intent unambiguous
+        // (same reasoning for fail() below).
+    }
+
+    @Override
+    public void fail(Object msgId) {
+        // Nothing to replay -- see ack() above. A failed/timed-out tuple
+        // is simply dropped; it does not affect this spout's own emitted
+        // count, only the acked/completeLatency stats downstream consumers
+        // read, which is exactly the signal this fix is restoring.
     }
 
     @Override

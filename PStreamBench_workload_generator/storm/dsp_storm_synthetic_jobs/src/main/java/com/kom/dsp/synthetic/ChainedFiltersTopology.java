@@ -66,6 +66,13 @@ public class ChainedFiltersTopology extends SyntheticTopology {
             if (topology.isLocal()) {
                 topology.writeLocalMetrics(waitTimeToCancel);
             }
+        } catch (Throwable t) {
+            // See LinearQueryTopology.main() for why this is here: the bare
+            // "finally { System.exit(0); }" below used to swallow every
+            // submission exception silently (System.exit() in finally runs
+            // before Java ever gets to print an uncaught exception).
+            t.printStackTrace();
+            System.exit(1);
         } finally {
             System.exit(0);
         }

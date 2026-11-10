@@ -75,6 +75,11 @@ public class JoinTopology extends SyntheticTopology {
         // actually matters by the time runAndSelfCancel() calls .start().
         int shuffleWidthValue = cfg.parallelism.get(idx++);
 
+        // No watermark bookkeeping needed at the call sites anymore (see
+        // SyntheticTopology.source()'s javadoc): the watermark and
+        // "bucket" are both declared once, in source(), and every
+        // pairwiseJoin()/windowAvg() call below just joins/groups on the
+        // already-propagated "bucket" column.
         Dataset<Row> joined = streams[0];
         for (int i = 1; i < n; i++) {
             joined = pairwiseJoin(joined, streams[i], "join-" + i, shuffleWidthValue);

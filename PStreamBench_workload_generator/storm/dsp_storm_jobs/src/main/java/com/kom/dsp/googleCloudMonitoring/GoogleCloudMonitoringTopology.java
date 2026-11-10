@@ -20,9 +20,9 @@ public class GoogleCloudMonitoringTopology extends AbstractTopology {
 
     @Override
     public void buildTopology() {
-        //this.config.registerSerialization(com.kom.dsp.googleCloudMonitoring.CPUPerCategory.class);
-        //this.config.registerSerialization(com.kom.dsp.googleCloudMonitoring.CPUPerJob.class);
-        //this.config.registerSerialization(com.kom.dsp.googleCloudMonitoring.TaskEvent.class);
+        this.config.registerSerialization(com.kom.dsp.googleCloudMonitoring.CPUPerCategory.class);
+        this.config.registerSerialization(com.kom.dsp.googleCloudMonitoring.CPUPerJob.class);
+        this.config.registerSerialization(com.kom.dsp.googleCloudMonitoring.TaskEvent.class);
 
         this.builder.setSpout("spout", this.getSpout(), this.getParallelismDegree(0));
         // original Flink implementation takes input to determine type of query (CPU per job or CPU per category)

@@ -13,6 +13,8 @@ public class SentimentAnalysisTopology extends AbstractTopology {
 
     @Override
     public void buildTopology() {
+        this.config.registerSerialization(com.kom.dsp.sentimentAnalysis.SentimentResult.Sentiment.class);
+
         builder.setSpout("spout", this.getSpout(), this.getParallelismDegree(0));
 
         builder.setBolt("parse-tweet-bolt", new TweetParserBolt(), this.getParallelismDegree(1))
