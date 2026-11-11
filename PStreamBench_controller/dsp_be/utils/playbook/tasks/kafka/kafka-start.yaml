@@ -49,13 +49,23 @@
   # control-network abuse warning this project hit during the Storm
   # strategy-sweep phase (2026-09-06/07): every broker was silently
   # advertising its public control-network address instead of the
-  # internal-LAN one. No extra extravar needed here -- `id` is already
-  # available per-host (_inventory_manipulation() in infra/views.py
-  # assigns it as each host's position in the caller's node list), and
-  # every cluster this project stands up lists master-first, so id
-  # 0/1/2... already lines up with CloudLab's own internal-LAN short names
-  # node0/node1/node2 (see server.properties' matching comment).
-  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/kafka_2.12/bin/kafka-server-start.sh {{ INSTALLATION_DIR }}/kafka_2.12/config/server.properties --override broker.id={{ id }} --override advertised.listeners=PLAINTEXT://node{{ id }}:9092 --override listeners=PLAINTEXT://0.0.0.0:9092"
+  # internal-LAN one.
+  #
+  # Uses ansible_hostname (a real per-host gathered fact, "node0".."node5")
+  # rather than node{{ id }} -- confirmed live (2026-11-02) that `id` (each
+  # host's position in _inventory_manipulation()'s node list, assigned by
+  # Nodes-table registration order) does NOT reliably match CloudLab's own
+  # fixed physical node-N identity: on a 6-node cluster, 4 of 6 brokers
+  # advertised themselves under another broker's node-N hostname (e.g. the
+  # broker physically on node3 advertised itself as "node2", which was
+  # really a different physical machine), so every client that followed a
+  # mismatched broker's advertised address for a partition it led got
+  # silently misrouted -- indistinguishable from "producer/spout never
+  # processed anything" (zero throughput, zero acked/failed tuples, no
+  # error anywhere since every call site in this pipeline uses
+  # ignore_errors: true). broker.id can stay position-based since it only
+  # needs to be unique per broker, not tied to physical identity.
+  command: "sudo /bin/bash {{ INSTALLATION_DIR }}/kafka_2.12/bin/kafka-server-start.sh {{ INSTALLATION_DIR }}/kafka_2.12/config/server.properties --override broker.id={{ id }} --override advertised.listeners=PLAINTEXT://{{ ansible_hostname }}:9092 --override listeners=PLAINTEXT://0.0.0.0:9092"
   environment:
     KAFKA_OPTS: "-javaagent:/home/playground/kafka_2.12/libs/jmx_prometheus_javaagent.jar=7075:/home/playground/kafka_2.12/config/jmx_exporter.yml"
   async : 45000
