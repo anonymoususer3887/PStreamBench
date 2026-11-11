@@ -1,5 +1,0 @@
-strategy,rate,final_assignment,num_rebalances,num_checks,converged_at_check,duration_s,final_measurement,spout_k,sink_k,sink_p50_k,latency_s,cpu,cpu_nodes,failed_k,acked_k,window
-DS2,100k,"[6, 3, 2, 2, 2]",6,6,,316.5,evaluationMetrics-i0s0-AdAnalytics-145-1794336111.json,38.344114679692936,27.03430508474576,4.512033898305085,0.865925,75.01778641287197,2.0,463.55,26399.42,441/11
-DS2,1M,"[40, 40, 40, 40, 2]",5,6,6.0,315.2,none (final_metrics_file null),,,,,,,,,
-Dhalion,100k,"[2, 2, 2, 2, 2]",1,6,2.0,284.0,evaluationMetrics-i0s0-AdAnalytics-146-1794337101.json,35.82676984207265,0.09820338983050848,0.0,0.878949,71.16728488355493,2.0,481.34,22751.32,467/17
-Dhalion,1M,"[2, 2, 2, 2, 2]",1,6,2.0,285.8,stale summary (older run),,,,,,,,,

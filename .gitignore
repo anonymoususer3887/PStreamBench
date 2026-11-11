@@ -1,4 +1,8 @@
 plots/**/*.png
 plots/**/*.svg
 PStreamBench_wui/dsp_fe/node_modules/
-PStreamBench_benchmark_data/artifacts/
+PStreamBench_benchmark_data/artifacts/PStreamBench_benchmark_data/datasets_v2/
+PStreamBench_benchmark_data/paper_figure_scripts/
+PStreamBench_benchmark_data/plot_synthetic/
+PStreamBench_benchmark_data/plots/
+PStreamBench_benchmark_data/plots_pdsp_spark/
