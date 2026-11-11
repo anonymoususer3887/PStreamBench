@@ -105,14 +105,14 @@ Selected sample experiment outputs (real-world and synthetic applications).
 
 > Note: Detailed steps about each component of PStreamBench is provided in their respective README.md files.
 
-## Ways to Run PStreamBench
+## Run PStreamBench
 
 PStreamBench can be run four ways, depending on whether you want a full distributed CloudLab cluster or a quick local check, and whether you want to drive it from the Web UI or the command line.
 
 | | Frontend (WUI) | Command line |
 |---|---|---|
 | **Distributed** (CloudLab, any of the 5 SUTs, live monitoring) | ✅ the primary workflow — see [Step-by-Step Operations](#step-by-step-operations) below | the WUI talks to the controller's Django REST API; nothing stops calling those same endpoints directly (e.g. with `curl`/a script) instead of the UI, but there isn't a dedicated CLI for this today — possible, not yet scripted |
-| **Local** (single machine, proof-of-concept) | not supported — the WUI only targets CloudLab-provisioned clusters | ✅ [PStreamBench_local_docker/](https://github.com/anonymoususer3887/PStreamBench/tree/main/PStreamBench_local_docker#readme) — a `docker-compose` stack (Kafka + the SUT) plus shell scripts (`submit_*.sh`, `run_producer.sh`, `verify_output.sh`) or an interactive wizard (`pstreambench_cli.py`) that prompts for engine/workload/parallelism one at a time. Currently wired for Flink with Word Count and Ad Analytics as proof-of-life workloads; see that folder's README for scope and how to extend it |
+| **Local** (single machine for quick testing) | the WUI only targets CloudLab-provisioned clusters | ✅ [PStreamBench_local_docker/](https://github.com/anonymoususer3887/PStreamBench/tree/main/PStreamBench_local_docker#readme) — a `docker-compose` stack (Kafka + the SUT) plus shell scripts (`submit_*.sh`, `run_producer.sh`, `verify_output.sh`) or an interactive wizard (`pstreambench_cli.py`) that prompts for engine/workload/parallelism one at a time. Currently wired for Flink with Word Count and Ad Analytics as proof-of-life workloads; see that folder's README for scope and how to extend it |
 
 If you just want to confirm a job actually runs — without provisioning CloudLab nodes, without the controller or WUI — start with `PStreamBench_local_docker/`. If you're running the full parallelism-enumeration benchmark across hardware tiers, use the distributed CloudLab + controller + WUI path described next.
 

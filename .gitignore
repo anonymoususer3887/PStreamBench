@@ -20,7 +20,6 @@ id_rsa*
 PStreamBench_controller/dsp_be/db.sqlite3
 PStreamBench_controller/dsp_be/utils/playbook/inventory.yml
 PStreamBench_controller/dsp_be/benchmark_sweep/manifest*.json
-PStreamBench_controller/dsp_be/benchmark_sweep/SWEEP_STATUS.txt
 PStreamBench_controller/dsp_be/*/
 !PStreamBench_controller/dsp_be/infra/
 !PStreamBench_controller/dsp_be/utils/
