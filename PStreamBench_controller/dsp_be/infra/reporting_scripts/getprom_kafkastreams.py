@@ -413,6 +413,55 @@ def getLinearRoad(main_node_ip, timestamp_prom, job_query_number=None):
                      operator_names=operator_names)
 
 
+# Synthetic-workload dispatch (dsp_kafkastreams_synthetic_jobs), added
+# 2026-10-16 -- same pattern as getprom.py's Flink and getprom_spark.py's
+# Spark synthetic dispatch. Unlike Spark (where a stage name got baked
+# into the Prometheus metric NAME, needing a "-" -> "_" normalization --
+# see getprom_spark.py's _prom_safe_name()), Kafka Streams exposes each
+# stage name as a PromQL LABEL VALUE (operator_id="...", see
+# _get_operator_rate() above), and Prometheus does not sanitize label
+# VALUES the way it sanitizes metric NAMES -- hyphenated names
+# ("window-agg", "join-1", "source-0") pass through unmodified, no
+# normalization helper needed here.
+def getSyntheticCombo(job_name, main_node_ip, input_topic, output_topic, timestamp_prom, operator_names):
+    """Same shape as getCombo() above, reused directly (not reimplemented)
+    -- synthetic jobs are still real Kafka Streams apps reading/writing
+    real Kafka topics (see SyntheticProducer's javadoc: this is the one
+    engine where that was never optional in the first place), so
+    getKafkaMetrics()/getStreamsMetrics()/getHardwareMetrics() all apply
+    unmodified."""
+    return getCombo(job_name, main_node_ip, input_topic, output_topic, timestamp_prom,
+                     operator_names=operator_names)
+
+
+def getLinearQuerySynthetic(main_node_ip, timestamp_prom, job_query_number=None):
+    return getSyntheticCombo("LinearQuery", main_node_ip, "LinearQueryIn", "LinearQueryOut", timestamp_prom,
+                              ["source", "filter1", "window-agg", "filter2", "sink"])
+
+
+def getChainedFiltersSynthetic(main_node_ip, timestamp_prom, job_query_number):
+    n = int(job_query_number)
+    job_name = {2: "TwoFilters", 3: "ThreeFilters", 4: "FourFilters"}[n]
+    names = ["source", "window-agg"] + [f"filter{i}" for i in range(1, n + 1)] + ["sink"]
+    return getSyntheticCombo(job_name, main_node_ip, job_name + "In", job_name + "Out", timestamp_prom, names)
+
+
+def getJoinSynthetic(main_node_ip, timestamp_prom, job_query_number):
+    n = int(job_query_number)
+    job_name = {2: "TwoWayJoin", 3: "ThreeWayJoin", 4: "FourWayJoin", 5: "FiveWayJoin", 6: "SixWayJoin"}[n]
+    names = [f"source-{i}" for i in range(n)]
+    if n <= 3:
+        names += [f"filter-{i}" for i in range(n)]
+    names += [f"join-{i}" for i in range(1, n)] + ["window-agg", "sink"]
+    # JoinTopology has N input topics (<name>In0..N-1); getKafkaMetrics()
+    # takes exactly one input_topic (an event-rate sanity check, not the
+    # primary per-source data -- that's already captured individually via
+    # the "source-i" entries in operatorMetrics above), so source-0's
+    # topic is used as a representative one, not an attempt to average
+    # across all N.
+    return getSyntheticCombo(job_name, main_node_ip, job_name + "In0", job_name + "Out", timestamp_prom, names)
+
+
 # job_class (the human-readable name from the controller's job_class field,
 # e.g. "Word Count") -> collector function. Extend this alongside
 # constants_kafkastreams.py and the Java job port as more workloads land
@@ -432,6 +481,15 @@ JOB_CLASS_DISPATCH = {
     "Bargain Index": getBargainIndex,
     "Google cloud Monitoring": getGoogleCloudMonitoring,
     "Click Analytics": getClickAnalytics,
+    "LinearQuery": getLinearQuerySynthetic,
+    "TwoFilters": getChainedFiltersSynthetic,
+    "ThreeFilters": getChainedFiltersSynthetic,
+    "FourFilters": getChainedFiltersSynthetic,
+    "TwoWayJoin": getJoinSynthetic,
+    "ThreeWayJoin": getJoinSynthetic,
+    "FourWayJoin": getJoinSynthetic,
+    "FiveWayJoin": getJoinSynthetic,
+    "SixWayJoin": getJoinSynthetic,
 }
 
 

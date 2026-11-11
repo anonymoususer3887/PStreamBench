@@ -7,7 +7,7 @@
 # PStreamBench_Cloud_setup/README.md ports table) -- move it next to
 # Flink's dashboard port (8086) instead.
 export SPARK_MASTER_WEBUI_PORT=8087
-export SPARK_MASTER_HOST=ms0932
+export SPARK_MASTER_HOST=ms0808
 
-export SPARK_WORKER_CORES=16
-export SPARK_LOCAL_IP=ms0945
+export SPARK_WORKER_CORES=8
+export SPARK_LOCAL_IP=ms0802

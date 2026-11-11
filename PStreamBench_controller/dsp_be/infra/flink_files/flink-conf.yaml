@@ -1,11 +1,11 @@
-jobmanager.rpc.address: node0
+jobmanager.rpc.address: ms1029
 jobmanager.rpc.port: 6123
 jobmanager.bind-host: 0.0.0.0
 jobmanager.memory.process.size: 64gb
 taskmanager.bind-host: 0.0.0.0
-taskmanager.host: node5
+taskmanager.host: ms0809
 taskmanager.memory.process.size: 64gb
-taskmanager.numberOfTaskSlots: 16
+taskmanager.numberOfTaskSlots: 4
 parallelism.default: 1
 jobmanager.execution.failover-strategy: region
 rest.port: 8086

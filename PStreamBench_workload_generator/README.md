@@ -1,6 +1,6 @@
-# PStreamBench Workloads (Real-World)
+# PStreamBench Workloads (Real-World and Synthetic)
 
-PStreamBench includes **14 real-world streaming workloads** inspired by established DSPS/database benchmarks and prior studies (e.g., **Linear Road**, **Smart Grid**, **Ads Analytics**, **Click Analytics**). The suite is designed to cover major performance indicators such as **CPU**, **network**, and **memory/state** behavior that react differently to changes in **Degree of Parallelism (DoP)**.
+PStreamBench includes **14 real-world streaming workloads** and **9 synthetic query shapes** (see [Synthetic Queries](#synthetic-queries)). The real-world suite has 14 workloads inspired by established DSPS/database benchmarks and prior studies (e.g., **Linear Road**, **Smart Grid**, **Ads Analytics**, **Click Analytics**). The suite is designed to cover major performance indicators such as **CPU**, **network**, and **memory/state** behavior that react differently to changes in **Degree of Parallelism (DoP)**.
 
 This diversity is important for evaluating **scaling efficiency**, because changing DoP can shift bottlenecks between CPU saturation, network bandwidth, and state/data redistribution overheads.
 
@@ -308,3 +308,78 @@ Matches vehicle locations to road segments (map matching) and computes average s
 
 - This classification reflects the **dominant** bottleneck under typical configurations. Under different rates, key cardinalities, and DoP settings, workloads may **shift** bottlenecks.
 - The taxonomy is intended to guide scaling studies, heterogeneous resource selection, and comparisons across all five supported engines (Flink, Storm, Spark, Kafka Streams, RisingWave) — see the `flink/`, `storm/`, `spark/`, `kafkastreams/`, and `risingwave/` subfolders for each engine's job implementations.
+
+---
+
+## Synthetic Queries
+
+The synthetic queries complement the real-world workloads. Each one is a **fixed operator graph** that isolates one
+structural dimension of a query (pipeline depth, filter chains, join width), so that the effect of parallelism can be
+studied without the data characteristics of a specific application. Every run of a shape has the same graph; only the
+parallelism and the input rate change.
+
+### Data model
+
+- Each record is `(key, value)`: `key` is drawn uniformly from a key space `[0, K)`, `value` is uniform in `[0, 1)`.
+- No event-time field. Windows are **1-second tumbling windows on processing time** (RisingWave: the Kafka
+  produce timestamp with a 1-second watermark, its closest equivalent).
+- Window size, thresholds and key space are fixed per shape; only parallelism and event rate are swept.
+
+### The nine shapes
+
+| Shape | Folder name | Operator graph | Stages with their own DoP |
+|---|---|---|---|
+| Linear | `LinearQuery` | source → filter1 (value < 0.5) → windowed avg per key → filter2 → sink | filter1, window-agg, filter2 |
+| 2 / 3 / 4 chained filters | `TwoFilters`, `ThreeFilters`, `FourFilters` | source → windowed avg per key → filter × N → sink | window-agg, filter1..N |
+| 2-way / 3-way join | `TwoWayJoin`, `ThreeWayJoin` | N sources, each pre-filtered (value < 0.5) → N−1 pairwise windowed joins on `key` → windowed avg → sink | pre-filters, join(s), window-agg |
+| 4 / 5 / 6-way join | `FourWayJoin`, `FiveWayJoin`, `SixWayJoin` | N sources, no pre-filter → N−1 pairwise windowed joins on `key` → windowed avg → sink | join(s), window-agg |
+
+- **Filter thresholds** of the chained-filter shapes are 0.52, 0.50, 0.48, 0.46 (filter1..4), chosen so that each filter
+  removes part of the window averages (which cluster around 0.5). Measured selectivities for 4 filters: about
+  0.77 → 0.65 → 0.47 → 0.34.
+- **Join key space.** With a fixed key space, join output either explodes (narrow joins) or vanishes (wide joins).
+  `K` is therefore calibrated per shape so that every join width produces about `target` matches per window
+  (default 1000):
+
+  ```
+  K = (n_w^N / target)^(1/(N-1))
+  ```
+
+  where `n_w` is the per-source tuple count per window after pre-filtering (event rate × pre-filter selectivity ×
+  window length) and `N` the join width. `--keySpace` overrides it, `--targetMatches` changes the target.
+- **Join operators per engine.** Storm's `JoinBolt` fuses all N−1 joins into one bolt (one join DoP per shape); Flink,
+  Spark and Kafka Streams expose each pairwise join as its own operator.
+
+### Engine implementations
+
+Each engine has its own project next to the real-world jobs; the real-world projects are not modified.
+
+| Engine | Project | Input | Output |
+|---|---|---|---|
+| Flink | `flink/dsp_flink_synthetic_jobs` | in-process `DataGeneratorSource` (no Kafka) | `DiscardingSink` |
+| Storm | `storm/dsp_storm_synthetic_jobs` | in-process `SyntheticSpout` (no Kafka) | `KafkaBolt` on the cluster, file sink in local mode |
+| Spark Structured Streaming | `spark/dsp_spark_synthetic_jobs` | `rate` source (in-process) | `noop` sink |
+| Kafka Streams | `kafkastreams/dsp_kafkastreams_synthetic_jobs` | Kafka topic, filled by `SyntheticProducer.java` | Kafka topic |
+| RisingWave | `risingwave/dsp_risingwave_synthetic_jobs/<Shape>/*.sql` | Kafka source (same `SyntheticProducer.java`) | Kafka sink |
+
+The parallelism argument is a vector `[source, interior stages..., sink]` in the stage order of the table above.
+Kafka Streams and RisingWave apply one job-level parallelism to the whole query.
+
+### Benchmark settings used in the paper
+
+- Event rates 100k, 500k and 1M events/s; uniform DoP 2, 4, 8, 16, 32, 40 for all interior stages;
+  fixed source and sink DoP (Storm sweep: source 2, sink 1); 5 minutes per run.
+- Strategies: `uniform`, `random` (Storm sweep: 10 samples per shape and rate, seed 42), `ds2` and `dhalion`
+  (one decision computed from the uniform DoP-2 run).
+- Metrics are collected by the same `getprom_*.py` collectors as the real-world workloads, so synthetic and
+  real-world runs share one result schema (`evaluationMetrics-*.json`, `metaInfo-*.json`).
+
+### Known differences between engines
+
+- **RisingWave `LinearQuery`** has no filters (source → windowed avg → sink), unlike the other four engines.
+- **Linear filter2 threshold**: Flink and Storm use `avg < 0.25`, Spark and Kafka Streams use `avg < 0.5`.
+- In-process sources (Flink, Storm, Spark) do not pay the Kafka read cost that Kafka Streams and RisingWave pay.
+
+Design rationale, validation runs and the bugs found while building the shapes are documented in
+[`SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md`](../SYNTHETIC_WORKLOAD_CONTRIBUTIONS.md).
+

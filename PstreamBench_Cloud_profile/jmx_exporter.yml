@@ -1,0 +1,213 @@
+lowercaseOutputName: true
+
+# Excludes per-client-id quota/request MBeans from being scraped at all
+# (a cheap ObjectName-level filter, evaluated before any of the regex rules
+# below even run). This project's own metrics collection (getKafkaMetrics()
+# in getprom_kafkastreams.py) only ever reads kafka.server:type=
+# BrokerTopicMetrics -- it never touches per-client quota data -- yet these
+# per-client-id beans are exactly what scales with Kafka Streams thread
+# count (one unique, ~70-char client-id string per StreamThread), and every
+# one of them still gets tried against every kafka.server-domain regex rule
+# on every 1s scrape. Confirmed live: at parallelism>=16, the broker's JMX
+# HTTP server (port 7075) would go unresponsive well before a scrape could
+# finish; at parallelism 2-8 it usually completed in time. Blacklisting
+# just these two ObjectName shapes removes the beans, not the rules that
+# match them, so kafka.server:type=BrokerTopicMetrics (what this project
+# actually needs) and everything else this shared config supports for
+# other engines' dashboards is untouched.
+blacklistObjectNames:
+  - "kafka.server:type=*,client-id=*"
+  - "kafka.server:type=*,user=*,client-id=*"
+
+rules:
+# Special cases and very specific rules
+#
+# All capture groups below are bounded to [^,]+/[^,>]+ rather than the
+# original unbounded (.+)/(.*): with multiple greedy dot-groups separated
+# only by literal ", " and terminated by "><>", a non-matching (or even a
+# matching-but-unusually-long) bean+attribute string forces the regex
+# engine to try every possible way of distributing consumed characters
+# across the groups before concluding no match -- classic catastrophic
+# backtracking. This was hit for real: a live thread dump on this
+# project's Kafka broker (see KAFKA_STREAMS_RISINGWAVE_PLAN.md /
+# SPARK_VALIDATION.md-adjacent incident notes) showed a
+# jmx_prometheus_javaagent scrape thread pegged at ~100% CPU for 44+
+# minutes inside JmxCollector.recordBean's regex substitution, triggered
+# by Kafka Streams' unusually long internal consumer/producer client-id
+# strings (application-id + uuid + "-StreamThread-N-consumer", 70+ chars)
+# appearing in broker-side per-client quota/request metrics. Since no
+# property value in a JMX ObjectName's canonical form can legitimately
+# contain a literal comma or ">" unless quoted (a case the original rules
+# never handled either), bounding each group to exclude those characters
+# preserves identical matching behavior for every real input while making
+# the search for where one group ends and the next begins unambiguous --
+# eliminating the exponential blowup entirely. Verified: same capture
+# groups on real inputs, and empirically fast against long adversarial
+# non-matching strings (see /tmp/regex_test.py-style checks run before
+# this change was deployed).
+- pattern : kafka.server<type=([^,]+), name=([^,]+), clientId=([^,]+), topic=([^,]+), partition=([^,>]*)><>Value
+  name: kafka_server_$1_$2
+  type: GAUGE
+  labels:
+    clientId: "$3"
+    topic: "$4"
+    partition: "$5"
+- pattern : kafka.server<type=([^,]+), name=([^,]+), clientId=([^,]+), brokerHost=([^,]+), brokerPort=([^,>]+)><>Value
+  name: kafka_server_$1_$2
+  type: GAUGE
+  labels:
+    clientId: "$3"
+    broker: "$4:$5"
+- pattern : kafka.coordinator.(\w+)<type=([^,]+), name=([^,>]+)><>Value
+  name: kafka_coordinator_$1_$2_$3
+  type: GAUGE
+
+# Kafka Streams (kafka.streams domain, the Kafka Streams engine's own app
+# metrics -- see KAFKA_STREAMS_RISINGWAVE_PLAN.md Part A.4), attached via
+# this same javaagent on a separate port (7076) on the app's own `java`
+# command line, distinct from the broker's own exporter (7075) since both
+# run on the same node -- see kafkastreams-provide-job.yaml.
+#
+# Verified against a live jmx_exporter dump (kafka-run-class.sh
+# kafka.tools.JmxTool against a real running WordCount job, Kafka Streams
+# 3.8.0): stream-processor-node-metrics carries exactly 3 tags (thread-id,
+# task-id, processor-node-id) and stream-operator-metrics carries exactly 2
+# (thread-id, operator-id) -- NO client-id tag at this level (client-id only
+# appears at the client-wide stream-metrics type). An earlier version of
+# these rules assumed a 4th/3rd client-id tag that doesn't exist there,
+# which silently matched nothing. Capture groups bounded to [^,]+/[^,>]+
+# for the same catastrophic-backtracking reasons as the broker rules above
+# -- these run against every kafka.streams bean, including unusually long
+# thread-id/task-id strings.
+- pattern: kafka.streams<type=stream-processor-node-metrics, thread-id=([^,]+), task-id=([^,]+), processor-node-id=([^,>]+)><>record-e2e-latency-(min|avg|max)
+  name: kafka_streams_processor_node_record_e2e_latency_$4
+  type: GAUGE
+  labels:
+    thread_id: "$1"
+    task_id: "$2"
+    processor_node_id: "$3"
+- pattern: kafka.streams<type=stream-processor-node-metrics, thread-id=([^,]+), task-id=([^,]+), processor-node-id=([^,>]+)><>process-(rate|total)
+  name: kafka_streams_processor_node_process_$4
+  type: GAUGE
+  labels:
+    thread_id: "$1"
+    task_id: "$2"
+    processor_node_id: "$3"
+# Our own OperatorMetricsProcessor sensors (Tier 3 selectivity/throughput,
+# see dsp_kafkastreams_jobs/utils/OperatorMetricsProcessor.java) --
+# scopeName="operator", entityName=<stage name>, operationName="records".
+- pattern: kafka.streams<type=stream-operator-metrics, thread-id=([^,]+), operator-id=([^,>]+)><>records-(rate|total)
+  name: kafka_streams_operator_records_$3
+  type: GAUGE
+  labels:
+    thread_id: "$1"
+    operator_id: "$2"
+# Catch-all fallback for any other kafka.streams metric (process-latency-avg,
+# dropped-records-*, rocksdb metrics, ...) not given its own rule above --
+# covers the 3-tag processor-node/state-store shape. Unlike kafka.server's
+# Yammer-style metrics (attribute literally named "Value"/"Count", see the
+# generic rules further below), Kafka Streams' org.apache.kafka.common.
+# metrics.Metrics framework exposes each metric as its own directly-named
+# JMX attribute (e.g. "process-rate"), so this matches the attribute name
+# itself via a bounded group -- the kafka.server-style rules below this
+# point in the file do not apply to kafka.streams at all. The trailing
+# group was previously left as unbounded (.+) on the theory that "consumes
+# to end of string, nothing following it" made it unambiguous -- that
+# reasoning was wrong: confirmed via a live jstack on the sweep cluster
+# showing this exact rule's thread pegged at 100% CPU for 4+ hours inside
+# catastrophic backtracking (longer thread-id/task-id strings from
+# higher-parallelism sweep runs triggered it, unlike the shorter strings
+# Word Count validation exercised). Bounded to [^,>]+ like every other
+# group in this file -- attribute names are plain hyphenated identifiers
+# with no commas or '>', so this matches identically on valid input while
+# removing the backtracking risk on malformed/unexpected ones.
+- pattern: kafka.streams<type=([^,]+), thread-id=([^,]+), task-id=([^,]+), ([^,]+)-id=([^,>]+)><>([^,>]+)
+  name: kafka_streams_$5
+  type: GAUGE
+  labels:
+    metric_type: "$1"
+    thread_id: "$2"
+    task_id: "$3"
+
+# Generic per-second counters with 0-2 key/value pairs
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+)PerSec\w*, ([^,]+)=([^,]+), ([^,]+)=([^,>]+)><>Count
+  name: kafka_$1_$2_$3_total
+  type: COUNTER
+  labels:
+    "$4": "$5"
+    "$6": "$7"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+)PerSec\w*, ([^,]+)=([^,>]+)><>Count
+  name: kafka_$1_$2_$3_total
+  type: COUNTER
+  labels:
+    "$4": "$5"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,>]+)PerSec\w*><>Count
+  name: kafka_$1_$2_$3_total
+  type: COUNTER
+
+- pattern: kafka.server<type=([^,]+), client-id=([^,>]+)><>([a-z-]+)
+  name: kafka_server_quota_$3
+  type: GAUGE
+  labels:
+    resource: "$1"
+    clientId: "$2"
+
+- pattern: kafka.server<type=([^,]+), user=([^,]+), client-id=([^,>]+)><>([a-z-]+)
+  name: kafka_server_quota_$4
+  type: GAUGE
+  labels:
+    resource: "$1"
+    user: "$2"
+    clientId: "$3"
+
+# Generic gauges with 0-2 key/value pairs
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+), ([^,]+)=([^,]+), ([^,]+)=([^,>]+)><>Value
+  name: kafka_$1_$2_$3
+  type: GAUGE
+  labels:
+    "$4": "$5"
+    "$6": "$7"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+), ([^,]+)=([^,>]+)><>Value
+  name: kafka_$1_$2_$3
+  type: GAUGE
+  labels:
+    "$4": "$5"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,>]+)><>Value
+  name: kafka_$1_$2_$3
+  type: GAUGE
+
+# Emulate Prometheus 'Summary' metrics for the exported 'Histogram's.
+#
+# Note that these are missing the '_sum' metric!
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+), ([^,]+)=([^,]+), ([^,]+)=([^,>]+)><>Count
+  name: kafka_$1_$2_$3_count
+  type: COUNTER
+  labels:
+    "$4": "$5"
+    "$6": "$7"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+), ([^,]+)=([^,]*), ([^,]+)=([^,>]+)><>(\d+)thPercentile
+  name: kafka_$1_$2_$3
+  type: GAUGE
+  labels:
+    "$4": "$5"
+    "$6": "$7"
+    quantile: "0.$8"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+), ([^,]+)=([^,>]+)><>Count
+  name: kafka_$1_$2_$3_count
+  type: COUNTER
+  labels:
+    "$4": "$5"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,]+), ([^,]+)=([^,>]*)><>(\d+)thPercentile
+  name: kafka_$1_$2_$3
+  type: GAUGE
+  labels:
+    "$4": "$5"
+    quantile: "0.$6"
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,>]+)><>Count
+  name: kafka_$1_$2_$3_count
+  type: COUNTER
+- pattern: kafka.(\w+)<type=([^,]+), name=([^,>]+)><>(\d+)thPercentile
+  name: kafka_$1_$2_$3
+  type: GAUGE
+  labels:
+    quantile: "0.$4"

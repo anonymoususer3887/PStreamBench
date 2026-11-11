@@ -24,7 +24,18 @@ def getBoltMetrics(parallelization, main_node_ip, job_id, operatorId,
     prom_endpoint_Selectivity = "http://" + main_node_ip + ":9090/api/v1/query?query=(bolts_emitted{TopologyId='"+job_id+"',BoltId='"+operatorId+"'} / on() group_left() uptime_seconds{TopologyId='"+job_id+"'}) / (bolts_executed{TopologyId='"+job_id+"',BoltId='"+operatorId+"'} / on() group_left() uptime_seconds{TopologyId='"+job_id+"'})"
     response = requests.get(prom_endpoint_Selectivity)
     data = response.json()
-    selectivity_avg = data["data"]["result"][0]["value"][1]
+    # Confirmed live, 2026-10-25: a bolt with zero executed/emitted
+    # tuples in the query window (legitimate right after a cluster
+    # restart, or at low parallelism/low rate) makes this division
+    # query return an empty Prometheus result vector rather than one
+    # with a NaN/0 value -- result[0] then raised a bare IndexError
+    # that crashed the whole collect() call for the combo (TwoFilters/
+    # 100000/level2+4 confirmed hit by this), same class of bug as the
+    # one already guarded below for "capacity".
+    try:
+        selectivity_avg = data["data"]["result"][0]["value"][1]
+    except (IndexError, KeyError):
+        selectivity_avg = None
     response_data = {"Selectivity": selectivity_avg}
     dict_response["selectivity"] = response_data
 
@@ -37,7 +48,10 @@ def getBoltMetrics(parallelization, main_node_ip, job_id, operatorId,
     prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=bolts_executed{TopologyId='"+job_id+"',BoltId='"+operatorId+"'} / on() group_left() uptime_seconds{TopologyId='"+job_id+"'}"
     response = requests.get(prom_endpoint_Throughput)
     data = response.json()
-    throughput_per_sec = float(data["data"]["result"][0]["value"][1])
+    try:
+        throughput_per_sec = float(data["data"]["result"][0]["value"][1])
+    except (IndexError, KeyError):
+        throughput_per_sec = 0.0
     dict_response["throughput_per_sec"] = throughput_per_sec
 
     # busy_ratio / backpressure_ratio -- derived from Storm's native
@@ -68,7 +82,10 @@ def getBoltMetrics(parallelization, main_node_ip, job_id, operatorId,
     prom_endpoint_Latency_98th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.98, bolts_execute_latency{TopologyId=\"" + job_id + "\", BoltId=\""+operatorId+"\"}[5m] @ " +timestamp_prom+")"
     response = requests.get(prom_endpoint_Latency_98th)
     data = response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     response_data = {"Latency_98th": data}
     dict_response["execution_latency_98th"] = response_data
 
@@ -76,7 +93,10 @@ def getBoltMetrics(parallelization, main_node_ip, job_id, operatorId,
     prom_endpoint_Latency_95th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.95, bolts_execute_latency{TopologyId=\"" + job_id + "\", BoltId=\""+operatorId+"\"}[5m] @ " +timestamp_prom+")"
     response = requests.get(prom_endpoint_Latency_95th)
     data = response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     response_data = {"Latency_95th": data}
     dict_response["execution_latency_95th"] = response_data
 
@@ -84,7 +104,10 @@ def getBoltMetrics(parallelization, main_node_ip, job_id, operatorId,
     prom_endpoint_Latency_50th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.50, bolts_execute_latency{TopologyId=\"" + job_id + "\", BoltId=\""+operatorId+"\"}[5m] @ " +timestamp_prom+")"
     response = requests.get(prom_endpoint_Latency_50th)
     data = response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     response_data = {"Latency_50th": data}
     dict_response["execution_latency_50th"] = response_data
 
@@ -95,8 +118,20 @@ def getQueryMetrics(main_node_ip, job_id, timestamp_prom, spouts):
     dictReturn = {}
 
     for spout in spouts:
-        # records out
-        eventrate_query = "rate(spouts_emitted{TopologyId=\"" + job_id + "\" , SpoutId='" + spout + "'}[1m])[5m:1m] @ " + timestamp_prom
+        # records out -- was rate(spouts_emitted[1m])[5m:1m], a narrow-window
+        # rate query on Storm's own periodically-reported (not continuously
+        # incrementing) emitted count. Confirmed via live audit (storm_
+        # spout_vs_bolt.csv, 2026-10-25): this read 0 at p50 in 63 of 489
+        # runs, mostly at 500k/1m event rates, while the SAME runs' bolts
+        # (using the division-by-uptime pattern below, never rate()) showed
+        # 1000-160000 rows/s -- i.e. the pipeline was fine, only this one
+        # query's narrow rate window was dropping out under the increased
+        # scrape/reporting load that comes with higher event rates. Switched
+        # to the identical uptime-division pattern getBoltMetrics() already
+        # uses for bolts_executed, for the same robustness: a cumulative
+        # count over cumulative uptime only needs ONE scrape of two gauges,
+        # not several back-to-back 1-minute windows all landing cleanly.
+        eventrate_query = "(spouts_emitted{TopologyId=\"" + job_id + "\" , SpoutId='" + spout + "'} / on() group_left() uptime_seconds{TopologyId=\"" + job_id + "\"})[5m:1s] @ " + timestamp_prom
         prom_endpoint_recPerSecOutSource = "http://" + main_node_ip + ":9090/api/v1/query?query=" + eventrate_query
         recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource)
         data = recPerSecOutSource_resp.json()
@@ -106,36 +141,78 @@ def getQueryMetrics(main_node_ip, job_id, timestamp_prom, spouts):
         prom_endpoint_recPerSecOutSource_max = "http://" + main_node_ip + ":9090/api/v1/query?query=max_over_time(" + eventrate_query + ")"
         recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_max)
         data = recPerSecOutSource_resp.json()
-        data = data['data']['result'][0]['value'][1]
+        try:
+            data = data['data']['result'][0]['value'][1]
+        except (IndexError, KeyError):
+            data = None
         dictReturn["recPerSecOutSource_" + spout + "_max"] = data
 
         # records out 98th
         prom_endpoint_recPerSecOutSource_98 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.98," + eventrate_query + "))"
         recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_98)
         data = recPerSecOutSource_resp.json()
-        data = data['data']['result'][0]['value'][1]
+        try:
+            data = data['data']['result'][0]['value'][1]
+        except (IndexError, KeyError):
+            data = None
         dictReturn["recPerSecOutSource_" + spout + "_98"] = data
 
         # records out 95th
         prom_endpoint_recPerSecOutSource_95 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.95," + eventrate_query + "))"
         recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_95)
         data = recPerSecOutSource_resp.json()
-        data = data['data']['result'][0]['value'][1]
+        try:
+            data = data['data']['result'][0]['value'][1]
+        except (IndexError, KeyError):
+            data = None
         dictReturn["recPerSecOutSource_" + spout + "_95"] = data
 
         # records out 50th
         prom_endpoint_recPerSecOutSource_50 = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.50," + eventrate_query + "))"
         recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_50)
         data = recPerSecOutSource_resp.json()
-        data = data['data']['result'][0]['value'][1]
+        try:
+            data = data['data']['result'][0]['value'][1]
+        except (IndexError, KeyError):
+            data = None
         dictReturn["recPerSecOutSource_" + spout + "_50"] = data
 
         # records out 50th
         prom_endpoint_recPerSecOutSource_avg = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(" + eventrate_query + "))"
         recPerSecOutSource_resp = requests.get(prom_endpoint_recPerSecOutSource_avg)
         data = recPerSecOutSource_resp.json()
-        data = data['data']['result'][0]['value'][1]
+        try:
+            data = data['data']['result'][0]['value'][1]
+        except (IndexError, KeyError):
+            data = None
         dictReturn["recPerSecOutSource_" + spout + "_avg"] = data
+
+        # acked/failed tuple counts -- storm_exporter.py has always exported
+        # spouts_acked/spouts_failed (see spoutMetric()), but nothing here
+        # ever queried them, so every collected run silently had neither.
+        # Both only become meaningful once the spout actually emits with a
+        # message id (SyntheticSpout.java fix, 2026-10-25) -- before that,
+        # Storm never tracks these tuples at all, so both would read 0
+        # regardless of this query existing. Cumulative counts (not a rate)
+        # since that's what's needed to compute a fail ratio for telling
+        # contention apart from timeouts/replays.
+        try:
+            prom_endpoint_acked = "http://" + main_node_ip + ":9090/api/v1/query?query=" + urllib.parse.quote(
+                "spouts_acked{{TopologyId=\"{}\", SpoutId='{}'}} @ {}".format(job_id, spout, timestamp_prom))
+            response = requests.get(prom_endpoint_acked)
+            data = response.json()
+            dictReturn["spout_acked_" + spout] = float(data['data']['result'][0]['value'][1])
+        except (IndexError, KeyError):
+            dictReturn["spout_acked_" + spout] = None
+
+        try:
+            prom_endpoint_failed = "http://" + main_node_ip + ":9090/api/v1/query?query=" + urllib.parse.quote(
+                "spouts_failed{{TopologyId=\"{}\", SpoutId='{}'}} @ {}".format(job_id, spout, timestamp_prom))
+            response = requests.get(prom_endpoint_failed)
+            data = response.json()
+            dictReturn["spout_failed_" + spout] = float(data['data']['result'][0]['value'][1])
+        except (IndexError, KeyError):
+            dictReturn["spout_failed_" + spout] = None
 
     # throughput
     throughput_query = "rate(bolts_executed{TopologyId=\"" + job_id + "\" , BoltId='sink'}[1m])[5m:1m] @ " + timestamp_prom
@@ -149,27 +226,39 @@ def getQueryMetrics(main_node_ip, job_id, timestamp_prom, spouts):
     prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.98," + throughput_query + "))"
     throughput_response = requests.get(prom_endpoint_Throughput)
     data = throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["throughput_98"] = data
 
     # throughput 95th
     prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.95," + throughput_query + "))"
     throughput_response = requests.get(prom_endpoint_Throughput)
     data = throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["throughput_95"] = data
 
     # throughput 50th
     prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(quantile_over_time(0.50," + throughput_query + "))"
     throughput_response = requests.get(prom_endpoint_Throughput)
     data = throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["throughput_50"] = data
 
     prom_endpoint_Throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=sum(avg_over_time(" + throughput_query + "))"
     throughput_response = requests.get(prom_endpoint_Throughput)
     data = throughput_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["throughput_avg"] = data
 
 #    # latency
@@ -213,7 +302,10 @@ def getQueryMetrics(main_node_ip, job_id, timestamp_prom, spouts):
         prom_endpoint_Latency = "http://" + main_node_ip + ":9090/api/v1/query?query=topology_stats_complete_latency{TopologyId=\"" + job_id + "\", window=\"600\"} @ " + timestamp_prom
         latency_response = requests.get(prom_endpoint_Latency)
         data = latency_response.json()
-        data = data['data']['result'][0]['value'][1]
+        try:
+            data = data['data']['result'][0]['value'][1]
+        except (IndexError, KeyError):
+            data = None
         dictReturn["endtoend_latency_storm"] = data
     except IndexError:
         dictReturn["endtoend_latency_storm"] = 0
@@ -255,21 +347,30 @@ def getHardwareMetrics(main_node_ip, job_id, timestamp_prom):
     cpu_response = requests.get(prom_endpoint_cpu)
     data = cpu_response.json()
     print(data)
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_cpu_98"] = data
 
     # cpu 95th
     prom_endpoint_cpu = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.95," + cpu_query + "))"
     cpu_response = requests.get(prom_endpoint_cpu)
     data = cpu_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_cpu_95"] = data
 
     # cpu 50th
     prom_endpoint_cpu = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.50," + cpu_query + "))"
     cpu_response = requests.get(prom_endpoint_cpu)
     data = cpu_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_cpu_50"] = data
 
     # control network out
@@ -284,21 +385,30 @@ def getHardwareMetrics(main_node_ip, job_id, timestamp_prom):
     prom_endpoint_NW = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.98," + network_query + "))"
     nw_response = requests.get(prom_endpoint_NW)
     data = nw_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_network_out_98"] = data
 
     # control network out 95th
     prom_endpoint_NW = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.95," + network_query + "))"
     nw_response = requests.get(prom_endpoint_NW)
     data = nw_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_network_out_95"] = data
 
     # control network out 50th
     prom_endpoint_NW = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.50," + network_query + "))"
     nw_response = requests.get(prom_endpoint_NW)
     data = nw_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_network_out_50"] = data
 
     # experiment network out
@@ -313,21 +423,30 @@ def getHardwareMetrics(main_node_ip, job_id, timestamp_prom):
     prom_endpoint_NW = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.98," + network_query + "))"
     nw_response = requests.get(prom_endpoint_NW)
     data = nw_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["experiment_network_out_98"] = data
 
     # experiment network out 95th
     prom_endpoint_NW = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.95," + network_query + "))"
     nw_response = requests.get(prom_endpoint_NW)
     data = nw_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["experiment_network_out_95"] = data
 
     # experiment network out 50th
     prom_endpoint_NW = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.50," + network_query + "))"
     nw_response = requests.get(prom_endpoint_NW)
     data = nw_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["experiment_network_out_50"] = data
 
     # memory
@@ -342,21 +461,30 @@ def getHardwareMetrics(main_node_ip, job_id, timestamp_prom):
     prom_endpoint_Memory = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.98," + urllib.parse.quote(memory_query) + "))"
     mem_response = requests.get(prom_endpoint_Memory)
     data = mem_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_memory_98"] = data
 
     # memory 95th
     prom_endpoint_Memory = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.95," + urllib.parse.quote(memory_query) + "))"
     mem_response = requests.get(prom_endpoint_Memory)
     data = mem_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_memory_95"] = data
 
     # memory 50th
     prom_endpoint_Memory = "http://" + main_node_ip + ":9090/api/v1/query?query=avg(quantile_over_time(0.50," + urllib.parse.quote(memory_query) + "))"
     mem_response = requests.get(prom_endpoint_Memory)
     data = mem_response.json()
-    data = data['data']['result'][0]['value'][1]
+    try:
+        data = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        data = None
     dictReturn["node_memory_50"] = data
 
     return dictReturn
@@ -370,7 +498,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_event_rate = "http://" + main_node_ip + ":9090/api/v1/query?query=avg_over_time(" + messages_query.format(input_topic, timestamp_prom) + ")"
     response = requests.get(prom_event_rate)
     data = response.json()
-    event_rate = data["data"]["result"][0]["value"][1]
+    try:
+        event_rate = data["data"]["result"][0]["value"][1]
+    except (IndexError, KeyError):
+        event_rate = None
     response_data = {"event rate": event_rate}
     dict_response["kafka_event_rate"] = response_data
 
@@ -378,7 +509,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_event_rate_98th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.98, " + messages_query.format(input_topic, timestamp_prom) + ")"
     response = requests.get(prom_event_rate_98th)
     data = response.json()
-    event_rate_98th = data['data']['result'][0]['value'][1]
+    try:
+        event_rate_98th = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        event_rate_98th = None
     response_data = {"event rate 98th": event_rate_98th}
     dict_response["kafka_event_rate_98th"] = response_data
 
@@ -386,7 +520,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_event_rate_95th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.95, " + messages_query.format(input_topic, timestamp_prom) + ")"
     response = requests.get(prom_event_rate_95th)
     data = response.json()
-    event_rate_95th = data['data']['result'][0]['value'][1]
+    try:
+        event_rate_95th = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        event_rate_95th = None
     response_data = {"event rate 95th": event_rate_95th}
     dict_response["kafka_event_rate_95th"] = response_data
 
@@ -394,7 +531,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_event_rate_50th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.50, " + messages_query.format(input_topic, timestamp_prom) + ")"
     response = requests.get(prom_event_rate_50th)
     data = response.json()
-    event_rate_50th = data['data']['result'][0]['value'][1]
+    try:
+        event_rate_50th = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        event_rate_50th = None
     response_data = {"event rate 50th": event_rate_50th}
     dict_response["kafka_event_rate_50th"] = response_data
 
@@ -402,7 +542,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_throughput = "http://" + main_node_ip + ":9090/api/v1/query?query=avg_over_time(" + messages_query.format(output_topic, timestamp_prom) + ")"
     response = requests.get(prom_throughput)
     data = response.json()
-    throughput = data["data"]["result"][0]["value"][1]
+    try:
+        throughput = data["data"]["result"][0]["value"][1]
+    except (IndexError, KeyError):
+        throughput = None
     response_data = {"throughput": throughput}
     dict_response["kafka_throughput"] = response_data
 
@@ -410,7 +553,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_throughput_98th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.98, " + messages_query.format(output_topic, timestamp_prom) + ")"
     response = requests.get(prom_throughput_98th)
     data = response.json()
-    throughput_98th = data['data']['result'][0]['value'][1]
+    try:
+        throughput_98th = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        throughput_98th = None
     response_data = {"throughput 98th": throughput_98th}
     dict_response["kafka_throughput_98th"] = response_data
 
@@ -418,7 +564,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_throughput_95th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.95, " + messages_query.format(output_topic, timestamp_prom) + ")"
     response = requests.get(prom_throughput_95th)
     data = response.json()
-    throughput_95th = data['data']['result'][0]['value'][1]
+    try:
+        throughput_95th = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        throughput_95th = None
     response_data = {"throughput 95th": throughput_95th}
     dict_response["kafka_throughput_95th"] = response_data
 
@@ -426,7 +575,10 @@ def getKafkaMetrics(main_node_ip, input_topic, output_topic, timestamp_prom):
     prom_throuthput_50th = "http://" + main_node_ip + ":9090/api/v1/query?query=quantile_over_time(0.50, " + messages_query.format(output_topic, timestamp_prom) + ")"
     response = requests.get(prom_throuthput_50th)
     data = response.json()
-    throughput_50th = data['data']['result'][0]['value'][1]
+    try:
+        throughput_50th = data['data']['result'][0]['value'][1]
+    except (IndexError, KeyError):
+        throughput_50th = None
     response_data = {"throughput 50th": throughput_50th}
     dict_response["kafka_throughput_50th"] = response_data
 

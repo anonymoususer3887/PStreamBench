@@ -328,14 +328,32 @@ class JobRunner():
                                      distributed=True)
         url = "http://" + config['main_node_ip'] + \
               ":8080/api/v1/topology/summary"
+
+        # A single immediate query here used to silently return
+        # topology_id=0 whenever Nimbus hadn't yet listed the
+        # just-submitted topology as ACTIVE by the instant the ansible
+        # playbook call returned (confirmed live, 2026-11-11: Ad Analytics
+        # ds2/1M's collection step crashed with a KeyError on
+        # response["name"] inside getprom_storm.py's main(), because
+        # job_id="0" doesn't exist on Nimbus -- get_logs()'s
+        # subprocess.run(check=True) swallows that exception in its own
+        # except clause, so the view still returned 200 success with no
+        # evaluationMetrics/metaInfo file ever written for that job).
+        # Retry for a short window instead of querying exactly once,
+        # mirroring _run_flink_job's own background-poller fix for the
+        # identical class of registration-lag race.
         topology_id = 0
-        topologies = requests.get(url)
-        for topology in topologies.json()["topologies"]:
-            if topology["name"] != config["job_class"].replace(" ", ""):
-                continue
-            if topology["status"] == "ACTIVE":
-                topology_id = topology["id"]
-                break
+        deadline = time.time() + 30
+        while time.time() < deadline and not topology_id:
+            topologies = requests.get(url)
+            for topology in topologies.json()["topologies"]:
+                if topology["name"] != config["job_class"].replace(" ", ""):
+                    continue
+                if topology["status"] == "ACTIVE":
+                    topology_id = topology["id"]
+                    break
+            if not topology_id:
+                time.sleep(2)
 
         time.sleep(int(config['job_run_time'])*60)
         return topology_id

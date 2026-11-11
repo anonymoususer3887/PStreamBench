@@ -1,0 +1,61 @@
+lowercaseOutputName: true
+
+rules:
+# Minimal, Kafka-Streams-only ruleset for the per-job application exporter
+# (port 7076, one instance per running job -- see kafkastreams-provide-job.yaml).
+#
+# This intentionally does NOT include jmx_exporter.yml's kafka.server /
+# kafka.coordinator / generic kafka.(\w+)<type=...> rules: those only ever
+# match beans that exist in an actual Kafka *broker* JVM, never in a Kafka
+# Streams *client* JVM (which is all a per-job instance is). Carrying them
+# here was pure dead weight -- every one of those ~15 rules still gets
+# tried (matches()) against every single kafka.streams bean on every
+# scrape, for no possible benefit, and each additional rule is one more
+# chance to hit a catastrophic-backtracking case like the ones found live
+# on this project's broker exporter (see jmx_exporter.yml's history).
+#
+# Confirmed live: with the full shared jmx_exporter.yml on this port, a
+# per-job instance's JMX HTTP server would go completely unresponsive
+# (connection refused on all but the very first scrape) within ~15-20s of
+# starting, even though the Kafka Streams application itself ran and shut
+# down completely cleanly (no exceptions) -- i.e. the hang was entirely in
+# jmx_exporter's own bean-matching loop, not the app. Cutting the ruleset
+# down to only what a Streams client JVM can ever expose removes that
+# surface area outright rather than chasing each individual pattern.
+#
+# Capture groups bounded to [^,]+/[^,>]+ for the same reason as
+# jmx_exporter.yml: unbounded (.+)/(.*) groups risk catastrophic
+# backtracking against unusually long thread-id/task-id strings (which
+# scale with parallelism -- e.g. "StreamThread-40").
+- pattern: kafka.streams<type=stream-processor-node-metrics, thread-id=([^,]+), task-id=([^,]+), processor-node-id=([^,>]+)><>record-e2e-latency-(min|avg|max)
+  name: kafka_streams_processor_node_record_e2e_latency_$4
+  type: GAUGE
+  labels:
+    thread_id: "$1"
+    task_id: "$2"
+    processor_node_id: "$3"
+- pattern: kafka.streams<type=stream-processor-node-metrics, thread-id=([^,]+), task-id=([^,]+), processor-node-id=([^,>]+)><>process-(rate|total)
+  name: kafka_streams_processor_node_process_$4
+  type: GAUGE
+  labels:
+    thread_id: "$1"
+    task_id: "$2"
+    processor_node_id: "$3"
+# Our own OperatorMetricsProcessor sensors (Tier 3 selectivity/throughput,
+# see dsp_kafkastreams_jobs/utils/OperatorMetricsProcessor.java) --
+# scopeName="operator", entityName=<stage name>, operationName="records".
+- pattern: kafka.streams<type=stream-operator-metrics, thread-id=([^,]+), operator-id=([^,>]+)><>records-(rate|total)
+  name: kafka_streams_operator_records_$3
+  type: GAUGE
+  labels:
+    thread_id: "$1"
+    operator_id: "$2"
+# Catch-all fallback for any other kafka.streams metric (process-latency-avg,
+# dropped-records-*, rocksdb metrics, ...) not given its own rule above.
+- pattern: kafka.streams<type=([^,]+), thread-id=([^,]+), task-id=([^,]+), ([^,]+)-id=([^,>]+)><>([^,>]+)
+  name: kafka_streams_$5
+  type: GAUGE
+  labels:
+    metric_type: "$1"
+    thread_id: "$2"
+    task_id: "$3"

@@ -748,6 +748,185 @@ def getTpch(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
                      stage_relations=stage_relations)
 
 
+# Synthetic-workload dispatch (dsp_risingwave_synthetic_jobs), added
+# 2026-10-20 -- same JOB_CLASS_DISPATCH-keyed pattern as every other
+# engine's synthetic port. getCombo()/getOperatorMetrics() needed ZERO
+# changes to support this (confirmed by direct reuse below) -- both were
+# already written generically against a (stage_name, relation_name,
+# flag_substring) list, not hardcoded per real workload.
+#
+# Every one of the 9 shapes ends in a windowed AVG (a true aggregation --
+# GROUP BY k, window_start), the same structural reason getActorMetrics()'s
+# own docstring already gives for why RisingWave has no per-event
+# end-to-end latency "even in principle" for an aggregating query: COUNT/
+# AVG loses per-row identity, so there is no analog of Kafka Streams'
+# KIP-613 record-e2e-latency here. This is NOT a gap specific to the
+# synthetic port -- getActorMetrics()'s barrier_inflight_latency_avg/max
+# (already called by getCombo() for every workload, synthetic or real) is
+# the same honest substitute used everywhere else in this file, for the
+# same reason. Confirmed by inspecting every one of the 9 .sql files
+# directly: none has a non-aggregating pass-through stage a true per-event
+# latency could be measured across.
+#
+# Selectivity caveat for the 5 join shapes: getOperatorMetrics() computes
+# each stage's selectivity as current/previous in LIST order, which
+# assumes one linear chain. The N sources (and, for N<=3, their N
+# pre-filters) are independent PARALLEL branches, not a chain, so only
+# the very first list entry (source-0) has a meaningful selectivity
+# (1.0, by construction); every other source-i/filter-i's "selectivity"
+# is computed against whichever unrelated branch happens to be listed
+# right before it, not a real ratio -- same for join-1's (the first
+# hop's "selectivity" is computed against the last-listed filter/source,
+# not a true combined fan-in ratio across both of that join's actual
+# inputs). From join-2 onward this resolves itself: each later join hop
+# really does have exactly one upstream (the previous join's own
+# output), so its selectivity is genuine again. Same accepted-limitation
+# shape as every other engine's multi-source workloads (e.g. Ad
+# Analytics Q1) -- every stage's THROUGHPUT number is unaffected and
+# fully real; only the derived selectivity ratio is meaningless for the
+# specific stages named above.
+
+def getLinearQuerySynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source", "linear_query_source", "SOURCE"),
+        ("window-agg", "linear_query_mv", "MVIEW"),
+        ("sink", "linear_query_sink", "SINK"),
+    ]
+    return getCombo("LinearQuery", main_node_ip, rw_port, "LinearQueryIn", "LinearQueryOut", timestamp_prom,
+                     stage_relations=stage_relations)
+
+def getTwoFiltersSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source", "two_filters_source", "SOURCE"),
+        ("window-agg", "two_filters_agg_mv", "MVIEW"),
+        ("filter1", "two_filters_filter1_mv", "MVIEW"),
+        ("filter2", "two_filters_filter2_mv", "MVIEW"),
+        ("sink", "two_filters_sink", "SINK"),
+    ]
+    return getCombo("TwoFilters", main_node_ip, rw_port, "TwoFiltersIn", "TwoFiltersOut", timestamp_prom,
+                     stage_relations=stage_relations)
+
+def getThreeFiltersSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source", "three_filters_source", "SOURCE"),
+        ("window-agg", "three_filters_agg_mv", "MVIEW"),
+        ("filter1", "three_filters_filter1_mv", "MVIEW"),
+        ("filter2", "three_filters_filter2_mv", "MVIEW"),
+        ("filter3", "three_filters_filter3_mv", "MVIEW"),
+        ("sink", "three_filters_sink", "SINK"),
+    ]
+    return getCombo("ThreeFilters", main_node_ip, rw_port, "ThreeFiltersIn", "ThreeFiltersOut", timestamp_prom,
+                     stage_relations=stage_relations)
+
+def getFourFiltersSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source", "four_filters_source", "SOURCE"),
+        ("window-agg", "four_filters_agg_mv", "MVIEW"),
+        ("filter1", "four_filters_filter1_mv", "MVIEW"),
+        ("filter2", "four_filters_filter2_mv", "MVIEW"),
+        ("filter3", "four_filters_filter3_mv", "MVIEW"),
+        ("filter4", "four_filters_filter4_mv", "MVIEW"),
+        ("sink", "four_filters_sink", "SINK"),
+    ]
+    return getCombo("FourFilters", main_node_ip, rw_port, "FourFiltersIn", "FourFiltersOut", timestamp_prom,
+                     stage_relations=stage_relations)
+
+def getTwoWayJoinSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source-0", "two_way_join_source0", "SOURCE"),
+        ("source-1", "two_way_join_source1", "SOURCE"),
+        ("filter-0", "two_way_join_filter0_mv", "MVIEW"),
+        ("filter-1", "two_way_join_filter1_mv", "MVIEW"),
+        ("join-1", "two_way_join_join1_mv", "MVIEW"),
+        ("window-agg", "two_way_join_agg_mv", "MVIEW"),
+        ("sink", "two_way_join_sink", "SINK"),
+    ]
+    return getCombo("TwoWayJoin", main_node_ip, rw_port, "TwoWayJoinIn0", "TwoWayJoinOut", timestamp_prom,  # input_topic is source-0 only; this job has 2 input topics, getKafkaMetrics() only takes one
+                     stage_relations=stage_relations)
+
+def getThreeWayJoinSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source-0", "three_way_join_source0", "SOURCE"),
+        ("source-1", "three_way_join_source1", "SOURCE"),
+        ("source-2", "three_way_join_source2", "SOURCE"),
+        ("filter-0", "three_way_join_filter0_mv", "MVIEW"),
+        ("filter-1", "three_way_join_filter1_mv", "MVIEW"),
+        ("filter-2", "three_way_join_filter2_mv", "MVIEW"),
+        ("join-1", "three_way_join_join1_mv", "MVIEW"),
+        ("join-2", "three_way_join_join2_mv", "MVIEW"),
+        ("window-agg", "three_way_join_agg_mv", "MVIEW"),
+        ("sink", "three_way_join_sink", "SINK"),
+    ]
+    return getCombo("ThreeWayJoin", main_node_ip, rw_port, "ThreeWayJoinIn0", "ThreeWayJoinOut", timestamp_prom,  # input_topic is source-0 only; this job has 3 input topics, getKafkaMetrics() only takes one
+                     stage_relations=stage_relations)
+
+def getFourWayJoinSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source-0", "four_way_join_source0", "SOURCE"),
+        ("source-1", "four_way_join_source1", "SOURCE"),
+        ("source-2", "four_way_join_source2", "SOURCE"),
+        ("source-3", "four_way_join_source3", "SOURCE"),
+        ("src-0", "four_way_join_src0_mv", "MVIEW"),
+        ("src-1", "four_way_join_src1_mv", "MVIEW"),
+        ("src-2", "four_way_join_src2_mv", "MVIEW"),
+        ("src-3", "four_way_join_src3_mv", "MVIEW"),
+        ("join-1", "four_way_join_join1_mv", "MVIEW"),
+        ("join-2", "four_way_join_join2_mv", "MVIEW"),
+        ("join-3", "four_way_join_join3_mv", "MVIEW"),
+        ("window-agg", "four_way_join_agg_mv", "MVIEW"),
+        ("sink", "four_way_join_sink", "SINK"),
+    ]
+    return getCombo("FourWayJoin", main_node_ip, rw_port, "FourWayJoinIn0", "FourWayJoinOut", timestamp_prom,  # input_topic is source-0 only; this job has 4 input topics, getKafkaMetrics() only takes one
+                     stage_relations=stage_relations)
+
+def getFiveWayJoinSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source-0", "five_way_join_source0", "SOURCE"),
+        ("source-1", "five_way_join_source1", "SOURCE"),
+        ("source-2", "five_way_join_source2", "SOURCE"),
+        ("source-3", "five_way_join_source3", "SOURCE"),
+        ("source-4", "five_way_join_source4", "SOURCE"),
+        ("src-0", "five_way_join_src0_mv", "MVIEW"),
+        ("src-1", "five_way_join_src1_mv", "MVIEW"),
+        ("src-2", "five_way_join_src2_mv", "MVIEW"),
+        ("src-3", "five_way_join_src3_mv", "MVIEW"),
+        ("src-4", "five_way_join_src4_mv", "MVIEW"),
+        ("join-1", "five_way_join_join1_mv", "MVIEW"),
+        ("join-2", "five_way_join_join2_mv", "MVIEW"),
+        ("join-3", "five_way_join_join3_mv", "MVIEW"),
+        ("join-4", "five_way_join_join4_mv", "MVIEW"),
+        ("window-agg", "five_way_join_agg_mv", "MVIEW"),
+        ("sink", "five_way_join_sink", "SINK"),
+    ]
+    return getCombo("FiveWayJoin", main_node_ip, rw_port, "FiveWayJoinIn0", "FiveWayJoinOut", timestamp_prom,  # input_topic is source-0 only; this job has 5 input topics, getKafkaMetrics() only takes one
+                     stage_relations=stage_relations)
+
+def getSixWayJoinSynthetic(main_node_ip, rw_port, timestamp_prom, job_query_number=None):
+    stage_relations = [
+        ("source-0", "six_way_join_source0", "SOURCE"),
+        ("source-1", "six_way_join_source1", "SOURCE"),
+        ("source-2", "six_way_join_source2", "SOURCE"),
+        ("source-3", "six_way_join_source3", "SOURCE"),
+        ("source-4", "six_way_join_source4", "SOURCE"),
+        ("source-5", "six_way_join_source5", "SOURCE"),
+        ("src-0", "six_way_join_src0_mv", "MVIEW"),
+        ("src-1", "six_way_join_src1_mv", "MVIEW"),
+        ("src-2", "six_way_join_src2_mv", "MVIEW"),
+        ("src-3", "six_way_join_src3_mv", "MVIEW"),
+        ("src-4", "six_way_join_src4_mv", "MVIEW"),
+        ("src-5", "six_way_join_src5_mv", "MVIEW"),
+        ("join-1", "six_way_join_join1_mv", "MVIEW"),
+        ("join-2", "six_way_join_join2_mv", "MVIEW"),
+        ("join-3", "six_way_join_join3_mv", "MVIEW"),
+        ("join-4", "six_way_join_join4_mv", "MVIEW"),
+        ("join-5", "six_way_join_join5_mv", "MVIEW"),
+        ("window-agg", "six_way_join_agg_mv", "MVIEW"),
+        ("sink", "six_way_join_sink", "SINK"),
+    ]
+    return getCombo("SixWayJoin", main_node_ip, rw_port, "SixWayJoinIn0", "SixWayJoinOut", timestamp_prom,  # input_topic is source-0 only; this job has 6 input topics, getKafkaMetrics() only takes one
+                     stage_relations=stage_relations)
+
+
 # job_class (the human-readable name from the controller's job_class field,
 # e.g. "Word Count") -> collector function. Word Count is validated live;
 # Smart Grid's .sql is written but not yet validated (see its own header
@@ -794,6 +973,29 @@ JOB_CLASS_DISPATCH = {
     "Linear Road": getLinearRoad,
     "Google cloud Monitoring": getGoogleCloudMonitoring,
     "Google cloud Monitoring Q2": getGoogleCloudMonitoring,
+    "LinearQuery": getLinearQuerySynthetic,
+    "TwoFilters": getTwoFiltersSynthetic,
+    "ThreeFilters": getThreeFiltersSynthetic,
+    "FourFilters": getFourFiltersSynthetic,
+    "TwoWayJoin": getTwoWayJoinSynthetic,
+    "ThreeWayJoin": getThreeWayJoinSynthetic,
+    "FourWayJoin": getFourWayJoinSynthetic,
+    "FiveWayJoin": getFiveWayJoinSynthetic,
+    "SixWayJoin": getSixWayJoinSynthetic,
+}
+
+# Job classes whose output folder name must exactly match job_class
+# itself (not fall back to "Word Count") -- same bug class as the
+# query-variant comment above, but for the synthetic shapes: without this
+# set, main()'s `job_name = job_class if job_class in JOB_CLASS_DISPATCH
+# else "Word Count"` line already handles it correctly since every
+# synthetic shape name IS a literal JOB_CLASS_DISPATCH key -- this set
+# exists only so a sweep script can check "is this a synthetic job" in
+# one place rather than re-deriving the list, mirroring
+# getprom_spark.py's/getprom_kafkastreams.py's SYNTHETIC_JOB_CLASSES.
+SYNTHETIC_JOB_CLASSES = {
+    "LinearQuery", "TwoFilters", "ThreeFilters", "FourFilters",
+    "TwoWayJoin", "ThreeWayJoin", "FourWayJoin", "FiveWayJoin", "SixWayJoin",
 }
 
 

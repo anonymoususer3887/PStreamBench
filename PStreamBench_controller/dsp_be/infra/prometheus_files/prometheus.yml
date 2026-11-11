@@ -5,16 +5,16 @@ scrape_configs:
   - targets: ['localhost:9250']
 - job_name: taskmanager
   static_configs:
-  - targets: ['ms0822.utah.cloudlab.us:9250', 'ms0843.utah.cloudlab.us:9250', 'ms0830.utah.cloudlab.us:9250',
-      'ms0817.utah.cloudlab.us:9250', 'ms0825.utah.cloudlab.us:9250']
+  - targets: ['ms0837.utah.cloudlab.us:9250', 'ms0812.utah.cloudlab.us:9250', 'ms0838.utah.cloudlab.us:9250',
+      'ms0805.utah.cloudlab.us:9250', 'ms0802.utah.cloudlab.us:9250']
 - job_name: kafka
   static_configs:
-  - targets: ['localhost:7075', 'ms0822:7075', 'ms0843:7075', 'ms0830:7075', 'ms0817:7075',
-      'ms0825:7075']
+  - targets: ['localhost:7075', 'ms0837:7075', 'ms0812:7075', 'ms0838:7075', 'ms0805:7075',
+      'ms0802:7075']
 - job_name: node_exporter
   static_configs:
-  - targets: ['ms0822.utah.cloudlab.us:9100', 'ms0843.utah.cloudlab.us:9100', 'ms0830.utah.cloudlab.us:9100',
-      'ms0817.utah.cloudlab.us:9100', 'ms0825.utah.cloudlab.us:9100']
+  - targets: ['ms0837.utah.cloudlab.us:9100', 'ms0812.utah.cloudlab.us:9100', 'ms0838.utah.cloudlab.us:9100',
+      'ms0805.utah.cloudlab.us:9100', 'ms0802.utah.cloudlab.us:9100']
 - job_name: push_gateway
   static_configs:
   - targets: ['localhost:9091']
@@ -24,13 +24,13 @@ scrape_configs:
 - job_name: spark_driver
   metrics_path: /metrics/prometheus/
   static_configs:
-  - targets: ['ms0807:4040']
+  - targets: ['ms0808:4040']
 - job_name: kafkastreams_app
   static_configs:
-  - targets: ['localhost:7076', 'ms0822:7076', 'ms0843:7076', 'ms0830:7076', 'ms0817:7076',
-      'ms0825:7076']
+  - targets: ['localhost:7076', 'ms0837:7076', 'ms0812:7076', 'ms0838:7076', 'ms0805:7076',
+      'ms0802:7076']
 - job_name: risingwave
   static_configs:
-  - targets: ['ms0807.utah.cloudlab.us:1250', 'ms0807.utah.cloudlab.us:2222', 'ms0822.utah.cloudlab.us:1222',
-      'ms0843.utah.cloudlab.us:1222', 'ms0830.utah.cloudlab.us:1222', 'ms0817.utah.cloudlab.us:1222',
-      'ms0825.utah.cloudlab.us:1222']
+  - targets: ['ms0808.utah.cloudlab.us:1250', 'ms0808.utah.cloudlab.us:2222', 'ms0837.utah.cloudlab.us:1222',
+      'ms0812.utah.cloudlab.us:1222', 'ms0838.utah.cloudlab.us:1222', 'ms0805.utah.cloudlab.us:1222',
+      'ms0802.utah.cloudlab.us:1222']
