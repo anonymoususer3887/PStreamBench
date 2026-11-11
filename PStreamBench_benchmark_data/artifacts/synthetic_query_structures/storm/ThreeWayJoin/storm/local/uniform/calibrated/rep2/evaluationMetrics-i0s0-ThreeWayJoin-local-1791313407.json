@@ -1,0 +1,56 @@
+{
+  "job_name": "ThreeWayJoin",
+  "active_window_seconds": 7.078990167,
+  "operatorMetrics": {
+    "filter-0": {
+      "selectivity": {
+        "Selectivity": 0.4994423386734925
+      },
+      "throughput_per_sec": 33057.398651419826,
+      "busy_ratio": 0.01711927621611005,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 5.178651955233256E-4
+    },
+    "filter-1": {
+      "selectivity": {
+        "Selectivity": 0.5002524301752465
+      },
+      "throughput_per_sec": 33017.13867177915,
+      "busy_ratio": 0.015225352975123013,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 4.6113484049835704E-4
+    },
+    "filter-2": {
+      "selectivity": {
+        "Selectivity": 0.499841888450165
+      },
+      "throughput_per_sec": 33057.25738833337,
+      "busy_ratio": 0.014976270696661924,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 4.530403269917782E-4
+    },
+    "join": {
+      "selectivity": {
+        "Selectivity": 0.019982920091245686
+      },
+      "throughput_per_sec": 49293.471493530895,
+      "busy_ratio": 0.010442455810237037,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 2.1184257253229708E-4
+    },
+    "window-agg": {
+      "selectivity": {
+        "Selectivity": 0.7001290692671733
+      },
+      "throughput_per_sec": 985.0275018753251,
+      "busy_ratio": 0.009896321275678358,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 0.010046746163774559
+    }
+  },
+  "queryMetrics": {
+    "recPerSecOutSource_spout_avg": 99131.79471153233,
+    "throughput_avg": 689.6463880905402
+  },
+  "hardwareMetrics": {}
+}

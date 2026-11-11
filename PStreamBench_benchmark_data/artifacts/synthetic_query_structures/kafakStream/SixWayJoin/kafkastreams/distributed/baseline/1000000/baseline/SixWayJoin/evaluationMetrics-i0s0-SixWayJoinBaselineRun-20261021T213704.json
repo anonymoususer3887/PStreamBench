@@ -1,0 +1,518 @@
+{
+    "job_name": "SixWayJoin",
+    "queryMetrics": {
+        "kafka_event_rate": {
+            "event rate": null
+        },
+        "kafka_event_rate_98th": {
+            "event rate 98th": null
+        },
+        "kafka_event_rate_95th": {
+            "event rate 95th": null
+        },
+        "kafka_event_rate_50th": {
+            "event rate 50th": null
+        },
+        "kafka_throughput": {
+            "throughput": null
+        },
+        "kafka_throughput_98th": {
+            "throughput 98th": null
+        },
+        "kafka_throughput_95th": {
+            "throughput 95th": null
+        },
+        "kafka_throughput_50th": {
+            "throughput 50th": null
+        }
+    },
+    "streamsMetrics": {
+        "end_to_end_latency_avg": null,
+        "end_to_end_latency_max": null
+    },
+    "operatorMetrics": {
+        "source-0": {
+            "throughput_per_sec": 0.0,
+            "selectivity": 1.0,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "source-1": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "source-2": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "source-3": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "source-4": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "source-5": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "join-1": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "join-2": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "join-3": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "join-4": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "join-5": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "window-agg": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        },
+        "sink": {
+            "throughput_per_sec": 0.0,
+            "selectivity": null,
+            "busy_ratio": 0.009900990099009901,
+            "backpressure_ratio": 0.0
+        }
+    },
+    "hardwareMetrics": {
+        "node_cpu": [
+            {
+                "metric": {
+                    "instance": "node2:9100"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "96.18749999990541"
+                    ],
+                    [
+                        1792611370,
+                        "94.18750000022555"
+                    ],
+                    [
+                        1792611380,
+                        "96.50000000019645"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "instance": "node4:9100"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "95.93750000003638"
+                    ],
+                    [
+                        1792611370,
+                        "94.74999999983993"
+                    ],
+                    [
+                        1792611380,
+                        "96.00000000027649"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "instance": "node0:9100"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "12.93750000004367"
+                    ],
+                    [
+                        1792611370,
+                        "0.5000000002837481"
+                    ],
+                    [
+                        1792611380,
+                        "65.81249999999272"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "instance": "node1:9100"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "95.81250000010186"
+                    ],
+                    [
+                        1792611370,
+                        "95.99999999991269"
+                    ],
+                    [
+                        1792611380,
+                        "97.93749999971624"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "instance": "node3:9100"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "94.499999999789"
+                    ],
+                    [
+                        1792611370,
+                        "94.06250000010914"
+                    ],
+                    [
+                        1792611380,
+                        "94.31249999943248"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "instance": "node5:9100"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "94.06249999938154"
+                    ],
+                    [
+                        1792611370,
+                        "94.5625000000291"
+                    ],
+                    [
+                        1792611380,
+                        "93.87500000011642"
+                    ]
+                ]
+            }
+        ],
+        "node_cpu_98": "90.51291666665809",
+        "node_cpu_95": "89.95416666664521",
+        "node_cpu_50": "81.57291666645203",
+        "node_network_out": [
+            {
+                "metric": {
+                    "device": "eno1",
+                    "instance": "node0:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "30.177"
+                    ],
+                    [
+                        1792611370,
+                        "156.88888888888889"
+                    ],
+                    [
+                        1792611380,
+                        "678.4444444444445"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1",
+                    "instance": "node1:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "31.379483333333333"
+                    ],
+                    [
+                        1792611370,
+                        "102.8888888888889"
+                    ],
+                    [
+                        1792611380,
+                        "175.7777777777778"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1",
+                    "instance": "node2:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "45.81333333333333"
+                    ],
+                    [
+                        1792611370,
+                        "88.8888888888889"
+                    ],
+                    [
+                        1792611380,
+                        "91.33333333333334"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1",
+                    "instance": "node3:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "48.96666666666666"
+                    ],
+                    [
+                        1792611370,
+                        "96.8888888888889"
+                    ],
+                    [
+                        1792611380,
+                        "88.8888888888889"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1",
+                    "instance": "node4:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "61.221333333333334"
+                    ],
+                    [
+                        1792611370,
+                        "171.7777777777778"
+                    ],
+                    [
+                        1792611380,
+                        "75.55555555555556"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1",
+                    "instance": "node5:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "58.488666666666674"
+                    ],
+                    [
+                        1792611370,
+                        "88.8888888888889"
+                    ],
+                    [
+                        1792611380,
+                        "90.22222222222223"
+                    ]
+                ]
+            }
+        ],
+        "node_network_out_98": "212.72444444444443",
+        "node_network_out_95": "205.7",
+        "node_network_out_50": "100.33333333333334",
+        "experiment_network_out": [
+            {
+                "metric": {
+                    "device": "eno1d1",
+                    "instance": "node0:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "10325.5635"
+                    ],
+                    [
+                        1792611370,
+                        "14405.111111111111"
+                    ],
+                    [
+                        1792611380,
+                        "29394.77777777778"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1d1",
+                    "instance": "node1:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "9079.545883333334"
+                    ],
+                    [
+                        1792611370,
+                        "12166.444444444445"
+                    ],
+                    [
+                        1792611380,
+                        "31791.55555555556"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1d1",
+                    "instance": "node2:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "8433.891066666667"
+                    ],
+                    [
+                        1792611370,
+                        "12750.555555555557"
+                    ],
+                    [
+                        1792611380,
+                        "24318.77777777778"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1d1",
+                    "instance": "node3:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "8784.130333333333"
+                    ],
+                    [
+                        1792611370,
+                        "11967"
+                    ],
+                    [
+                        1792611380,
+                        "12428.222222222223"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1d1",
+                    "instance": "node4:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "8967.3948"
+                    ],
+                    [
+                        1792611370,
+                        "11470.88888888889"
+                    ],
+                    [
+                        1792611380,
+                        "20093.88888888889"
+                    ]
+                ]
+            },
+            {
+                "metric": {
+                    "device": "eno1d1",
+                    "instance": "node5:9100",
+                    "job": "node_exporter"
+                },
+                "values": [
+                    [
+                        1792611360,
+                        "8931.789416666667"
+                    ],
+                    [
+                        1792611370,
+                        "11963.88888888889"
+                    ],
+                    [
+                        1792611380,
+                        "12075.111111111111"
+                    ]
+                ]
+            }
+        ],
+        "experiment_network_out_98": "21314.532592592594",
+        "experiment_network_out_95": "20760.74814814815",
+        "experiment_network_out_50": "12453.981481481482",
+        "node_memory": [
+            {
+                "metric": {},
+                "values": [
+                    [
+                        1792611360,
+                        "12.654223446863341"
+                    ],
+                    [
+                        1792611370,
+                        "12.483463200343039"
+                    ],
+                    [
+                        1792611380,
+                        "12.601283570072354"
+                    ]
+                ]
+            }
+        ],
+        "node_memory_98": "12.6521058517917",
+        "node_memory_95": "12.648929459184242",
+        "node_memory_50": "12.601283570072354"
+    }
+}

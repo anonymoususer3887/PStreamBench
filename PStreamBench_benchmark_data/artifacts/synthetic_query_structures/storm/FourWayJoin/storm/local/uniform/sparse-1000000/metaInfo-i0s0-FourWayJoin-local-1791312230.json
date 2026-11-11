@@ -1,0 +1,20 @@
+{
+  "job_framework": "Apache Storm",
+  "job_iteration": "0",
+  "job_sample": "0",
+  "job_run_time": "10",
+  "job_parallelization": "1,1,1,1,1,1,1",
+  "job_query_number": "4",
+  "job_window_size": "1000",
+  "job_window_slide_size": "1000",
+  "producer_event_per_second": "100000",
+  "cluster_hardware_type": "local",
+  "cluster_nodes": "1",
+  "cluster_slots_per_node": "2",
+  "enumeration_strategy": "uniform",
+  "synthetic_variant": "sparse",
+  "join_key_space": "1000000",
+  "target_matches_per_window": "none",
+  "filter_selectivity": "1.0",
+  "effective_join_input_rate": "100000.0"
+}

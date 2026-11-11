@@ -1,0 +1,29 @@
+{
+  "job_name": "FiveWayJoin",
+  "active_window_seconds": 7.007374958,
+  "operatorMetrics": {
+    "join": {
+      "selectivity": {
+        "Selectivity": 0.00943086740588388
+      },
+      "throughput_per_sec": 100052.01722502145,
+      "busy_ratio": 0.019080688817337297,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 1.9070768732652312E-4
+    },
+    "window-agg": {
+      "selectivity": {
+        "Selectivity": 0.34160405381792763
+      },
+      "throughput_per_sec": 816.7109701281665,
+      "busy_ratio": 0.0016320365427204245,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 0.001998303686877512
+    }
+  },
+  "queryMetrics": {
+    "recPerSecOutSource_spout_avg": 100312.74253384973,
+    "throughput_avg": 278.9917781933541
+  },
+  "hardwareMetrics": {}
+}

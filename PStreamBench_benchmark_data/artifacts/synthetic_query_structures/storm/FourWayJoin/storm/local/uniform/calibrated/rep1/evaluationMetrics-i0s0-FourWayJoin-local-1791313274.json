@@ -1,0 +1,29 @@
+{
+  "job_name": "FourWayJoin",
+  "active_window_seconds": 7.010125458,
+  "operatorMetrics": {
+    "join": {
+      "selectivity": {
+        "Selectivity": 0.009749579190956979
+      },
+      "throughput_per_sec": 99494.0824067631,
+      "busy_ratio": 0.017404223466609463,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 1.749272222588628E-4
+    },
+    "window-agg": {
+      "selectivity": {
+        "Selectivity": 0.5256166982922201
+      },
+      "throughput_per_sec": 826.9466837265268,
+      "busy_ratio": 0.0025728556654313734,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 0.003111271519751596
+    }
+  },
+  "queryMetrics": {
+    "recPerSecOutSource_spout_avg": 100119.32086023445,
+    "throughput_avg": 434.6569855640378
+  },
+  "hardwareMetrics": {}
+}

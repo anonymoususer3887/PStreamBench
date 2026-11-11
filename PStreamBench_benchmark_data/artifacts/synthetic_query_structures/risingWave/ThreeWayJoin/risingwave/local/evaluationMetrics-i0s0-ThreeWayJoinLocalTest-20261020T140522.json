@@ -1,0 +1,123 @@
+{
+    "job_name": "ThreeWayJoin",
+    "queryMetrics": {
+        "kafka_event_rate": {
+            "event rate": null
+        },
+        "kafka_event_rate_98th": {
+            "event rate 98th": null
+        },
+        "kafka_event_rate_95th": {
+            "event rate 95th": null
+        },
+        "kafka_event_rate_50th": {
+            "event rate 50th": null
+        },
+        "kafka_throughput": {
+            "throughput": null
+        },
+        "kafka_throughput_98th": {
+            "throughput 98th": null
+        },
+        "kafka_throughput_95th": {
+            "throughput 95th": null
+        },
+        "kafka_throughput_50th": {
+            "throughput 50th": null
+        }
+    },
+    "actorMetrics": {
+        "barrier_inflight_latency_avg": "0.2966036458333333",
+        "barrier_inflight_latency_max": "0.4702500000000001"
+    },
+    "operatorMetrics": {
+        "source-0": {
+            "throughput_per_sec": 20.607786078929507,
+            "selectivity": 1.0,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0003123986032524924,
+            "busy_ratio": 0.0029351118414216526
+        },
+        "source-1": {
+            "throughput_per_sec": 20.616229674739166,
+            "selectivity": 1.0004097284287268,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00018796058266964215,
+            "busy_ratio": 0.0017764961775717939
+        },
+        "source-2": {
+            "throughput_per_sec": 20.887495854669947,
+            "selectivity": 1.0131578947368423,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0001718541792283393,
+            "busy_ratio": 0.001844800025811368
+        },
+        "filter-0": {
+            "throughput_per_sec": 10.359401170405233,
+            "selectivity": 0.49596185404336623,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0015804810675099474,
+            "busy_ratio": 0.00394556108701815
+        },
+        "filter-1": {
+            "throughput_per_sec": 10.502042153436935,
+            "selectivity": 1.0137692305457964,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0011343374803929821,
+            "busy_ratio": 0.0030655990401826094
+        },
+        "filter-2": {
+            "throughput_per_sec": 10.648718632543915,
+            "selectivity": 1.013966472135991,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0011465242418159404,
+            "busy_ratio": 0.003338527182830424
+        },
+        "join-1": {
+            "throughput_per_sec": null,
+            "selectivity": null,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0,
+            "busy_ratio": 0.0
+        },
+        "join-2": {
+            "throughput_per_sec": null,
+            "selectivity": null,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0,
+            "busy_ratio": 0.0
+        },
+        "window-agg": {
+            "throughput_per_sec": 6.957210991845375,
+            "selectivity": 0.653337855184116,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00014391785834981904,
+            "busy_ratio": 0.001450497281938775
+        },
+        "sink": {
+            "throughput_per_sec": 7.198977127498009,
+            "selectivity": 1.0347504389238749,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0,
+            "busy_ratio": 0.0008937668435540342
+        }
+    },
+    "hardwareMetrics": {
+        "node_cpu": [],
+        "node_cpu_98": null,
+        "node_cpu_95": null,
+        "node_cpu_50": null,
+        "node_network_out": [],
+        "node_network_out_98": null,
+        "node_network_out_95": null,
+        "node_network_out_50": null,
+        "experiment_network_out": [],
+        "experiment_network_out_98": null,
+        "experiment_network_out_95": null,
+        "experiment_network_out_50": null,
+        "node_memory": [],
+        "node_memory_98": null,
+        "node_memory_95": null,
+        "node_memory_50": null
+    }
+}

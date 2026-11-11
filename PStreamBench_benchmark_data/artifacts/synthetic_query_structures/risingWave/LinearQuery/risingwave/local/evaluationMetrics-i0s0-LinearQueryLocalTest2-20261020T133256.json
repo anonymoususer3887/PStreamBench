@@ -1,0 +1,74 @@
+{
+    "job_name": "LinearQuery",
+    "queryMetrics": {
+        "kafka_event_rate": {
+            "event rate": null
+        },
+        "kafka_event_rate_98th": {
+            "event rate 98th": null
+        },
+        "kafka_event_rate_95th": {
+            "event rate 95th": null
+        },
+        "kafka_event_rate_50th": {
+            "event rate 50th": null
+        },
+        "kafka_throughput": {
+            "throughput": null
+        },
+        "kafka_throughput_98th": {
+            "throughput 98th": null
+        },
+        "kafka_throughput_95th": {
+            "throughput 95th": null
+        },
+        "kafka_throughput_50th": {
+            "throughput 50th": null
+        }
+    },
+    "actorMetrics": {
+        "barrier_inflight_latency_avg": "0.099",
+        "barrier_inflight_latency_max": "0.09900000000000002"
+    },
+    "operatorMetrics": {
+        "source": {
+            "throughput_per_sec": 0.28771263146675374,
+            "selectivity": 1.0,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 3.498444069238217e-05,
+            "busy_ratio": 0.000369087156434871
+        },
+        "window-agg": {
+            "throughput_per_sec": 0.17059363403424996,
+            "selectivity": 0.5929306376455101,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0002394158106595754,
+            "busy_ratio": 0.0015793087351350292
+        },
+        "sink": {
+            "throughput_per_sec": 0.17059363403424996,
+            "selectivity": 1.0,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0,
+            "busy_ratio": 0.0016499458123188941
+        }
+    },
+    "hardwareMetrics": {
+        "node_cpu": [],
+        "node_cpu_98": null,
+        "node_cpu_95": null,
+        "node_cpu_50": null,
+        "node_network_out": [],
+        "node_network_out_98": null,
+        "node_network_out_95": null,
+        "node_network_out_50": null,
+        "experiment_network_out": [],
+        "experiment_network_out_98": null,
+        "experiment_network_out_95": null,
+        "experiment_network_out_50": null,
+        "node_memory": [],
+        "node_memory_98": null,
+        "node_memory_95": null,
+        "node_memory_50": null
+    }
+}

@@ -1,0 +1,38 @@
+{
+  "job_name": "LinearQuery",
+  "active_window_seconds": 7.102099417,
+  "operatorMetrics": {
+    "filter1": {
+      "selectivity": {
+        "Selectivity": 0.5005693080947203
+      },
+      "throughput_per_sec": 98805.8542689927,
+      "busy_ratio": 0.012424824452439793,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 2.514997627289167E-4
+    },
+    "window-agg": {
+      "selectivity": {
+        "Selectivity": 0.019947907464506972
+      },
+      "throughput_per_sec": 49409.89690457328,
+      "busy_ratio": 0.07033437877598778,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 0.0028469753301378687
+    },
+    "filter2": {
+      "selectivity": {
+        "Selectivity": 0.5030146425495263
+      },
+      "throughput_per_sec": 980.8367344627387,
+      "busy_ratio": 4.6399850333156775E-4,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 9.461279069767442E-4
+    }
+  },
+  "queryMetrics": {
+    "recPerSecOutSource_spout_avg": 98805.8542689927,
+    "throughput_avg": 493.3752393852191
+  },
+  "hardwareMetrics": {}
+}

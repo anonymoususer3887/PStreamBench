@@ -1,0 +1,144 @@
+{
+    "job_name": "FourWayJoin",
+    "queryMetrics": {
+        "kafka_event_rate": {
+            "event rate": null
+        },
+        "kafka_event_rate_98th": {
+            "event rate 98th": null
+        },
+        "kafka_event_rate_95th": {
+            "event rate 95th": null
+        },
+        "kafka_event_rate_50th": {
+            "event rate 50th": null
+        },
+        "kafka_throughput": {
+            "throughput": null
+        },
+        "kafka_throughput_98th": {
+            "throughput 98th": null
+        },
+        "kafka_throughput_95th": {
+            "throughput 95th": null
+        },
+        "kafka_throughput_50th": {
+            "throughput 50th": null
+        }
+    },
+    "actorMetrics": {
+        "barrier_inflight_latency_avg": "0.3091085416666667",
+        "barrier_inflight_latency_max": "0.4702500000000001"
+    },
+    "operatorMetrics": {
+        "source-0": {
+            "throughput_per_sec": 19.78433472586848,
+            "selectivity": 1.0,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00024833165806190186,
+            "busy_ratio": 0.0023645886405111558
+        },
+        "source-1": {
+            "throughput_per_sec": 19.78433472586848,
+            "selectivity": 1.0,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00015723178560816297,
+            "busy_ratio": 0.0016559248225344245
+        },
+        "source-2": {
+            "throughput_per_sec": 19.790798127740747,
+            "selectivity": 1.0003266929094066,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00016411671706890855,
+            "busy_ratio": 0.0016756145437551004
+        },
+        "source-3": {
+            "throughput_per_sec": 20.048384185758916,
+            "selectivity": 1.0130154456811478,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0001273911025965264,
+            "busy_ratio": 0.0013146886668724813
+        },
+        "src-0": {
+            "throughput_per_sec": 20.03892495667862,
+            "selectivity": 0.9995281799773662,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.001273148044217856,
+            "busy_ratio": 0.0035874255337817176
+        },
+        "src-1": {
+            "throughput_per_sec": 20.302555697211695,
+            "selectivity": 1.0131559323218688,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0011049528028165706,
+            "busy_ratio": 0.0031119247846271253
+        },
+        "src-2": {
+            "throughput_per_sec": 20.57428563729693,
+            "selectivity": 1.013384026333323,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0011687462821084536,
+            "busy_ratio": 0.0030589407321215826
+        },
+        "src-3": {
+            "throughput_per_sec": 20.853148160195964,
+            "selectivity": 1.0135539346451725,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0011095023909189182,
+            "busy_ratio": 0.002950291663425072
+        },
+        "join-1": {
+            "throughput_per_sec": 75.02459454252923,
+            "selectivity": 3.597758667716875,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0005727267353319459,
+            "busy_ratio": 0.004264991154766465
+        },
+        "join-2": {
+            "throughput_per_sec": 325.69960960606926,
+            "selectivity": 4.341237851294748,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0007315518622798025,
+            "busy_ratio": 0.004584948039922925
+        },
+        "join-3": {
+            "throughput_per_sec": 1622.3888633738636,
+            "selectivity": 4.981242886155523,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0008691445375320801,
+            "busy_ratio": 0.006277965829966582
+        },
+        "window-agg": {
+            "throughput_per_sec": 13.94055216137342,
+            "selectivity": 0.00859260839129722,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0001811633570313645,
+            "busy_ratio": 0.002406369261489932
+        },
+        "sink": {
+            "throughput_per_sec": 14.434495033150979,
+            "selectivity": 1.0354320880593366,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0,
+            "busy_ratio": 0.0007249679995881711
+        }
+    },
+    "hardwareMetrics": {
+        "node_cpu": [],
+        "node_cpu_98": null,
+        "node_cpu_95": null,
+        "node_cpu_50": null,
+        "node_network_out": [],
+        "node_network_out_98": null,
+        "node_network_out_95": null,
+        "node_network_out_50": null,
+        "experiment_network_out": [],
+        "experiment_network_out_98": null,
+        "experiment_network_out_95": null,
+        "experiment_network_out_50": null,
+        "node_memory": [],
+        "node_memory_98": null,
+        "node_memory_95": null,
+        "node_memory_50": null
+    }
+}

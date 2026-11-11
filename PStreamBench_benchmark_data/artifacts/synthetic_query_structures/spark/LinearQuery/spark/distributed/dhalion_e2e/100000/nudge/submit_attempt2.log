@@ -1,0 +1,162 @@
+26/10/31 18:14:00 INFO SparkContext: Running Spark version 3.5.1
+26/10/31 18:14:00 INFO SparkContext: OS info Linux, 5.15.0-187-generic, amd64
+26/10/31 18:14:00 INFO SparkContext: Java version 11.0.32.1
+26/10/31 18:14:00 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/31 18:14:00 INFO ResourceUtils: ==============================================================
+26/10/31 18:14:00 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/31 18:14:00 INFO ResourceUtils: ==============================================================
+26/10/31 18:14:00 INFO SparkContext: Submitted application: LinearQuery
+26/10/31 18:14:01 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(memory -> name: memory, amount: 16384, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/31 18:14:01 INFO ResourceProfile: Limiting resource is cpu
+26/10/31 18:14:01 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/31 18:14:01 INFO SecurityManager: Changing view acls to: pagnih03
+26/10/31 18:14:01 INFO SecurityManager: Changing modify acls to: pagnih03
+26/10/31 18:14:01 INFO SecurityManager: Changing view acls groups to: 
+26/10/31 18:14:01 INFO SecurityManager: Changing modify acls groups to: 
+26/10/31 18:14:01 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: pagnih03; groups with view permissions: EMPTY; users with modify permissions: pagnih03; groups with modify permissions: EMPTY
+26/10/31 18:14:01 INFO Utils: Successfully started service 'sparkDriver' on port 39663.
+26/10/31 18:14:01 INFO SparkEnv: Registering MapOutputTracker
+26/10/31 18:14:01 INFO SparkEnv: Registering BlockManagerMaster
+26/10/31 18:14:01 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/31 18:14:01 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/31 18:14:01 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/31 18:14:01 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-e4bd46ed-8138-42cc-b856-0652bb2b2234
+26/10/31 18:14:01 INFO MemoryStore: MemoryStore started with capacity 3.4 GiB
+26/10/31 18:14:01 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/31 18:14:01 INFO JettyUtils: Start Jetty 10.10.1.1:4040 for SparkUI
+26/10/31 18:14:01 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/31 18:14:01 INFO SparkContext: Added JAR file:/home/playground/dsp_spark_synthetic_jobs-1.0-SNAPSHOT-e2e.jar at spark://node0-lan:39663/jars/dsp_spark_synthetic_jobs-1.0-SNAPSHOT-e2e.jar with timestamp 1793470440751
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Connecting to master spark://10.10.1.1:7077...
+26/10/31 18:14:02 INFO TransportClientFactory: Successfully created connection to /10.10.1.1:7077 after 41 ms (0 ms spent in bootstraps)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Connected to Spark cluster with app ID app-20261031181402-1194
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261031181402-1194/0 on worker-20261016104422-10.10.1.6-33825 (10.10.1.6:33825) with 16 core(s)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Granted executor ID app-20261031181402-1194/0 on hostPort 10.10.1.6:33825 with 16 core(s), 16.0 GiB RAM
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261031181402-1194/1 on worker-20261016104422-10.10.1.4-38593 (10.10.1.4:38593) with 16 core(s)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Granted executor ID app-20261031181402-1194/1 on hostPort 10.10.1.4:38593 with 16 core(s), 16.0 GiB RAM
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261031181402-1194/2 on worker-20261016104422-10.10.1.5-40461 (10.10.1.5:40461) with 16 core(s)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Granted executor ID app-20261031181402-1194/2 on hostPort 10.10.1.5:40461 with 16 core(s), 16.0 GiB RAM
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261031181402-1194/3 on worker-20261016104422-10.10.1.2-43163 (10.10.1.2:43163) with 16 core(s)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Granted executor ID app-20261031181402-1194/3 on hostPort 10.10.1.2:43163 with 16 core(s), 16.0 GiB RAM
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261031181402-1194/4 on worker-20261016104422-10.10.1.1-33113 (10.10.1.1:33113) with 16 core(s)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Granted executor ID app-20261031181402-1194/4 on hostPort 10.10.1.1:33113 with 16 core(s), 16.0 GiB RAM
+26/10/31 18:14:02 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 41911.
+26/10/31 18:14:02 INFO NettyBlockTransferService: Server created on node0-lan:41911
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor added: app-20261031181402-1194/5 on worker-20261016104422-10.10.1.3-36299 (10.10.1.3:36299) with 16 core(s)
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: Granted executor ID app-20261031181402-1194/5 on hostPort 10.10.1.3:36299 with 16 core(s), 16.0 GiB RAM
+26/10/31 18:14:02 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/31 18:14:02 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, node0-lan, 41911, None)
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261031181402-1194/0 is now RUNNING
+26/10/31 18:14:02 INFO BlockManagerMasterEndpoint: Registering block manager node0-lan:41911 with 3.4 GiB RAM, BlockManagerId(driver, node0-lan, 41911, None)
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261031181402-1194/1 is now RUNNING
+26/10/31 18:14:02 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, node0-lan, 41911, None)
+26/10/31 18:14:02 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, node0-lan, 41911, None)
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261031181402-1194/2 is now RUNNING
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261031181402-1194/3 is now RUNNING
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261031181402-1194/5 is now RUNNING
+26/10/31 18:14:02 INFO StandaloneAppClient$ClientEndpoint: Executor updated: app-20261031181402-1194/4 is now RUNNING
+26/10/31 18:14:02 INFO StandaloneSchedulerBackend: SchedulerBackend is ready for scheduling beginning after reached minRegisteredResourcesRatio: 0.0
+26/10/31 18:14:02 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+26/10/31 18:14:02 INFO SharedState: Warehouse path is 'file:/home/playground/spark-warehouse'.
+26/10/31 18:14:04 INFO StateStoreCoordinatorRef: Registered StateStoreCoordinator endpoint
+26/10/31 18:14:05 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.10.1.6:41454) with ID 0,  ResourceProfileId 0
+26/10/31 18:14:05 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.10.1.2:46760) with ID 3,  ResourceProfileId 0
+26/10/31 18:14:05 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.10.1.4:37588) with ID 1,  ResourceProfileId 0
+26/10/31 18:14:05 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.10.1.5:58552) with ID 2,  ResourceProfileId 0
+26/10/31 18:14:05 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.10.1.3:45676) with ID 5,  ResourceProfileId 0
+26/10/31 18:14:05 INFO BlockManagerMasterEndpoint: Registering block manager 10.10.1.2:45685 with 9.4 GiB RAM, BlockManagerId(3, 10.10.1.2, 45685, None)
+26/10/31 18:14:05 INFO BlockManagerMasterEndpoint: Registering block manager 10.10.1.6:44537 with 9.4 GiB RAM, BlockManagerId(0, 10.10.1.6, 44537, None)
+26/10/31 18:14:05 INFO BlockManagerMasterEndpoint: Registering block manager 10.10.1.4:44667 with 9.4 GiB RAM, BlockManagerId(1, 10.10.1.4, 44667, None)
+26/10/31 18:14:05 INFO BlockManagerMasterEndpoint: Registering block manager 10.10.1.5:36467 with 9.4 GiB RAM, BlockManagerId(2, 10.10.1.5, 36467, None)
+26/10/31 18:14:05 INFO BlockManagerMasterEndpoint: Registering block manager 10.10.1.3:33147 with 9.4 GiB RAM, BlockManagerId(5, 10.10.1.3, 33147, None)
+26/10/31 18:14:05 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Registered executor NettyRpcEndpointRef(spark-client://Executor) (10.10.1.1:58460) with ID 4,  ResourceProfileId 0
+26/10/31 18:14:06 INFO BlockManagerMasterEndpoint: Registering block manager 10.10.1.1:46067 with 9.4 GiB RAM, BlockManagerId(4, 10.10.1.1, 46067, None)
+[main] WARNING: checkpoint pre-create failed (continuing anyway): java.nio.file.FileSystemException: /proj/maki-test-PG0/spark-checkpoints/LinearQuery-1793470446386: Disk quota exceeded
+Exception in thread "main" java.io.IOException: mkdir of file:/proj/maki-test-PG0/spark-checkpoints/LinearQuery-1793470446386 failed
+	at org.apache.hadoop.fs.FileSystem.primitiveMkdir(FileSystem.java:1357)
+	at org.apache.hadoop.fs.DelegateToFileSystem.mkdir(DelegateToFileSystem.java:185)
+	at org.apache.hadoop.fs.FilterFs.mkdir(FilterFs.java:219)
+	at org.apache.hadoop.fs.FileContext$4.next(FileContext.java:809)
+	at org.apache.hadoop.fs.FileContext$4.next(FileContext.java:805)
+	at org.apache.hadoop.fs.FSLinkResolver.resolve(FSLinkResolver.java:90)
+	at org.apache.hadoop.fs.FileContext.mkdir(FileContext.java:812)
+	at org.apache.spark.sql.execution.streaming.AbstractFileContextBasedCheckpointFileManager.createCheckpointDirectory(CheckpointFileManager.scala:346)
+	at org.apache.spark.sql.execution.streaming.ResolveWriteToStream$.resolveCheckpointLocation(ResolveWriteToStream.scala:131)
+	at org.apache.spark.sql.execution.streaming.ResolveWriteToStream$$anonfun$apply$1.applyOrElse(ResolveWriteToStream.scala:42)
+	at org.apache.spark.sql.execution.streaming.ResolveWriteToStream$$anonfun$apply$1.applyOrElse(ResolveWriteToStream.scala:40)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.$anonfun$resolveOperatorsDownWithPruning$2(AnalysisHelper.scala:170)
+	at org.apache.spark.sql.catalyst.trees.CurrentOrigin$.withOrigin(origin.scala:76)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.$anonfun$resolveOperatorsDownWithPruning$1(AnalysisHelper.scala:170)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper$.allowInvokingTransformsInAnalyzer(AnalysisHelper.scala:323)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.resolveOperatorsDownWithPruning(AnalysisHelper.scala:168)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.resolveOperatorsDownWithPruning$(AnalysisHelper.scala:164)
+	at org.apache.spark.sql.catalyst.plans.logical.LogicalPlan.resolveOperatorsDownWithPruning(LogicalPlan.scala:32)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.resolveOperatorsWithPruning(AnalysisHelper.scala:99)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.resolveOperatorsWithPruning$(AnalysisHelper.scala:96)
+	at org.apache.spark.sql.catalyst.plans.logical.LogicalPlan.resolveOperatorsWithPruning(LogicalPlan.scala:32)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.resolveOperators(AnalysisHelper.scala:76)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper.resolveOperators$(AnalysisHelper.scala:75)
+	at org.apache.spark.sql.catalyst.plans.logical.LogicalPlan.resolveOperators(LogicalPlan.scala:32)
+	at org.apache.spark.sql.execution.streaming.ResolveWriteToStream$.apply(ResolveWriteToStream.scala:40)
+	at org.apache.spark.sql.execution.streaming.ResolveWriteToStream$.apply(ResolveWriteToStream.scala:39)
+	at org.apache.spark.sql.catalyst.rules.RuleExecutor.$anonfun$execute$2(RuleExecutor.scala:222)
+	at scala.collection.LinearSeqOptimized.foldLeft(LinearSeqOptimized.scala:126)
+	at scala.collection.LinearSeqOptimized.foldLeft$(LinearSeqOptimized.scala:122)
+	at scala.collection.immutable.List.foldLeft(List.scala:91)
+	at org.apache.spark.sql.catalyst.rules.RuleExecutor.$anonfun$execute$1(RuleExecutor.scala:219)
+	at org.apache.spark.sql.catalyst.rules.RuleExecutor.$anonfun$execute$1$adapted(RuleExecutor.scala:211)
+	at scala.collection.immutable.List.foreach(List.scala:431)
+	at org.apache.spark.sql.catalyst.rules.RuleExecutor.execute(RuleExecutor.scala:211)
+	at org.apache.spark.sql.catalyst.analysis.Analyzer.org$apache$spark$sql$catalyst$analysis$Analyzer$$executeSameContext(Analyzer.scala:226)
+	at org.apache.spark.sql.catalyst.analysis.Analyzer.$anonfun$execute$1(Analyzer.scala:222)
+	at org.apache.spark.sql.catalyst.analysis.AnalysisContext$.withNewAnalysisContext(Analyzer.scala:173)
+	at org.apache.spark.sql.catalyst.analysis.Analyzer.execute(Analyzer.scala:222)
+	at org.apache.spark.sql.catalyst.analysis.Analyzer.execute(Analyzer.scala:188)
+	at org.apache.spark.sql.catalyst.rules.RuleExecutor.$anonfun$executeAndTrack$1(RuleExecutor.scala:182)
+	at org.apache.spark.sql.catalyst.QueryPlanningTracker$.withTracker(QueryPlanningTracker.scala:89)
+	at org.apache.spark.sql.catalyst.rules.RuleExecutor.executeAndTrack(RuleExecutor.scala:182)
+	at org.apache.spark.sql.catalyst.analysis.Analyzer.$anonfun$executeAndCheck$1(Analyzer.scala:209)
+	at org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper$.markInAnalyzer(AnalysisHelper.scala:330)
+	at org.apache.spark.sql.catalyst.analysis.Analyzer.executeAndCheck(Analyzer.scala:208)
+	at org.apache.spark.sql.execution.QueryExecution.$anonfun$analyzed$1(QueryExecution.scala:77)
+	at org.apache.spark.sql.catalyst.QueryPlanningTracker.measurePhase(QueryPlanningTracker.scala:138)
+	at org.apache.spark.sql.execution.QueryExecution.$anonfun$executePhase$2(QueryExecution.scala:219)
+	at org.apache.spark.sql.execution.QueryExecution$.withInternalError(QueryExecution.scala:546)
+	at org.apache.spark.sql.execution.QueryExecution.$anonfun$executePhase$1(QueryExecution.scala:219)
+	at org.apache.spark.sql.SparkSession.withActive(SparkSession.scala:900)
+	at org.apache.spark.sql.execution.QueryExecution.executePhase(QueryExecution.scala:218)
+	at org.apache.spark.sql.execution.QueryExecution.analyzed$lzycompute(QueryExecution.scala:77)
+	at org.apache.spark.sql.execution.QueryExecution.analyzed(QueryExecution.scala:74)
+	at org.apache.spark.sql.streaming.StreamingQueryManager.createQuery(StreamingQueryManager.scala:270)
+	at org.apache.spark.sql.streaming.StreamingQueryManager.startQuery(StreamingQueryManager.scala:346)
+	at org.apache.spark.sql.streaming.DataStreamWriter.startQuery(DataStreamWriter.scala:433)
+	at org.apache.spark.sql.streaming.DataStreamWriter.startInternal(DataStreamWriter.scala:410)
+	at org.apache.spark.sql.streaming.DataStreamWriter.start(DataStreamWriter.scala:251)
+	at com.kom.dsp.synthetic.SyntheticTopology.runAndSelfCancel(SyntheticTopology.java:337)
+	at com.kom.dsp.synthetic.LinearQueryTopology.build(LinearQueryTopology.java:40)
+	at com.kom.dsp.synthetic.LinearQueryTopology.main(LinearQueryTopology.java:45)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.apache.spark.deploy.JavaMainApplication.start(SparkApplication.scala:52)
+	at org.apache.spark.deploy.SparkSubmit.org$apache$spark$deploy$SparkSubmit$$runMain(SparkSubmit.scala:1029)
+	at org.apache.spark.deploy.SparkSubmit.doRunMain$1(SparkSubmit.scala:194)
+	at org.apache.spark.deploy.SparkSubmit.submit(SparkSubmit.scala:217)
+	at org.apache.spark.deploy.SparkSubmit.doSubmit(SparkSubmit.scala:91)
+	at org.apache.spark.deploy.SparkSubmit$$anon$2.doSubmit(SparkSubmit.scala:1120)
+	at org.apache.spark.deploy.SparkSubmit$.main(SparkSubmit.scala:1129)
+	at org.apache.spark.deploy.SparkSubmit.main(SparkSubmit.scala)
+26/10/31 18:14:06 INFO SparkContext: Invoking stop() from shutdown hook
+26/10/31 18:14:06 INFO SparkContext: SparkContext is stopping with exitCode 0.
+26/10/31 18:14:06 INFO SparkUI: Stopped Spark web UI at http://node0-lan:4040
+26/10/31 18:14:06 INFO StandaloneSchedulerBackend: Shutting down all executors
+26/10/31 18:14:06 INFO StandaloneSchedulerBackend$StandaloneDriverEndpoint: Asking each executor to shut down
+26/10/31 18:14:06 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+26/10/31 18:14:06 INFO MemoryStore: MemoryStore cleared
+26/10/31 18:14:06 INFO BlockManager: BlockManager stopped
+26/10/31 18:14:06 INFO BlockManagerMaster: BlockManagerMaster stopped
+26/10/31 18:14:06 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+26/10/31 18:14:06 INFO SparkContext: Successfully stopped SparkContext
+26/10/31 18:14:06 INFO ShutdownHookManager: Shutdown hook called
+26/10/31 18:14:06 INFO ShutdownHookManager: Deleting directory /tmp/spark-134e0b4c-19c5-48df-a367-172bdd04e7a7
+26/10/31 18:14:06 INFO ShutdownHookManager: Deleting directory /tmp/spark-ddaaf030-247c-4669-97ba-55dab384fff9

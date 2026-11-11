@@ -1,0 +1,29 @@
+{
+  "job_name": "SixWayJoin",
+  "active_window_seconds": 7.0689945,
+  "operatorMetrics": {
+    "join": {
+      "selectivity": {
+        "Selectivity": 0.010276932379895663
+      },
+      "throughput_per_sec": 99191.19331610741,
+      "busy_ratio": 0.01965626681418411,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 1.9816544349398585E-4
+    },
+    "window-agg": {
+      "selectivity": {
+        "Selectivity": 0.19513755598208574
+      },
+      "throughput_per_sec": 884.4256421475502,
+      "busy_ratio": 0.0014173219401995573,
+      "backpressure_ratio": 0.0,
+      "execution_latency_avg_ms": 0.0016025337492002558
+    }
+  },
+  "queryMetrics": {
+    "recPerSecOutSource_spout_avg": 99359.6755521595,
+    "throughput_avg": 172.5846582565597
+  },
+  "hardwareMetrics": {}
+}

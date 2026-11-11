@@ -1,0 +1,102 @@
+{
+    "job_name": "FourFilters",
+    "queryMetrics": {
+        "kafka_event_rate": {
+            "event rate": null
+        },
+        "kafka_event_rate_98th": {
+            "event rate 98th": null
+        },
+        "kafka_event_rate_95th": {
+            "event rate 95th": null
+        },
+        "kafka_event_rate_50th": {
+            "event rate 50th": null
+        },
+        "kafka_throughput": {
+            "throughput": null
+        },
+        "kafka_throughput_98th": {
+            "throughput 98th": null
+        },
+        "kafka_throughput_95th": {
+            "throughput 95th": null
+        },
+        "kafka_throughput_50th": {
+            "throughput 50th": null
+        }
+    },
+    "actorMetrics": {
+        "barrier_inflight_latency_avg": "0.49950000000000006",
+        "barrier_inflight_latency_max": "0.49950000000000006"
+    },
+    "operatorMetrics": {
+        "source": {
+            "throughput_per_sec": 21.059132175710758,
+            "selectivity": 1.0,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00042866779280844854,
+            "busy_ratio": 0.004410543352705197
+        },
+        "window-agg": {
+            "throughput_per_sec": 11.358000991022072,
+            "selectivity": 0.5393385110200408,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00038010129003456997,
+            "busy_ratio": 0.006818906300679368
+        },
+        "filter1": {
+            "throughput_per_sec": 5.821957487891497,
+            "selectivity": 0.5125864571145452,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00030249733611383,
+            "busy_ratio": 0.001216026923997406
+        },
+        "filter2": {
+            "throughput_per_sec": 5.613764123313787,
+            "selectivity": 0.9642399716915299,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00028176910530600943,
+            "busy_ratio": 0.0009428571492005618
+        },
+        "filter3": {
+            "throughput_per_sec": 5.3340855501575035,
+            "selectivity": 0.9501798495603355,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0002657263158736006,
+            "busy_ratio": 0.0008922343075806623
+        },
+        "filter4": {
+            "throughput_per_sec": 5.178122214362838,
+            "selectivity": 0.9707609984264199,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.00016420423882087303,
+            "busy_ratio": 0.000722710317236771
+        },
+        "sink": {
+            "throughput_per_sec": 5.365650223154396,
+            "selectivity": 1.0362154466480922,
+            "memory_usage_bytes": 0.0,
+            "backpressure_ratio": 0.0,
+            "busy_ratio": 0.0008693398069701763
+        }
+    },
+    "hardwareMetrics": {
+        "node_cpu": [],
+        "node_cpu_98": null,
+        "node_cpu_95": null,
+        "node_cpu_50": null,
+        "node_network_out": [],
+        "node_network_out_98": null,
+        "node_network_out_95": null,
+        "node_network_out_50": null,
+        "experiment_network_out": [],
+        "experiment_network_out_98": null,
+        "experiment_network_out_95": null,
+        "experiment_network_out_50": null,
+        "node_memory": [],
+        "node_memory_98": null,
+        "node_memory_95": null,
+        "node_memory_50": null
+    }
+}
