@@ -30,8 +30,8 @@ Two things worth knowing before you poke at it yourself:
   Streams/RisingWave containers) and `HOST` (`localhost:9092`, used by
   anything on your *host* machine: the producer script, `verify_output.sh`,
   `psql`). This exists because the project's own producer script hardcodes
-  `localhost:9092` for Word Count regardless of what's passed to it (see
-  "Known upstream quirks" below) — publishing Kafka's host listener on
+  `localhost:9092` for Word Count regardless of what's passed to it —
+  publishing Kafka's host listener on
   exactly `9092` means that hardcoded value works by accident, without
   needing a further patch.
 - **Storm's 3 services override `entrypoint: []`** — the official image's
@@ -55,8 +55,7 @@ PStreamBench_local_docker/
 │                            # (nimbus+supervisor+ui) + Spark (master+worker)
 ├── storm_conf/storm.yaml     # minimal single-node Storm cluster config
 ├── jars/
-│   ├── flink/                # Flink job jar (rebuilt, see "Known upstream
-│   │                          #  quirks fixed" below -- don't copy a prebuilt one)
+│   ├── flink/                # Flink job jar (rebuilt with Java 11 -- don't copy a prebuilt one)
 │   ├── kafkastreams/          # Kafka Streams app jar (rebuilt with Java 11)
 │   ├── storm/                 # Storm topology shadow jar (rebuilt with Java 11)
 │   └── spark/                 # Spark job jar (rebuilt with Java 11; see
@@ -87,45 +86,6 @@ PStreamBench_local_docker/
                                 # parallelism/rate one at a time, then drives
                                 # the scripts above. No frontend, no controller.
 ```
-
-## Known upstream quirks fixed to make this work locally
-
-Both were found while wiring this up, not invented for it — worth fixing
-upstream too, not just here:
-
-1. **`WordCountJob.java`** hardcoded its Kafka bootstrap server to
-   `"localhost:9092"`, silently ignoring the `--kafka-server` CLI argument
-   (the real line was commented out just above it). Harmless on the original
-   single-host CloudLab setup; breaks the moment Flink runs in its own
-   container. Fixed in
-   `PStreamBench_workload_generator/flink/dsp_flink_jobs/src/.../wordcount/WordCountJob.java`,
-   and the jar in `jars/flink/` was **rebuilt with Java 11** (matching the
-   project's `pom.xml` target) and the fix was verified directly in the
-   compiled bytecode with `javap`, not just trusted from a successful
-   `mvn package` — a prebuilt jar can silently drift from source (see this
-   project's own notes on that).
-2. **`custom_producer.py`** had the identical bug in *two* places (the
-   dedicated `wordcount()` generator and the generic `event_producer()` used
-   by Ad Analytics and everything else) — both hardcoded
-   `'bootstrap.servers': 'localhost:9092'` instead of using the
-   `kafka_bootstrap_server` parameter actually passed in. Also hardcoded its
-   dataset directory to `BASE_DIR = "/home/playground/"` (the CloudLab path).
-   The copy in `scripts/custom_producer.py` fixes both; `BASE_DIR` now
-   resolves to `PStreamBench_local_docker/data/` regardless of caller cwd.
-
-Because Kafka's host-facing listener in `docker-compose.yml` is published on
-exactly port 9092 (see the comment in that file), the *original* hardcoded
-producer value would actually have worked by accident too — but don't rely
-on that elsewhere; the fix is the correct behavior going forward.
-
-Two more were found wiring up `run_producer.sh` itself (not engine-specific):
-a bash syntax error (an apostrophe inside an unquoted `${var:?message}`
-expansion), and a dependency on GNU `timeout`, which doesn't ship on macOS by
-default — replaced with a background-process-plus-`kill` pattern.
-
-Kafka Streams needed no code fixes — `WordCountTopology.java`/`AdsAnalyticsTopology.java`
-already read `-kafka-server` correctly (no hardcoded-localhost bug like the
-Flink version had).
 
 ## Prerequisites
 
@@ -309,7 +269,7 @@ as possible.
 install procedures and this repo's existing CLI contracts, but **it has not
 been live-verified end-to-end on this machine** the way every Docker-path
 engine was (each of those was actually run, with real bugs found and fixed
-along the way — see "Known upstream quirks" above). Treat these steps as a
+along the way). Treat these steps as a
 solid starting point, not a proven-working path yet. If you hit something
 that doesn't match, say which step and it'll get fixed the same way the
 Docker path's bugs were — one real run at a time.
