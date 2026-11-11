@@ -4,7 +4,7 @@
 
 This repository contains the experimental setup and workload suite used in the paper:
 
-**“Is Parallelism a Silver Bullet? An Empirical Study of Parallelism Behavior in Distributed Stream Processing Systems.”**
+**“When Does Parallelism Pay Off? An Empirical Study of Distributed Stream Processing Systems”**
 
 It provides a collection of representative streaming applications, configurations for varying degrees of parallelism (DoP), and scripts for executing experiments across different distributed stream processing systems (DSPS), including **Apache Flink**, **Apache Storm**, **Apache Spark**, **Kafka Streams**, and **RisingWave**.
 
