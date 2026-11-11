@@ -26,13 +26,6 @@ simplifies benchmark configuration, execution, and monitoring for <b>Apache Flin
   </li>
 </ul>
 
-<p align="center">
-  <img src="../reference_images/PStreamBench_WUI_screenshots/pstreamBench_wui.png"
-       alt="PStreamBench WUI"
-       width="800"
-       style="border:1px solid #ccc; padding:6px; border-radius:6px;" />
-</p>
-
 <h2>Getting Started with the WUI</h2>
 
 <ol>
