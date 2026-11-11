@@ -11,7 +11,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-KAGGLE_CONFIG_DIR="${KAGGLE_CONFIG_DIR:-../../PStreamBench-risingwave/PStreamBench_Cloud_setup}"
+KAGGLE_CONFIG_DIR="${KAGGLE_CONFIG_DIR:-$HOME/.kaggle}"   # folder with your own kaggle.json
 export KAGGLE_CONFIG_DIR
 
 mkdir -p data/zip
