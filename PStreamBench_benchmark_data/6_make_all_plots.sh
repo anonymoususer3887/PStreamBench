@@ -14,10 +14,18 @@ fi
 
 declare -a PY_LMH_ARGS=()
 
+# run from the script's folder so artifacts/, the CSVs and the plot folders resolve from anywhere
+cd "$(dirname "$0")"
+PYTHON="${PYTHON:-python3}"
+
 # -------------------------------------------------------------------
 # PlotGeneratorPDSP — interactive, GitHub-friendly plot builder
 #
+# One runner for all five engines (replaces the former 6_make_all_plots_{spark,kafkastream,risingwave}.sh).
+#
 # Usage:
+#   ./6_make_all_plots.sh extract         # step 1 + 2: query_performance_data.csv and operator_metrics_wide/
+#   ./6_make_all_plots.sh extract all     # extract, then every plot
 #   ./make_all_plots.sh                 # interactive menu
 #   ./make_all_plots.sh all             # run everything
 #   ./make_all_plots.sh 1               # run a single plot group (by id)
@@ -30,6 +38,12 @@ declare -a PY_LMH_ARGS=()
 #
 # Optional style overrides:
 #   MPL_STYLE=ieee LATEX_TEXT=1 HW_PALETTE=tableau ./make_all_plots.sh all
+#
+# Engines, hardware, rates and output folder (defaults: all five engines, plots_pdsp):
+#   FRAMEWORKS="flink storm" OUT_DIR=plots_pdsp_flink_storm ./6_make_all_plots.sh all
+#   HARDWARES="m510" PRODUCER_RATES="100000 1000000" ./6_make_all_plots.sh 9
+#   MIGRATE_FROM=../PStreamBench_controller/dsp_be ./6_make_all_plots.sh extract   # also copy new Spark/KS/RW runs
+#   PYTHON=python3.12 ./6_make_all_plots.sh all
 #
 # Optional environment overrides (axis + density control):
 #   YMIN=1 YMAX=1e7 ./make_all_plots.sh all
@@ -61,8 +75,14 @@ print_banner() {
 # Data + scripts
 # -----------------------------
 CSV="query_performance_data.csv"
-OUT_DIR="plots_pdsp"
+OUT_DIR="${OUT_DIR:-plots_pdsp}"
+EXTRACT_SCRIPT="1_data_extractor.py"
+OPERATOR_BUILD_SCRIPT="2_operator_build_data.py"
 PLOT_SCRIPT="3_plot_pdsp_query_metrics.py"
+LOW_HIGH_SCRIPT="4_plot_pdsp_low_high_parallelism.py"
+OPERATOR_PLOT_SCRIPT="5_plot_pdsp_operator_metrics.py"
+OPERATOR_DIR="operator_metrics_wide"
+MIGRATE_FROM="${MIGRATE_FROM:-}"
 
 # -----------------------------
 # GLOBAL PLOT OPTIONS (env overridable)
@@ -111,16 +131,8 @@ if [[ -n "${MAX_POINTS}" ]]; then
 fi
 
 # ---- EDIT THESE ARRAYS TO MATCH YOUR SETUP ----
-HARDWARES=(
-  "c6525-100g"
-  "c6525-25g"
-  "m510"
-)
-
-PRODUCER_RATES=(
-  500000
-  1000000
-)
+read -r -a HARDWARES <<< "${HARDWARES:-c6525-100g c6525-25g m510}"
+read -r -a PRODUCER_RATES <<< "${PRODUCER_RATES:-100000 500000 1000000}"
 
 CORE_METRICS=(
   throughput_50
@@ -146,7 +158,7 @@ EFFICIENCY_METRICS=(
   network_efficiency
 )
 
-FRAMEWORKS=("flink" "storm")
+read -r -a FRAMEWORKS <<< "${FRAMEWORKS:-flink storm spark kafkastream risingwave}"
 
 parallelisms_for_hw() {
   local hw="$1"
@@ -169,6 +181,9 @@ INTRO_RATE=1000000
 # LMH mappings
 LMH_PAR_MAP_JSON='{"m510":[2,16,40],"c6525-25g":[2,16,40],"c6525-100g":[2,16,40]}'
 LMH_RATE_MAP_JSON='{"m510":[100000,500000,1000000],"c6525-25g":[100000,500000,1000000],"c6525-100g":[100000,500000,1000000]}'
+
+# Low/high parallelism per hardware for 4_plot_pdsp_low_high_parallelism.py
+LOW_HIGH_PAR_MAP_JSON="${LOW_HIGH_PAR_MAP_JSON:-{\"m510\":[2,40],\"c6525-25g\":[2,80],\"c6525-100g\":[2,96]}}"
 
 if [[ "${SHOW_GROUP_VALUES}" == "1" ]]; then
   PY_LMH_ARGS=( --show-group-values )
@@ -198,7 +213,10 @@ MENU_ITEMS=(
   "15|app_eventrate_all_hw|App event-rate across all HW|Per query_id+par: one plot comparing all HW + both FW vs event-rate|${OUT_DIR}/app_eventrate_all_hw/*|slow"
   "16|cpu_efficiency_across_hw|CPU/Network efficiency across HW|Efficiency plots (cpu/network efficiency) across HW at fixed rate/par map|${OUT_DIR}/efficiency_across_hw/*|medium"
   "17|workload_fw_hw_parallelism|Workload×FW×HW×parallelism grid|Per query_id+rate+metric: many figures for full interaction view|${OUT_DIR}/workload_fw_hw_parallelism/*|very slow"
-  "18|all|ALL plots|Runs options 1–17 in order|${OUT_DIR}/*|depends (can be very slow)"
+  "18|low_high_across_hw|Low vs high parallelism across HW|Per query+metric+rate: low and high DoP per HW, all engines (4_plot_pdsp_low_high_parallelism.py)|${OUT_DIR}/low_high_across_hw/*|medium"
+  "19|operator_metrics|Operator metrics vs parallelism|Per query+HW+rate: selectivity, latency, throughput, busy/backpressure per operator (5_plot_pdsp_operator_metrics.py)|${OUT_DIR}/operator_over_parallelism/*|slow"
+  "20|extract|Extract data (steps 1+2)|Builds query_performance_data.csv and operator_metrics_wide/ from artifacts/ (MIGRATE_FROM=<dsp_be> also copies new Spark/KS/RW runs)|query_performance_data.csv, operator_metrics_wide/|medium"
+  "21|all|ALL plots|Runs plot options 1–19 in order (not the extraction)|${OUT_DIR}/*|depends (can be very slow)"
 )
 
 declare -A ID_TO_KEY=()
@@ -210,7 +228,7 @@ print_menu() {
   printf "%-4s %-38s %-10s\n" "ID" "Plot" "Runtime"
   printf "%-4s %-38s %-10s\n" "--" "----" "-------"
   for item in "${MENU_ITEMS[@]}"; do
-    IFS='|' read -r id key title what out where runtime <<<"$item"
+    IFS='|' read -r id key title what out runtime <<<"$item"
     printf "%-4s %-38s %-10s\n" "${id})" "${key}" "${runtime}"
   done
   echo
@@ -243,7 +261,7 @@ init_menu_maps() {
   for item in "${MENU_ITEMS[@]}"; do
     IFS='|' read -r id key title what out runtime <<<"$item"
     ID_TO_KEY["$id"]="$key"
-    if [[ "$key" != "all" ]]; then
+    if [[ "$key" != "all" && "$key" != "extract" ]]; then
       ALL_KEYS+=("$key")
     fi
   done
@@ -269,7 +287,7 @@ discover_query_ids() {
   while IFS= read -r qid; do
     [[ -z "${qid}" ]] && continue
     QUERY_IDS+=("${qid}")
-  done < <(python - <<PY
+  done < <("${PYTHON}" - <<PY
 import pandas as pd
 import sys
 csv = "${CSV}"
@@ -306,7 +324,7 @@ run_intro_hw_scaling_multi() {
   echo ">>> [intro_hw_scaling_multi] Flink-only intro figure (3 workloads × HW @ rate=1M) ..."
   for METRIC in throughput_50 endtoend_latency; do
     SAVE_BASE="${OUT_DIR}/intro_hw_scaling_multi/intro_${METRIC}"
-    python "${PLOT_SCRIPT}" \
+    "${PYTHON}" "${PLOT_SCRIPT}" \
       --csv "${CSV}" \
       --plot intro_hw_scaling_multi \
       --framework flink \
@@ -325,7 +343,7 @@ run_intro_hw_scaling_multi_fw() {
   echo ">>> [intro_hw_scaling_multi_fw] Flink vs Storm intro figure (2×3) @ rate=1M ..."
   for METRIC in throughput_50 endtoend_latency; do
     SAVE_BASE="${OUT_DIR}/intro_hw_scaling_multi_fw/intro_${METRIC}"
-    python "${PLOT_SCRIPT}" \
+    "${PYTHON}" "${PLOT_SCRIPT}" \
       --csv "${CSV}" \
       --plot intro_hw_scaling_multi_fw \
       --frameworks "${FRAMEWORKS[@]}" \
@@ -342,7 +360,7 @@ run_intro_hw_scaling_multi_fw() {
 
 run_batch_low_med_high_parallelism_across_hw() {
   echo ">>> [batch_low_med_high_parallelism_across_hw] LOW/MED/HIGH parallelism across hardware ..."
-  python "${PLOT_SCRIPT}" \
+  "${PYTHON}" "${PLOT_SCRIPT}" \
     --csv "${CSV}" \
     --plot batch_low_med_high_parallelism_across_hw \
     --frameworks "${FRAMEWORKS[@]}" \
@@ -359,7 +377,7 @@ run_batch_low_med_high_parallelism_across_hw() {
 
 run_batch_low_med_high_eventrate_across_hw() {
   echo ">>> [batch_low_med_high_eventrate_across_hw] LOW/MED/HIGH event-rate across hardware ..."
-  python "${PLOT_SCRIPT}" \
+  "${PYTHON}" "${PLOT_SCRIPT}" \
     --csv "${CSV}" \
     --plot batch_low_med_high_eventrate_across_hw \
     --frameworks "${FRAMEWORKS[@]}" \
@@ -382,7 +400,7 @@ run_dual_axis_tp_latency() {
     for HW in "${HARDWARES[@]}"; do
       for RATE in "${PRODUCER_RATES[@]}"; do
         SAVE_BASE="${OUT_DIR}/dual_axis_tp_latency/${Q_SAFE}/${HW}/rate${RATE}"
-        python "${PLOT_SCRIPT}" \
+        "${PYTHON}" "${PLOT_SCRIPT}" \
           --csv "${CSV}" \
           --plot dual_axis_tp_latency \
           --frameworks "${FRAMEWORKS[@]}" \
@@ -409,7 +427,7 @@ run_queries_single_framework() {
       for FW in "${FRAMEWORKS[@]}"; do
         for METRIC in "${CORE_METRICS[@]}"; do
           SAVE_BASE="${OUT_DIR}/queries_single/${FW}/${HW}/${RATE}_$(safe "${METRIC}")"
-          python "${PLOT_SCRIPT}" \
+          "${PYTHON}" "${PLOT_SCRIPT}" \
             --csv "${CSV}" \
             --plot queries_single_framework \
             --framework "${FW}" \
@@ -433,7 +451,7 @@ run_queries_compare_frameworks() {
     for RATE in "${PRODUCER_RATES[@]}"; do
       for METRIC in "${CORE_METRICS[@]}"; do
         SAVE_BASE="${OUT_DIR}/queries_compare_fw/${HW}/${RATE}_$(safe "${METRIC}")"
-        python "${PLOT_SCRIPT}" \
+        "${PYTHON}" "${PLOT_SCRIPT}" \
           --csv "${CSV}" \
           --plot queries_compare_frameworks \
           --frameworks "${FRAMEWORKS[@]}" \
@@ -460,7 +478,7 @@ run_scaling_single() {
         for FW in "${FRAMEWORKS[@]}"; do
           for METRIC in "${CORE_METRICS[@]}"; do
             SAVE_BASE="${OUT_DIR}/scaling_single/${Q_SAFE}/${FW}/${HW}/${RATE}_$(safe "${METRIC}")"
-            python "${PLOT_SCRIPT}" \
+            "${PYTHON}" "${PLOT_SCRIPT}" \
               --csv "${CSV}" \
               --plot scaling_single \
               --framework "${FW}" \
@@ -489,7 +507,7 @@ run_scaling_compare_fw() {
       for RATE in "${PRODUCER_RATES[@]}"; do
         for METRIC in "${CORE_METRICS[@]}"; do
           SAVE_BASE="${OUT_DIR}/scaling_compare_fw/${Q_SAFE}/${HW}/${RATE}_$(safe "${METRIC}")"
-          python "${PLOT_SCRIPT}" \
+          "${PYTHON}" "${PLOT_SCRIPT}" \
             --csv "${CSV}" \
             --plot scaling_compare_fw \
             --frameworks "${FRAMEWORKS[@]}" \
@@ -514,7 +532,7 @@ run_batch_compare_eventrates() {
   for QID in "${QUERY_IDS[@]}"; do
     for HW in "${HARDWARES[@]}"; do
       for METRIC in "${BATCH_METRICS[@]}"; do
-        python "${PLOT_SCRIPT}" \
+        "${PYTHON}" "${PLOT_SCRIPT}" \
           --csv "${CSV}" \
           --plot batch_compare_eventrates \
           --frameworks "${FRAMEWORKS[@]}" \
@@ -535,7 +553,7 @@ run_batch_all_metrics_eventrates() {
   echo ">>> [batch_all_metrics_eventrates] BIG batch: all metrics × all rates per query_id+HW ..."
   for QID in "${QUERY_IDS[@]}"; do
     for HW in "${HARDWARES[@]}"; do
-      python "${PLOT_SCRIPT}" \
+      "${PYTHON}" "${PLOT_SCRIPT}" \
         --csv "${CSV}" \
         --plot batch_all_metrics_eventrates \
         --frameworks "${FRAMEWORKS[@]}" \
@@ -563,7 +581,7 @@ run_eventrate_single() {
         for FW in "${FRAMEWORKS[@]}"; do
           for METRIC in "${CORE_METRICS[@]}"; do
             SAVE_BASE="${OUT_DIR}/eventrate_single/${Q_SAFE}/${FW}/${HW}/par${PAR}_$(safe "${METRIC}")"
-            python "${PLOT_SCRIPT}" \
+            "${PYTHON}" "${PLOT_SCRIPT}" \
               --csv "${CSV}" \
               --plot eventrate_single \
               --framework "${FW}" \
@@ -594,7 +612,7 @@ run_eventrate_compare_fw() {
       for PAR in ${PARS}; do
         for METRIC in "${CORE_METRICS[@]}"; do
           SAVE_BASE="${OUT_DIR}/eventrate_compare_fw/${Q_SAFE}/${HW}/par${PAR}_$(safe "${METRIC}")"
-          python "${PLOT_SCRIPT}" \
+          "${PYTHON}" "${PLOT_SCRIPT}" \
             --csv "${CSV}" \
             --plot eventrate_compare_fw \
             --frameworks "${FRAMEWORKS[@]}" \
@@ -621,7 +639,7 @@ run_app_scaling_all_hw() {
     for RATE in "${PRODUCER_RATES[@]}"; do
       for METRIC in "${CORE_METRICS[@]}"; do
         SAVE_BASE="${OUT_DIR}/app_scaling_all_hw/${Q_SAFE}/rate${RATE}_$(safe "${METRIC}")"
-        python "${PLOT_SCRIPT}" \
+        "${PYTHON}" "${PLOT_SCRIPT}" \
           --csv "${CSV}" \
           --plot app_scaling_all_hw \
           --frameworks "${FRAMEWORKS[@]}" \
@@ -645,7 +663,7 @@ run_app_eventrate_all_hw() {
     Q_SAFE=$(safe "${QID}")
     for METRIC in "${CORE_METRICS[@]}"; do
       SAVE_BASE="${OUT_DIR}/app_eventrate_all_hw/${Q_SAFE}/par${REP_PARALLELISM}_$(safe "${METRIC}")"
-      python "${PLOT_SCRIPT}" \
+      "${PYTHON}" "${PLOT_SCRIPT}" \
         --csv "${CSV}" \
         --plot app_eventrate_all_hw \
         --frameworks "${FRAMEWORKS[@]}" \
@@ -674,7 +692,7 @@ run_cpu_efficiency_across_hw() {
       Q_SAFE=$(safe "${QID}")
       for METRIC in "${EFFICIENCY_METRICS[@]}"; do
         SAVE_BASE="${OUT_DIR}/efficiency_across_hw/${Q_SAFE}/rate${EFF_RATE}_$(safe "${METRIC}")"
-        python "${PLOT_SCRIPT}" \
+        "${PYTHON}" "${PLOT_SCRIPT}" \
           --csv "${CSV}" \
           --plot cpu_efficiency_across_hw \
           --frameworks "${FRAMEWORKS[@]}" \
@@ -700,7 +718,7 @@ run_workload_fw_hw_parallelism() {
     for RATE in "${PRODUCER_RATES[@]}"; do
       for METRIC in "${CORE_METRICS[@]}"; do
         SAVE_BASE="${OUT_DIR}/workload_fw_hw_parallelism/${Q_SAFE}/rate${RATE}_$(safe "${METRIC}")"
-        python "${PLOT_SCRIPT}" \
+        "${PYTHON}" "${PLOT_SCRIPT}" \
           --csv "${CSV}" \
           --plot workload_fw_hw_parallelism \
           --frameworks "${FRAMEWORKS[@]}" \
@@ -715,6 +733,43 @@ run_workload_fw_hw_parallelism() {
       done
     done
   done
+}
+
+run_extract() {
+  echo ">>> [extract] step 1: query-level metrics -> ${CSV}"
+  if [[ -n "${MIGRATE_FROM}" ]]; then
+    "${PYTHON}" "${EXTRACT_SCRIPT}" --migrate-from "${MIGRATE_FROM}" --out "${CSV}"
+  else
+    "${PYTHON}" "${EXTRACT_SCRIPT}" --out "${CSV}"
+  fi
+  echo ">>> [extract] step 2: operator-level metrics -> ${OPERATOR_DIR}/"
+  "${PYTHON}" "${OPERATOR_BUILD_SCRIPT}"
+}
+
+run_low_high_across_hw() {
+  echo ">>> [low_high_across_hw] low vs high parallelism across hardware ..."
+  "${PYTHON}" "${LOW_HIGH_SCRIPT}" \
+    --csv "${CSV}" \
+    --plot batch_low_high_across_hw \
+    --frameworks "${FRAMEWORKS[@]}" \
+    --hardware-types "${HARDWARES[@]}" \
+    --par-map-json "${LOW_HIGH_PAR_MAP_JSON}" \
+    --out_dir "${OUT_DIR}" \
+    --all-formats \
+    --no-show || true
+}
+
+run_operator_metrics() {
+  echo ">>> [operator_metrics] operator metrics over parallelism ..."
+  require_file "${OPERATOR_DIR}/$(ls "${OPERATOR_DIR}" 2>/dev/null | head -1)"
+  "${PYTHON}" "${OPERATOR_PLOT_SCRIPT}" \
+    --operator-dir "${OPERATOR_DIR}" \
+    --out-dir "${OUT_DIR}" \
+    --plot batch_all \
+    --frameworks "${FRAMEWORKS[@]}" \
+    --mpl-style "${MPL_STYLE}" \
+    --all-formats \
+    --no-show || true
 }
 
 # -----------------------------
@@ -740,9 +795,12 @@ dispatch_plot() {
     app_eventrate_all_hw) run_app_eventrate_all_hw ;;
     cpu_efficiency_across_hw) run_cpu_efficiency_across_hw ;;
     workload_fw_hw_parallelism) run_workload_fw_hw_parallelism ;;
+    low_high_across_hw) run_low_high_across_hw ;;
+    operator_metrics) run_operator_metrics ;;
+    extract) run_extract ;;
     *)
       echo "Unknown plot key: $key"
-      echo "Run './make_all_plots.sh help' or run without args to see the menu."
+      echo "Run './6_make_all_plots.sh help' or run without args to see the menu."
       exit 1
       ;;
   esac
@@ -783,12 +841,6 @@ if [[ "${1:-}" == "info" ]]; then
   exit 0
 fi
 
-require_file "${CSV}"
-require_file "${PLOT_SCRIPT}"
-
-# Discover query_ids once for all plots (needed by most)
-discover_query_ids
-
 # Selection parsing (interactive if no args)
 SELECTIONS=""
 if [[ $# -eq 0 ]]; then
@@ -806,7 +858,7 @@ PLOTS_TO_RUN=()
 for tok in $SELECTIONS; do
   case "$tok" in
     q|quit|exit) exit 0 ;;
-    all) PLOTS_TO_RUN=("all") ;;
+    all) PLOTS_TO_RUN+=("all") ;;
     *)
       if [[ "$tok" =~ ^[0-9]+$ ]]; then
         key="${ID_TO_KEY[$tok]:-}"
@@ -820,13 +872,29 @@ for tok in $SELECTIONS; do
   esac
 done
 
-# Expand "all"
+# "extract" always runs first; "all" expands to every plot (extraction only when asked for)
+DO_EXTRACT=0
+EXPANDED=()
 for x in "${PLOTS_TO_RUN[@]}"; do
-  if [[ "$x" == "all" ]]; then
-    PLOTS_TO_RUN=("${ALL_KEYS[@]}")
-    break
-  fi
+  case "$x" in
+    extract) DO_EXTRACT=1 ;;
+    all) EXPANDED+=("${ALL_KEYS[@]}") ;;
+    *) EXPANDED+=("$x") ;;
+  esac
 done
+PLOTS_TO_RUN=(${EXPANDED[@]+"${EXPANDED[@]}"})
+
+if [[ "${DO_EXTRACT}" -eq 1 ]]; then
+  run_extract
+fi
+if [[ ${#PLOTS_TO_RUN[@]} -eq 0 ]]; then
+  echo ">>> Done (extraction only)."
+  exit 0
+fi
+
+require_file "${CSV}"
+require_file "${PLOT_SCRIPT}"
+discover_query_ids
 
 echo
 echo ">>> Will run ${#PLOTS_TO_RUN[@]} plot function(s):"

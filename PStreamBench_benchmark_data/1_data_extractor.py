@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
+"""Step 1: query-level metrics for all five engines -> query_performance_data.csv.
 
+Usage:
+  python3 1_data_extractor.py                         # read artifacts/ next to this script
+  python3 1_data_extractor.py --migrate-from <dsp_be>  # first copy new Spark / Kafka Streams / RisingWave
+                                                      # sweep results from the controller's dsp_be/ into artifacts/
+Flink and Storm results are already written into artifacts/ by the controller; Spark, Kafka Streams and RisingWave
+results stay in PStreamBench_controller/dsp_be/<Job Class>/ until they are migrated (this replaces the former
+0_migrate_{spark,kafkastream,risingwave}_results.py scripts, with the same rules)."""
+import argparse
+import re
+import shutil
 import os
 import json
 import statistics
@@ -98,8 +109,9 @@ def get_storm_values(info: dict, data: dict, path: list) -> dict:
     output["throughput_95"] = float(data["queryMetrics"].get("throughput_95", pd.NA))
     output["throughput_98"] = float(data["queryMetrics"].get("throughput_98", pd.NA))
 
-    output["endtoend_latency"] = \
-        float(data["queryMetrics"]["endtoend_latency_storm"])
+    # failed Storm runs (e.g. some reruns) report no latency: keep the row, latency = NaN
+    lat = data["queryMetrics"].get("endtoend_latency_storm")
+    output["endtoend_latency"] = float(lat) if lat is not None else float("nan")
 
     output = output | get_hardware_values(info, data)
     return pd.DataFrame([output])
@@ -650,7 +662,96 @@ def parse_location(root_path: str, info: dict):
     return (strategy or "uniform"), variant
 
 
+# ---------- optional step 0: migrate Spark / Kafka Streams / RisingWave results into artifacts/ ----------
+
+MIGRATE_ENGINES = {"Apache Spark": "spark", "Apache Kafka Streams": "kafkastream", "RisingWave": "risingwave"}
+MIGRATE_RATES = {"100000", "500000", "1000000"}
+MIGRATE_APP = {
+    "Ad Analytics": "ad-analytics", "Bargain Index": "bargain-index", "Click Analytics": "click-analytics",
+    "Google cloud Monitoring": "google-cloud-monitoring", "Linear Road": "linear-road",
+    "Log Processing": "log-processing", "Machine Outlier": "machine-outlier",
+    "Sentiment Analysis": "sentiment-analysis", "Smart Grid": "smart-grid", "Spike Detection": "spike-detection",
+    "TPCH": "tpch", "Traffic Monitoring": "traffic-monitoring", "Trending Topics": "trending-topics",
+    "Word Count": "word-count",
+}
+# job_query_number -> variant subfolder. Smart Grid and Log Processing deliberately have none (flat layout,
+# rows are told apart by job_query_number), exactly as in the former migration scripts.
+MIGRATE_VARIANT = {
+    "ad-analytics": {"1": "with_join", "2": "without_join"},
+    "click-analytics": {"1": "time-based", "2": "geo-based", "3": "count-based"},
+    "google-cloud-monitoring": {"1": "cpu-per-category", "2": "cpu-per-job"},
+    "linear-road": {"1": "toll-notification", "2": "accident-detection", "3": "daily-expenditure", "4": "travel-time"},
+    "tpch": {"1": "without_window", "2": "with_window"},
+}
+
+
+def _run_order(meta_name: str) -> int:
+    """Order of runs with the same configuration: Kafka Streams files carry an epoch
+    (metaInfo-i0s0-<Job>-<epoch>-<ts>.json), RisingWave a YYYYMMDDTHHMMSS stamp."""
+    parts = meta_name.removesuffix(".json").split("-")
+    if len(parts) > 3 and parts[3].isdigit():
+        return int(parts[3])
+    digits = "".join(c for c in parts[-1] if c.isdigit())
+    return int(digits) if digits else -1
+
+
+def migrate_results(dsp_be: str, artifacts_dir: str = "artifacts") -> None:
+    """Copy (never move) m510 sweep runs at 100k/500k/1M from dsp_be/<Job Class>[ Q<n>]/ into
+    artifacts/<app>/m510/<engine>/[<variant>/]<rate>/. Spark keeps every run; Kafka Streams and RisingWave keep only
+    the newest run per (query, parallelism, rate), as before."""
+    copied, skipped = 0, 0
+    for job_dir in sorted(os.listdir(dsp_be)):
+        app = MIGRATE_APP.get(re.sub(r" Q\d+$", "", job_dir))
+        src = os.path.join(dsp_be, job_dir)
+        if app is None or not os.path.isdir(src):
+            continue
+        best = {}
+        for name in sorted(os.listdir(src)):
+            if not (name.startswith("metaInfo-") and name.endswith(".json")):
+                continue
+            try:
+                with open(os.path.join(src, name)) as f:
+                    meta = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                continue
+            engine = MIGRATE_ENGINES.get(meta.get("job_framework", ""))
+            rate = str(meta.get("producer_event_per_second", ""))
+            ev = os.path.join(src, name.replace("metaInfo-", "evaluationMetrics-", 1))
+            if engine is None or rate not in MIGRATE_RATES or meta.get("cluster_hardware_type") != "m510" or not os.path.exists(ev):
+                skipped += 1
+                continue
+            qn = str(meta.get("job_query_number", ""))
+            dest = os.path.join(artifacts_dir, app, "m510", engine)
+            vmap = MIGRATE_VARIANT.get(app)
+            if vmap:
+                if qn not in vmap:
+                    print(f"  WARNING: unknown job_query_number={qn!r} in {job_dir}/{name}, skipped")
+                    continue
+                dest = os.path.join(dest, vmap[qn])
+            dest = os.path.join(dest, rate)
+            key = (engine, qn, str(meta.get("job_parallelization", "")), rate) if engine != "spark" else (name,)
+            if key not in best or _run_order(name) > _run_order(best[key][0]):
+                best[key] = (name, ev, dest)
+        for name, ev, dest in best.values():
+            os.makedirs(dest, exist_ok=True)
+            shutil.copy2(os.path.join(src, name), os.path.join(dest, name))
+            shutil.copy2(ev, os.path.join(dest, os.path.basename(ev)))
+            copied += 1
+    print(f"[migrate] copied {copied} runs into {artifacts_dir}/, skipped {skipped} (other engine, rate or hardware)")
+
+
 def main():
+    ap = argparse.ArgumentParser(description="Extract query-level metrics of all engines into query_performance_data.csv")
+    ap.add_argument("--migrate-from", default=None,
+                    help="controller results folder (PStreamBench_controller/dsp_be) to copy Spark/Kafka Streams/RisingWave runs from first")
+    ap.add_argument("--out", default="query_performance_data.csv", help="output CSV (default: query_performance_data.csv)")
+    args = ap.parse_args()
+    migrate_from = os.path.abspath(args.migrate_from) if args.migrate_from else None
+    args.out = os.path.abspath(args.out)
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))  # artifacts/ is read relative to this script
+    if migrate_from:
+        migrate_results(migrate_from)
+
     df = pd.DataFrame()
 
     for root_path, artifact in get_artifacts():
@@ -741,7 +842,8 @@ def main():
         df = pd.concat([df, output], ignore_index=True)
 
     df = df.sort_index()
-    df.to_csv("query_performance_data.csv", index=False)
+    df.to_csv(args.out, index=False)
+    print(f"[OK] {len(df)} runs -> {args.out}")
 
 
 if __name__ == "__main__":

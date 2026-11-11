@@ -1,0 +1,351 @@
+application,system,column,strategy,rate,thr_base,thr_cfg,lat_base_ms,lat_cfg_ms,thr_ratio,lat_ratio,cpu_diff_pp,fallback,runs_cfg,variant
+Sentiment Analysis,flink,L,DoP 40,100000,1137.05,20021.5,95497.4,86257.4,17.6083,0.903244,49.1124,False,1,
+Sentiment Analysis,flink,M,DoP 40,500000,1189.38,19198.7,117397,115009,16.1417,0.979656,50.7,False,1,
+Sentiment Analysis,flink,H,DoP 40,1e+06,1168.62,18410.2,91374.4,97871.4,15.7539,1.0711,48.2774,False,1,
+Sentiment Analysis,flink,DS2,ds2,1e+06,1168.62,14850.4,91374.4,48880.4,12.7077,0.534947,45.1509,False,1,
+Sentiment Analysis,flink,Dh,dhalion,1e+06,1168.62,1148.22,91374.4,276419,0.982543,3.02513,-0.939484,False,1,
+Sentiment Analysis,storm,L,DoP 40,100000,,4.91214,914.607,0,,,55.5391,False,1,
+Sentiment Analysis,storm,M,DoP 40,500000,,38.4502,4466.48,0,,,52.0781,False,1,
+Sentiment Analysis,storm,H,DoP 40,1e+06,,0.846921,3162.49,0,,,51.9141,False,1,
+Sentiment Analysis,storm,DS2,ds2,1e+06,,,3162.49,5856.69,,1.85193,13.6047,False,1,
+Sentiment Analysis,storm,Dh,dhalion,1e+06,,,3162.49,6887.91,,2.178,7.68594,False,1,
+Sentiment Analysis,spark,L,DoP 40,100000,100999,99042.6,3050.52,1518.37,0.980633,0.49774,0.250871,False,1,
+Sentiment Analysis,spark,M,DoP 40,500000,91408.8,211978,3574.76,7138.61,2.31902,1.99695,0.123989,False,5,
+Sentiment Analysis,spark,H,DoP 40,1e+06,94455.6,159425,1626.1,2034.86,1.68783,1.25138,-0.0546348,False,5,
+Sentiment Analysis,spark,DS2,ds2,1e+06,94455.6,149120,1626.1,2705.32,1.57873,1.66369,-1.34741,False,1,
+Sentiment Analysis,spark,Dh,dhalion,1e+06,94455.6,223202,1626.1,9271.3,2.36303,5.70156,-1.4021,False,1,
+Sentiment Analysis,kafkastream,L,DoP 40,100000,74592,76554.1,135.997,51.9534,1.0263,0.382019,3.65003,False,1,
+Sentiment Analysis,kafkastream,M,DoP 40,500000,368174,371877,365.334,48.6919,1.01006,0.13328,9.57046,False,1,
+Sentiment Analysis,kafkastream,H,DoP 40,1e+06,500932,489686,9884.89,56.9616,0.97755,0.00576249,11.1598,False,1,
+Sentiment Analysis,kafkastream,DS2,ds2,1e+06,500932,,9884.89,,,,-30.4824,False,1,
+Sentiment Analysis,kafkastream,Dh,dhalion,1e+06,500932,,9884.89,,,,-30.6319,False,1,
+Sentiment Analysis,risingwave,L,DoP 40,100000,37.8845,38.9436,1685.81,2340.77,1.02795,1.38851,1.48744,False,1,
+Sentiment Analysis,risingwave,M,DoP 40,500000,38.7146,40.1343,1702.9,3113.91,1.03667,1.8286,1.68125,False,1,
+Sentiment Analysis,risingwave,H,DoP 40,1e+06,38.3547,34.3977,1702.9,2315.14,0.896831,1.35953,1.1875,False,1,
+Sentiment Analysis,risingwave,DS2,ds2,1e+06,38.3547,39.6067,1702.9,2545.8,1.03264,1.49498,1.60533,False,1,
+Sentiment Analysis,risingwave,Dh,dhalion,1e+06,38.3547,40.1237,1702.9,2537.26,1.04612,1.48997,10.8937,False,1,
+Traffic Monitoring,flink,L,DoP 40,100000,1405.05,797,14458.4,1065.63,0.56724,0.0737029,20.3937,False,1,
+Traffic Monitoring,flink,M,DoP 40,500000,518.417,2156.18,25095.1,9781.67,4.15915,0.389785,55.2,False,1,
+Traffic Monitoring,flink,H,DoP 40,1e+06,686.5,2295.83,11667.8,5420.08,3.34426,0.464534,55.1875,False,1,
+Traffic Monitoring,flink,DS2,ds2,1e+06,686.5,45997.7,11667.8,2086.05,67.0032,0.178787,52.4832,False,1,
+Traffic Monitoring,flink,Dh,dhalion,1e+06,686.5,43885,11667.8,30349,63.9257,2.60109,1.57281,False,1,
+Traffic Monitoring,storm,L,DoP 40,100000,30416.4,19029.3,3501.52,1473.78,0.625628,0.420897,57.45,False,1,
+Traffic Monitoring,storm,M,DoP 40,500000,29804.2,18186.4,3774.65,1577.83,0.610196,0.418006,54.5062,False,1,
+Traffic Monitoring,storm,H,DoP 40,1e+06,30454.7,17952.5,3493.95,1806.37,0.589483,0.516999,53.1,False,1,
+Traffic Monitoring,storm,DS2,ds2,1e+06,30454.7,2451.86,3493.95,1867.27,0.0805085,0.534428,48.5625,False,1,
+Traffic Monitoring,storm,Dh,dhalion,1e+06,30454.7,39671.4,3493.95,3817.75,1.30263,1.09267,15.8187,False,1,
+Traffic Monitoring,spark,L,DoP 40,100000,19785,101537,18763.5,3952.16,5.132,0.21063,-0.176602,False,2,
+Traffic Monitoring,spark,M,DoP 40,500000,19051.8,274057,3036.96,28439.9,14.3849,9.36461,0.251062,False,3,
+Traffic Monitoring,spark,H,DoP 40,1e+06,9663.1,208599,1119.18,15381.5,21.5871,13.7436,0.326034,False,1,
+Traffic Monitoring,spark,DS2,ds2,1e+06,9663.1,36161.1,1119.18,2893.14,3.74219,2.58507,-0.992701,False,1,
+Traffic Monitoring,spark,Dh,dhalion,1e+06,9663.1,130653,1119.18,3735.16,13.5208,3.33742,-1.00833,False,1,
+Traffic Monitoring,kafkastream,L,DoP 40,100000,38.2217,12.0572,5801.79,10864.1,0.315454,1.87254,10.768,False,1,
+Traffic Monitoring,kafkastream,M,DoP 40,500000,33.5953,0.806522,27959.7,14.625,0.024007,0.000523075,62.2548,False,1,
+Traffic Monitoring,kafkastream,H,DoP 40,1e+06,31.7592,0.00620786,32355.1,60.3123,0.000195466,0.00186408,15.7873,False,1,
+Traffic Monitoring,kafkastream,DS2,ds2,1e+06,31.7592,,32355.1,,,,,False,,
+Traffic Monitoring,kafkastream,Dh,dhalion,1e+06,31.7592,24754.8,32355.1,66530.3,779.452,2.05626,0.134783,False,1,
+Traffic Monitoring,risingwave,L,DoP 40,100000,746.715,729.09,1691.51,1691.51,0.976396,1,0.3999,False,1,
+Traffic Monitoring,risingwave,M,DoP 40,500000,702.168,399.168,1685.81,1691.51,0.568479,1.00338,-0.04375,False,1,
+Traffic Monitoring,risingwave,H,DoP 40,1e+06,798.103,786.029,1691.91,1686.02,0.984871,0.996519,0.6125,False,1,
+Traffic Monitoring,risingwave,DS2,ds2,1e+06,798.103,806.287,1691.91,1685.81,1.01025,0.996396,1.00632,False,1,
+Traffic Monitoring,risingwave,Dh,dhalion,1e+06,798.103,799.655,1691.91,1691.51,1.00194,0.999762,1.42674,False,1,
+Trending Topics,flink,L,DoP 40,100000,103.55,74.8667,817.197,1297.87,0.723,1.5882,6.05,False,1,
+Trending Topics,flink,M,DoP 40,500000,434.683,665.35,950.737,1188.5,1.53065,1.25008,12.5688,False,1,
+Trending Topics,flink,H,DoP 40,1e+06,447.933,1324.02,929.748,974.89,2.95583,1.04855,27.8563,False,1,
+Trending Topics,flink,DS2,ds2,1e+06,447.933,29582.5,929.748,1213.69,66.0423,1.30539,36.9421,False,1,
+Trending Topics,flink,Dh,dhalion,1e+06,447.933,4137.03,929.748,1206.1,9.23582,1.29723,15.494,False,1,
+Trending Topics,storm,L,DoP 40,100000,33.2203,376.102,50.097,30.846,11.3214,0.615725,16.0234,False,1,
+Trending Topics,storm,M,DoP 40,500000,25.7627,2845.93,295.986,189.093,110.467,0.638858,18.6172,False,1,
+Trending Topics,storm,H,DoP 40,1e+06,15.0847,2923.73,313.855,119.317,193.82,0.380166,11.3344,False,1,
+Trending Topics,storm,DS2,ds2,1e+06,15.0847,56.7797,313.855,399.762,3.76404,1.27372,11.6719,False,1,
+Trending Topics,storm,Dh,dhalion,1e+06,15.0847,6.77966,313.855,633.309,0.449438,2.01784,-4.47187,False,1,
+Trending Topics,spark,L,DoP 40,100000,100791,93237.1,2309.21,1253.74,0.925057,0.542931,0.279681,False,1,
+Trending Topics,spark,M,DoP 40,500000,251571,386903,20091.9,27706,1.53795,1.37896,0.168877,False,1,
+Trending Topics,spark,H,DoP 40,1e+06,244691,384109,15945.5,27795.7,1.56977,1.74317,-0.119453,False,3,
+Trending Topics,spark,DS2,ds2,1e+06,244691,538.882,15945.5,13.004,0.0022023,0.00081553,-1.44794,False,1,
+Trending Topics,spark,Dh,dhalion,1e+06,244691,69402.7,15945.5,3253.91,0.283634,0.204065,-1.26825,False,1,
+Trending Topics,kafkastream,L,DoP 40,100000,5885.57,4947.12,6329.97,3854.39,0.840551,0.608911,5.85699,False,1,
+Trending Topics,kafkastream,M,DoP 40,500000,18637.2,25231.8,2908.88,798.084,1.35384,0.274361,12.9302,False,1,
+Trending Topics,kafkastream,H,DoP 40,1e+06,31618.7,40354,1425.77,362.272,1.27627,0.254089,35.3561,False,1,
+Trending Topics,kafkastream,DS2,ds2,1e+06,31618.7,8038.13,1425.77,28140.3,0.254221,19.7369,18.6471,False,1,
+Trending Topics,kafkastream,Dh,dhalion,1e+06,31618.7,3834.89,1425.77,33469.2,0.121286,23.4745,2.60293,False,1,
+Trending Topics,risingwave,L,DoP 40,100000,84.7187,78.9059,2528.72,1366.87,0.931387,0.540541,0.89375,False,1,
+Trending Topics,risingwave,M,DoP 40,500000,103.526,160.015,2528.72,1366.87,1.54566,0.540541,0.156187,False,1,
+Trending Topics,risingwave,H,DoP 40,1e+06,28.0241,90.4195,604.969,1361.18,3.22649,2.25,-0.1375,False,1,
+Trending Topics,risingwave,DS2,ds2,1e+06,28.0241,103.194,604.969,1685.81,3.68234,2.78661,0.795123,False,1,
+Trending Topics,risingwave,Dh,dhalion,1e+06,28.0241,172.454,604.969,3805.89,6.15376,6.29106,0.815608,False,1,
+Machine Outlier,flink,L,DoP 40,100000,2345.32,2775.58,362.292,492.532,1.18346,1.35949,5.97873,False,1,
+Machine Outlier,flink,M,DoP 40,500000,3684.94,3984.82,905.168,477.757,1.08138,0.52781,12.7625,False,1,
+Machine Outlier,flink,H,DoP 40,1e+06,2394.12,3884.88,1157.81,484.21,1.62268,0.41821,21.1187,False,1,
+Machine Outlier,flink,DS2,ds2,1e+06,2394.12,4294.22,1157.81,11990.8,1.79365,10.3564,6.96954,False,1,
+Machine Outlier,flink,Dh,dhalion,1e+06,2394.12,9444.47,1157.81,26667.6,3.94486,23.0327,-3.75333,False,1,
+Machine Outlier,storm,L,DoP 40,100000,15.414,118.983,74.114,31.541,7.71917,0.425574,25.1719,False,1,
+Machine Outlier,storm,M,DoP 40,500000,83.337,239.627,340.976,262.978,2.87539,0.771251,39.1875,False,1,
+Machine Outlier,storm,H,DoP 40,1e+06,23.5593,52.0339,314.747,284.953,2.20863,0.90534,37.3575,False,1,
+Machine Outlier,storm,DS2,ds2,1e+06,23.5593,3.38983,314.747,278.728,0.143885,0.885562,27.0828,False,1,
+Machine Outlier,storm,Dh,dhalion,1e+06,23.5593,116.864,314.747,564.599,4.96043,1.79382,9.27031,False,1,
+Machine Outlier,spark,L,DoP 40,100000,98978.2,100251,858.475,731.277,1.01286,0.851833,0.18135,False,1,
+Machine Outlier,spark,M,DoP 40,500000,403309,490905,26139.4,15454.7,1.21719,0.591241,0.0113755,False,1,
+Machine Outlier,spark,H,DoP 40,1e+06,413933,541115,25712.3,33733.4,1.30725,1.31196,0.279607,False,1,
+Machine Outlier,spark,DS2,ds2,1e+06,413933,406829,25712.3,27249.8,0.982838,1.0598,-0.924045,False,1,
+Machine Outlier,spark,Dh,dhalion,1e+06,413933,480813,25712.3,19433.8,1.16157,0.75582,-1.10373,False,1,
+Machine Outlier,kafkastream,L,DoP 40,100000,236529,255855,433.756,229.153,1.08171,0.5283,3.49852,False,1,
+Machine Outlier,kafkastream,M,DoP 40,500000,762190,1.16058e+06,32012.3,427.965,1.52269,0.0133688,21.9662,False,1,
+Machine Outlier,kafkastream,H,DoP 40,1e+06,766361,288199,61417.6,1722.38,0.376061,0.0280437,62.3606,False,1,
+Machine Outlier,kafkastream,DS2,ds2,1e+06,766361,,61417.6,,,,-28.4519,False,1,
+Machine Outlier,kafkastream,Dh,dhalion,1e+06,766361,,61417.6,,,,-28.3355,False,1,
+Machine Outlier,risingwave,L,DoP 40,100000,63946.6,106463,43183.1,5681.93,1.66487,0.131578,0.91875,False,1,
+Machine Outlier,risingwave,M,DoP 40,500000,56865.6,100989,4690.09,7035.13,1.77592,1.5,2.6875,False,1,
+Machine Outlier,risingwave,H,DoP 40,1e+06,48503.7,102344,5676.8,5713.64,2.11003,1.00649,1.26875,False,1,
+Machine Outlier,risingwave,DS2,ds2,1e+06,48503.7,101466,5676.8,5646.9,2.09192,0.994733,3.0997,False,1,
+Machine Outlier,risingwave,Dh,dhalion,1e+06,48503.7,104859,5676.8,28852.3,2.16187,5.0825,0.42663,False,1,
+Ad Analytics,flink,L,DoP 40,100000,89945.7,163832,1841.83,2611.58,1.82145,1.41793,8.1875,False,1,with_join
+Ad Analytics,flink,M,DoP 40,500000,204496,508113,3397.51,26289.1,2.48471,7.73775,8.68125,False,1,with_join
+Ad Analytics,flink,H,DoP 40,1e+06,210273,464557,3477.41,27902.8,2.2093,8.02403,7.94686,False,1,with_join
+Ad Analytics,flink,DS2,ds2,1e+06,210273,463232,3477.41,620276,2.203,178.373,-9.53253,False,1,with_join
+Ad Analytics,flink,Dh,dhalion,1e+06,210273,384204,3477.41,92053.9,1.82717,26.472,-12.6488,False,1,with_join
+Ad Analytics,storm,L,DoP 40,100000,8095.95,67643.2,620.091,751.401,8.35519,1.21176,43.7969,False,1,with_join
+Ad Analytics,storm,M,DoP 40,500000,73233.6,87424.3,950.65,684.019,1.19377,0.719528,16.2578,False,1,with_join
+Ad Analytics,storm,H,DoP 40,1e+06,29886,113610,449.399,1045.26,3.80144,2.3259,18.8906,False,1,with_join
+Ad Analytics,storm,DS2,ds2,1e+06,29886,,449.399,0,,,11.9438,False,1,with_join
+Ad Analytics,storm,Dh,dhalion,1e+06,29886,,449.399,0,,,12.0875,False,1,with_join
+Ad Analytics,spark,L,DoP 40,100000,195709,189499,1492.17,1331.2,0.968265,0.892124,-0.160364,False,1,with_join
+Ad Analytics,spark,M,DoP 40,500000,1.03371e+06,973873,5230.35,2251.6,0.942117,0.430488,0.305404,False,1,with_join
+Ad Analytics,spark,H,DoP 40,1e+06,1.26372e+06,1.85314e+06,23793.6,3652.91,1.46642,0.153525,0.218206,False,1,with_join
+Ad Analytics,spark,DS2,ds2,1e+06,1.26372e+06,145975,23793.6,4180.13,0.115513,0.175683,-1.38231,False,1,with_join
+Ad Analytics,spark,Dh,dhalion,1e+06,1.26372e+06,612287,23793.6,19947,0.484513,0.838337,-1.10888,False,1,with_join
+Ad Analytics,kafkastream,L,DoP 40,100000,5941.44,5898.59,5862.87,3701.16,0.992788,0.631288,7.42515,False,1,with_join
+Ad Analytics,kafkastream,M,DoP 40,500000,6704.15,6435.82,5418.47,2963.25,0.959975,0.54688,22.3853,False,1,with_join
+Ad Analytics,kafkastream,H,DoP 40,1e+06,5985.3,1150.6,17227,2777.23,0.192237,0.161214,49.3363,False,1,with_join
+Ad Analytics,kafkastream,DS2,ds2,1e+06,5985.3,,17227,,,,,False,,with_join
+Ad Analytics,kafkastream,Dh,dhalion,1e+06,5985.3,403388,17227,157694,67.3963,9.1539,2.8112,False,1,with_join
+Ad Analytics,risingwave,L,DoP 40,100000,13113.1,14394.8,1361.18,684.703,1.09774,0.503022,-0.23809,False,1,with_join
+Ad Analytics,risingwave,M,DoP 40,500000,9514.24,18993.4,1366.87,1366.87,1.99631,1,0.266278,False,1,with_join
+Ad Analytics,risingwave,H,DoP 40,1e+06,17731.8,9575.3,1366.87,1372.57,0.540006,1.00417,0.105639,False,1,with_join
+Ad Analytics,risingwave,DS2,ds2,1e+06,17731.8,21046.5,1366.87,1691.51,1.18693,1.2375,0.73599,False,1,with_join
+Ad Analytics,risingwave,Dh,dhalion,1e+06,17731.8,20554.5,1366.87,1692.21,1.15918,1.23801,-0.271573,False,1,with_join
+Click Analytics,flink,L,DoP 40,100000,99952.1,99905.6,392.748,725.107,0.999535,1.84624,9.325,False,1,time-based
+Click Analytics,flink,M,DoP 40,500000,296779,364598,664.223,6393.08,1.22852,9.62489,4.66395,False,1,time-based
+Click Analytics,flink,H,DoP 40,1e+06,295279,441728,627.427,4805.36,1.49597,7.65884,8.58067,False,1,time-based
+Click Analytics,flink,DS2,ds2,1e+06,295279,401712,627.427,451843,1.36045,720.152,-4.70676,False,1,time-based
+Click Analytics,flink,Dh,dhalion,1e+06,295279,358583,627.427,37465.4,1.21439,59.7127,-4.38183,False,1,time-based
+Click Analytics,storm,L,DoP 40,100000,208.136,3887.1,241.305,156.25,18.6758,0.647521,41.0136,False,1,time-based
+Click Analytics,storm,M,DoP 40,500000,100.678,2749.32,423.191,416.538,27.3081,0.984279,41.4762,False,1,time-based
+Click Analytics,storm,H,DoP 40,1e+06,256.102,3367.49,466.221,408.939,13.149,0.877136,32.9563,False,1,time-based
+Click Analytics,storm,DS2,ds2,1e+06,256.102,,466.221,0,,,19.125,False,1,time-based
+Click Analytics,storm,Dh,dhalion,1e+06,256.102,,466.221,0,,,19.1125,False,1,time-based
+Click Analytics,spark,L,DoP 40,100000,99987.6,99357.9,1341.06,1453.47,0.993702,1.08382,0.370007,False,4,time-based
+Click Analytics,spark,M,DoP 40,500000,375190,428162,24317.5,26268.9,1.14119,1.08025,0.136686,False,1,time-based
+Click Analytics,spark,H,DoP 40,1e+06,395117,424418,20214.2,17936.3,1.07416,0.887308,0.168133,False,1,time-based
+Click Analytics,spark,DS2,ds2,1e+06,395117,194958,20214.2,17486.4,0.49342,0.865054,-1.28358,False,1,time-based
+Click Analytics,spark,Dh,dhalion,1e+06,395117,221403,20214.2,20053.3,0.56035,0.992037,-0.767956,False,1,time-based
+Click Analytics,kafkastream,L,DoP 40,100000,193.895,199.87,5791.98,5001.98,1.03081,0.863604,14.707,False,1,time-based
+Click Analytics,kafkastream,M,DoP 40,500000,161.799,48.6913,29591.9,9695.02,0.300936,0.327624,51.4262,False,1,time-based
+Click Analytics,kafkastream,H,DoP 40,1e+06,157.311,38.6251,31933.7,7903.36,0.245534,0.247493,50.6897,False,1,time-based
+Click Analytics,kafkastream,DS2,ds2,1e+06,157.311,,31933.7,,,,,False,,time-based
+Click Analytics,kafkastream,Dh,dhalion,1e+06,157.311,51209.7,31933.7,180300,325.532,5.64607,-17.2415,False,1,time-based
+Click Analytics,risingwave,L,DoP 40,100000,846.246,880.404,2545.8,1691.51,1.04036,0.66443,0.00625,False,1,time-based
+Click Analytics,risingwave,M,DoP 40,500000,,888.207,,1702.9,,,1.08767,False,1,time-based
+Click Analytics,risingwave,H,DoP 40,1e+06,837.862,896.596,2551.5,2451.83,1.0701,0.960938,0.36875,False,1,time-based
+Click Analytics,risingwave,DS2,ds2,1e+06,837.862,922.877,2551.5,1700.05,1.10147,0.666295,1.06724,False,1,time-based
+Click Analytics,risingwave,Dh,dhalion,1e+06,837.862,878.31,2551.5,3780.26,1.04827,1.48158,1.17293,False,1,time-based
+Linear Road,flink,L,DoP 40,100000,498.833,737.525,917.025,983.89,1.4785,1.07292,3.11875,False,1,toll-notification
+Linear Road,flink,M,DoP 40,500000,1990.78,2865.33,755.71,890.752,1.4393,1.1787,3.4875,False,1,toll-notification
+Linear Road,flink,H,DoP 40,1e+06,3797.53,3677.28,891.683,846.972,0.968335,0.949857,5.29915,False,1,toll-notification
+Linear Road,flink,DS2,ds2,1e+06,3797.53,2931.45,891.683,624,0.771935,0.6998,2.92474,False,1,toll-notification
+Linear Road,flink,Dh,dhalion,1e+06,3797.53,4459.38,891.683,1073.98,1.17428,1.20444,-1.3834,False,1,toll-notification
+Linear Road,storm,L,DoP 40,100000,,4683.22,1931.01,100.294,,0.0519385,57.4188,False,1,toll-notification
+Linear Road,storm,M,DoP 40,500000,,13854.7,7042.92,111.218,,0.0157915,62.592,False,1,toll-notification
+Linear Road,storm,H,DoP 40,1e+06,,11464.2,1255.63,137.229,,0.109291,58.6813,False,1,toll-notification
+Linear Road,storm,DS2,ds2,1e+06,,,1255.63,7521.99,,5.99063,27.5,False,1,toll-notification
+Linear Road,storm,Dh,dhalion,1e+06,,,1255.63,5384.2,,4.28806,15.8625,False,1,toll-notification
+Linear Road,spark,L,DoP 40,100000,101239,102140,1898.25,758.576,1.00889,0.399618,0.127285,False,1,toll-notification
+Linear Road,spark,M,DoP 40,500000,507900,501577,6149.52,1691.72,0.98755,0.275098,0.092636,False,2,toll-notification
+Linear Road,spark,H,DoP 40,1e+06,629582,982810,29960.1,3187.04,1.56105,0.106376,-0.372909,False,1,toll-notification
+Linear Road,spark,DS2,ds2,1e+06,629582,802794,29960.1,23727.2,1.27512,0.791961,-1.4214,False,1,toll-notification
+Linear Road,spark,Dh,dhalion,1e+06,629582,960635,29960.1,18264,1.52583,0.60961,-1.39797,False,1,toll-notification
+Linear Road,kafkastream,L,DoP 40,100000,45615.1,49358.4,,0.363636,1.08206,,3.54827,False,1,toll-notification
+Linear Road,kafkastream,M,DoP 40,500000,209024,222815,0.526316,1.79887,1.06598,3.41786,11.2625,False,1,toll-notification
+Linear Road,kafkastream,H,DoP 40,1e+06,216020,365498,,,1.69196,,37.2832,False,1,toll-notification
+Linear Road,kafkastream,DS2,ds2,1e+06,216020,,,,,,,False,,toll-notification
+Linear Road,kafkastream,Dh,dhalion,1e+06,216020,,,,,,-24.579,False,1,toll-notification
+Linear Road,risingwave,L,DoP 40,100000,7701.82,7657.82,1366.87,1691.51,0.994286,1.2375,-0.48735,False,1,toll-notification
+Linear Road,risingwave,M,DoP 40,500000,16143,13382.9,1566.21,1691.51,0.829025,1.08,-0.5625,False,1,toll-notification
+Linear Road,risingwave,H,DoP 40,1e+06,17804.6,23126,1520.65,3203.61,1.29888,2.10674,0.5125,False,1,toll-notification
+Linear Road,risingwave,DS2,ds2,1e+06,17804.6,22688.2,1520.65,1691.51,1.27429,1.11236,-0.108754,False,1,toll-notification
+Linear Road,risingwave,Dh,dhalion,1e+06,17804.6,20941.7,1520.65,1691.51,1.1762,1.11236,1.27375,False,1,toll-notification
+Log Processing,flink,L,DoP 40,100000,99968.8,99986.1,271.457,467.498,1.00017,1.72218,5.10625,False,1,
+Log Processing,flink,M,DoP 40,500000,424228,499408,226.32,461.968,1.17722,2.04122,12.5509,False,1,
+Log Processing,flink,H,DoP 40,1e+06,482537,784598,231.658,3251.88,1.62599,14.0374,13.7688,False,1,
+Log Processing,flink,DS2,ds2,1e+06,482537,930553,231.658,162873,1.92846,703.072,-5.44912,False,1,
+Log Processing,flink,Dh,dhalion,1e+06,482537,889279,231.658,27241.6,1.84293,117.594,-7.70805,False,1,
+Log Processing,storm,L,DoP 40,100000,246.441,101514,87.07,13.6,411.919,0.156196,15.7578,False,1,
+Log Processing,storm,M,DoP 40,500000,104.279,7792.03,385.838,353.444,74.7233,0.916042,24.7656,False,1,
+Log Processing,storm,H,DoP 40,1e+06,53.7288,2716.27,346.173,362.537,50.5552,1.04727,32.6328,False,1,
+Log Processing,storm,DS2,ds2,1e+06,53.7288,221.61,346.173,446.819,4.12461,1.29074,7.49844,False,1,
+Log Processing,storm,Dh,dhalion,1e+06,53.7288,219.322,346.173,524.541,4.08202,1.51526,-8.50156,False,1,
+Log Processing,spark,L,DoP 40,100000,98176.1,100671,1105.29,912.303,1.02541,0.825394,-0.0463333,False,1,
+Log Processing,spark,M,DoP 40,500000,428260,437715,16148.4,14990,1.02208,0.928263,0.240008,False,1,
+Log Processing,spark,H,DoP 40,1e+06,420001,468157,16797.9,20534.9,1.11466,1.22247,0.0114931,False,1,
+Log Processing,spark,DS2,ds2,1e+06,420001,367810,16797.9,12805.1,0.875736,0.762303,-1.23724,False,1,
+Log Processing,spark,Dh,dhalion,1e+06,420001,526541,16797.9,20220.3,1.25367,1.20374,-1.19037,False,1,
+Log Processing,kafkastream,L,DoP 40,100000,534.445,545.135,4605.03,4944.78,1.02,1.07378,4.18568,False,2,
+Log Processing,kafkastream,M,DoP 40,500000,550.387,570.835,7179.94,6619.64,1.03715,0.921963,11.3697,False,2,
+Log Processing,kafkastream,H,DoP 40,1e+06,547.864,527.288,7743.52,7796.12,0.962443,1.00679,17.3244,False,2,
+Log Processing,kafkastream,DS2,ds2,1e+06,547.864,,7743.52,,,,-25.2594,False,1,
+Log Processing,kafkastream,Dh,dhalion,1e+06,547.864,,7743.52,,,,-25.057,False,1,
+Log Processing,risingwave,L,DoP 40,100000,,,,,,,,False,,
+Log Processing,risingwave,M,DoP 40,500000,,,,,,,,False,,
+Log Processing,risingwave,H,DoP 40,1e+06,,,,,,,,False,,
+Log Processing,risingwave,DS2,ds2,1e+06,,,,,,,,False,,
+Log Processing,risingwave,Dh,dhalion,1e+06,,,,,,,,False,,
+Bargain Index,flink,L,DoP 40,100000,29.4,,666.957,748.833,,1.12276,2.8875,False,1,
+Bargain Index,flink,M,DoP 40,500000,24.2917,,873.912,727.225,,0.832149,11.8437,False,1,
+Bargain Index,flink,H,DoP 40,1e+06,42.7333,,865.153,2814.78,,3.25351,15.5688,False,1,
+Bargain Index,flink,DS2,ds2,1e+06,42.7333,33.55,865.153,26740.7,0.785101,30.9087,-4.34798,False,1,
+Bargain Index,flink,Dh,dhalion,1e+06,42.7333,33.7,865.153,4160.84,0.788612,4.80936,-4.26189,False,1,
+Bargain Index,storm,L,DoP 40,100000,2.0339,,160.76,271.146,,1.68665,31.2437,False,1,
+Bargain Index,storm,M,DoP 40,500000,2.0339,,308.834,1030.85,,3.33786,26.8703,False,1,
+Bargain Index,storm,H,DoP 40,1e+06,,,320.533,929.384,,2.8995,23.0375,False,1,
+Bargain Index,storm,DS2,ds2,1e+06,,,320.533,0,,,19.6638,False,1,
+Bargain Index,storm,Dh,dhalion,1e+06,,,320.533,0,,,19.6313,False,1,
+Bargain Index,spark,L,DoP 40,100000,98345.8,92925.7,813.378,826.447,0.944888,1.01607,0.248924,False,1,
+Bargain Index,spark,M,DoP 40,500000,524506,502616,3125.56,2834.76,0.958264,0.906963,0.183251,False,1,
+Bargain Index,spark,H,DoP 40,1e+06,589127,624942,16815.1,21333.3,1.06079,1.2687,0.0412136,False,1,
+Bargain Index,spark,DS2,ds2,1e+06,589127,464747,16815.1,14801.9,0.788874,0.880274,-1.06502,False,1,
+Bargain Index,spark,Dh,dhalion,1e+06,589127,468734,16815.1,15700.9,0.795642,0.93374,-1.33846,False,1,
+Bargain Index,kafkastream,L,DoP 40,100000,0.0289653,0.0328543,28138,2882.1,1.13426,0.102427,3.65658,False,1,
+Bargain Index,kafkastream,M,DoP 40,500000,0.0174628,0.0167199,50684.1,43735.9,0.957458,0.862911,4.98912,False,1,
+Bargain Index,kafkastream,H,DoP 40,1e+06,0.00752195,0.0193875,56454.2,50225.8,2.57746,0.889672,5.52753,False,1,
+Bargain Index,kafkastream,DS2,ds2,1e+06,0.00752195,1.402,56454.2,364387,186.387,6.45456,3.03907,False,1,
+Bargain Index,kafkastream,Dh,dhalion,1e+06,0.00752195,0.804063,56454.2,356287,106.895,6.31108,-3.46445,False,1,
+Bargain Index,risingwave,L,DoP 40,100000,0.339431,0.27821,604.969,1366.87,0.819636,2.25941,0.317084,False,1,
+Bargain Index,risingwave,M,DoP 40,500000,1.1554,1.10564,5699.23,7092.8,0.95693,1.24452,0.414239,False,1,
+Bargain Index,risingwave,H,DoP 40,1e+06,1.49052,1.57388,8202.85,5747.28,1.05593,0.700644,0.33958,False,1,
+Bargain Index,risingwave,DS2,ds2,1e+06,1.49052,1.89595,8202.85,5718.45,1.272,0.697129,-0.202494,False,1,
+Bargain Index,risingwave,Dh,dhalion,1e+06,1.49052,1.14317,8202.85,7755.95,0.766963,0.945518,-0.376628,False,1,
+Smart Grid,flink,L,DoP 40,100000,1606.77,2540.88,437.777,484.528,1.58136,1.10679,2.71585,False,1,global-avg-load
+Smart Grid,flink,M,DoP 40,500000,3347.88,3755.5,302.323,494.407,1.12176,1.63536,4.8557,False,1,global-avg-load
+Smart Grid,flink,H,DoP 40,1e+06,3954.72,3915.05,264.708,472.092,0.98997,1.78344,12.4937,False,1,global-avg-load
+Smart Grid,flink,DS2,ds2,1e+06,3954.72,2221.35,264.708,641.738,0.561696,2.42432,8.9041,False,1,global-avg-load
+Smart Grid,flink,Dh,dhalion,1e+06,3954.72,7998.6,264.708,4394.19,2.02255,16.6001,-6.00604,False,1,global-avg-load
+Smart Grid,storm,L,DoP 40,100000,3375.08,2508.64,60.567,51.635,0.743283,0.852527,25.4875,False,1,global-avg-load
+Smart Grid,storm,M,DoP 40,500000,3661.02,3824.58,186.798,38.874,1.04468,0.208107,16,False,1,global-avg-load
+Smart Grid,storm,H,DoP 40,1e+06,3697.97,3698.98,191.273,101.585,1.00028,0.5311,17.1813,False,1,global-avg-load
+Smart Grid,storm,DS2,ds2,1e+06,3697.97,120.351,191.273,356.191,0.0325451,1.86221,1.78125,False,1,global-avg-load
+Smart Grid,storm,Dh,dhalion,1e+06,3697.97,99.661,191.273,287.021,0.0269502,1.50058,4.58125,False,1,global-avg-load
+Smart Grid,spark,L,DoP 40,100000,99378.9,100503,789.183,779.583,1.01131,0.987835,-0.186487,False,1,global-avg-load
+Smart Grid,spark,M,DoP 40,500000,501233,500628,3352.53,2648.94,0.998794,0.790132,0.147368,False,1,global-avg-load
+Smart Grid,spark,H,DoP 40,1e+06,594372,664504,33468.8,23162.2,1.11799,0.692053,0.28232,False,1,global-avg-load
+Smart Grid,spark,DS2,ds2,1e+06,594372,30712.7,33468.8,3906.14,0.0516726,0.11671,-0.877089,False,1,global-avg-load
+Smart Grid,spark,Dh,dhalion,1e+06,594372,296201,33468.8,16169.6,0.498343,0.483124,-1.11146,False,1,global-avg-load
+Smart Grid,kafkastream,L,DoP 40,100000,9.44182,859.212,13556.5,24276.5,91.0007,1.79076,15.5782,False,1,global-avg-load
+Smart Grid,kafkastream,M,DoP 40,500000,2.75434,1585.53,61257.6,80708.3,575.648,1.31752,32.2134,False,1,global-avg-load
+Smart Grid,kafkastream,H,DoP 40,1e+06,1.27727,1364.07,81904.5,90495.6,1067.96,1.10489,45.8601,False,1,global-avg-load
+Smart Grid,kafkastream,DS2,ds2,1e+06,1.27727,,81904.5,,,,-20.2083,False,1,global-avg-load
+Smart Grid,kafkastream,Dh,dhalion,1e+06,1.27727,,81904.5,,,,-20.0937,False,1,global-avg-load
+Smart Grid,risingwave,L,DoP 40,100000,33.3825,32.7553,1691.91,1691.51,0.981211,0.999762,0.653097,False,1,global-avg-load
+Smart Grid,risingwave,M,DoP 40,500000,94.2043,32.6069,2441.15,1691.51,0.34613,0.692913,0.70625,False,1,global-avg-load
+Smart Grid,risingwave,H,DoP 40,1e+06,140.561,33.4443,65465.1,1112.48,0.237935,0.0169935,1.4625,False,1,global-avg-load
+Smart Grid,risingwave,DS2,ds2,1e+06,140.561,33.2955,65465.1,1691.51,0.236877,0.0258383,1.44237,False,1,global-avg-load
+Smart Grid,risingwave,Dh,dhalion,1e+06,140.561,32.2431,65465.1,1685.81,0.229389,0.0257513,0.99375,False,1,global-avg-load
+Google Cloud Monitoring,flink,L,DoP 40,100000,126320,,863.625,,,,,True,,cpu-per-category
+Google Cloud Monitoring,flink,M,DoP 40,500000,309219,,1125.92,,,,,True,,cpu-per-category
+Google Cloud Monitoring,flink,H,DoP 40,1e+06,173773,,2066.83,,,,,True,,cpu-per-category
+Google Cloud Monitoring,flink,DS2,ds2,1e+06,173773,319309,2066.83,1208.09,1.8375,0.584514,6.2118,True,1,cpu-per-category
+Google Cloud Monitoring,flink,Dh,dhalion,1e+06,173773,127390,2066.83,2528.86,0.733083,1.22354,-1.4248,True,1,cpu-per-category
+Google Cloud Monitoring,storm,L,DoP 40,100000,,0.508153,0,0,,,48.7109,False,1,cpu-per-category
+Google Cloud Monitoring,storm,M,DoP 40,500000,,0.338768,0,0,,,53.2109,False,1,cpu-per-category
+Google Cloud Monitoring,storm,H,DoP 40,1e+06,,1.61017,0,0,,,48.5391,False,1,cpu-per-category
+Google Cloud Monitoring,storm,DS2,ds2,1e+06,,,0,0,,,38.9609,False,1,cpu-per-category
+Google Cloud Monitoring,storm,Dh,dhalion,1e+06,,,0,0,,,38.8609,False,1,cpu-per-category
+Google Cloud Monitoring,spark,L,DoP 40,100000,99337.7,102660,942.209,859.994,1.03345,0.912743,0.237061,False,1,cpu-per-category
+Google Cloud Monitoring,spark,M,DoP 40,500000,533275,508787,7553.74,6133.98,0.954081,0.812045,-0.0272731,False,1,cpu-per-category
+Google Cloud Monitoring,spark,H,DoP 40,1e+06,541561,544032,18521.9,14228.7,1.00456,0.768212,-0.220411,False,1,cpu-per-category
+Google Cloud Monitoring,spark,DS2,ds2,1e+06,541561,105579,18521.9,2543.16,0.194954,0.137306,-1.21104,False,1,cpu-per-category
+Google Cloud Monitoring,spark,Dh,dhalion,1e+06,541561,360740,18521.9,9545,0.666112,0.515336,-1.03135,False,1,cpu-per-category
+Google Cloud Monitoring,kafkastream,L,DoP 40,100000,291.097,290.948,3689.86,4227.58,0.999488,1.14573,8.9798,False,1,cpu-per-category
+Google Cloud Monitoring,kafkastream,M,DoP 40,500000,300.858,256.126,4685.37,3564.22,0.851321,0.760712,10.6881,False,1,cpu-per-category
+Google Cloud Monitoring,kafkastream,H,DoP 40,1e+06,298.378,64.8217,6586.69,4028.06,0.217247,0.611545,14.7104,False,1,cpu-per-category
+Google Cloud Monitoring,kafkastream,DS2,ds2,1e+06,298.378,,6586.69,,,,,False,,cpu-per-category
+Google Cloud Monitoring,kafkastream,Dh,dhalion,1e+06,298.378,178684,6586.69,71929.2,598.851,10.9204,-5.52051,False,1,cpu-per-category
+Google Cloud Monitoring,risingwave,L,DoP 40,100000,1429.3,1395.43,1361.18,1372.57,0.976304,1.00837,-0.0906213,False,1,cpu-per-category
+Google Cloud Monitoring,risingwave,M,DoP 40,500000,1239.68,1225.24,1366.87,1366.87,0.988353,1,0.55625,False,1,cpu-per-category
+Google Cloud Monitoring,risingwave,H,DoP 40,1e+06,1725.1,1571.74,1366.87,1366.87,0.911101,1,0.540716,False,1,cpu-per-category
+Google Cloud Monitoring,risingwave,DS2,ds2,1e+06,1725.1,1527.65,1366.87,1685.81,0.885543,1.23333,-0.200163,False,1,cpu-per-category
+Google Cloud Monitoring,risingwave,Dh,dhalion,1e+06,1725.1,1611.75,1366.87,1693.72,0.934297,1.23912,0.336785,False,1,cpu-per-category
+Spike Detection,flink,L,DoP 40,100000,4050.22,11991,649.503,745.097,2.96058,1.14718,2.71669,False,1,
+Spike Detection,flink,M,DoP 40,500000,114.75,2051.53,1091.27,736.025,17.8783,0.674469,11.4382,False,1,
+Spike Detection,flink,H,DoP 40,1e+06,77.8167,32.75,1122.46,3735.13,0.420861,3.32764,19.6742,False,1,
+Spike Detection,flink,DS2,ds2,1e+06,77.8167,,1122.46,104624,,93.21,-3.40281,False,1,
+Spike Detection,flink,Dh,dhalion,1e+06,77.8167,,1122.46,13786.5,,12.2825,-1.83116,False,1,
+Spike Detection,storm,L,DoP 40,100000,20.5014,13.9786,443.507,71.537,0.681835,0.161298,38.875,False,1,
+Spike Detection,storm,M,DoP 40,500000,36.7564,1.01695,471.368,1048.65,0.0276673,2.22469,20.2187,False,1,
+Spike Detection,storm,H,DoP 40,1e+06,22.5281,24.2219,383.706,1025.53,1.07519,2.67271,39.653,False,1,
+Spike Detection,storm,DS2,ds2,1e+06,22.5281,,383.706,0,,,9.00156,False,1,
+Spike Detection,storm,Dh,dhalion,1e+06,22.5281,,383.706,0,,,10.2891,False,1,
+Spike Detection,spark,L,DoP 40,100000,102708,99078.6,934.365,922.351,0.964663,0.987142,0.0500598,False,2,
+Spike Detection,spark,M,DoP 40,500000,419061,433648,18966.9,16067.6,1.03481,0.84714,-0.299992,False,1,
+Spike Detection,spark,H,DoP 40,1e+06,395825,401995,22068.2,19092.8,1.01559,0.865173,-0.0916432,False,1,
+Spike Detection,spark,DS2,ds2,1e+06,395825,204461,22068.2,22306.1,0.516544,1.01078,-1.42603,False,1,
+Spike Detection,spark,Dh,dhalion,1e+06,395825,314694,22068.2,11158.5,0.795034,0.505637,-1.05103,False,1,
+Spike Detection,kafkastream,L,DoP 40,100000,0.646996,0.732969,837.175,641.842,1.13288,0.766676,4.01941,False,1,
+Spike Detection,kafkastream,M,DoP 40,500000,2.97602,2.90249,4301.5,3423.95,0.975293,0.795989,7.34494,False,1,
+Spike Detection,kafkastream,H,DoP 40,1e+06,6.08522,5.6613,18186.8,5367.4,0.930336,0.295126,11.0539,False,1,
+Spike Detection,kafkastream,DS2,ds2,1e+06,6.08522,148.015,18186.8,277405,24.3237,15.2531,38.4522,False,1,
+Spike Detection,kafkastream,Dh,dhalion,1e+06,6.08522,544.116,18186.8,220260,89.416,12.111,-1.91289,False,1,
+Spike Detection,risingwave,L,DoP 40,100000,33376.8,32600.3,1702.9,1685.81,0.976735,0.989967,1.00351,False,1,
+Spike Detection,risingwave,M,DoP 40,500000,38445.9,41863.6,2463.79,1691.51,1.0889,0.686546,0.76875,False,1,
+Spike Detection,risingwave,H,DoP 40,1e+06,45839,49006,2525.87,1702.9,1.06909,0.674183,0.690334,False,1,
+Spike Detection,risingwave,DS2,ds2,1e+06,45839,51646.1,2525.87,2417.66,1.12669,0.957159,0.704013,False,1,
+Spike Detection,risingwave,Dh,dhalion,1e+06,45839,50239.2,2525.87,3780.26,1.09599,1.49662,0.593524,False,1,
+TPCH,flink,L,DoP 40,100000,49800.7,49761.1,466.66,953.348,0.999204,2.04292,2.11242,False,1,without_window
+TPCH,flink,M,DoP 40,500000,249199,249063,341.121,797.58,0.999454,2.33811,6.05291,False,1,without_window
+TPCH,flink,H,DoP 40,1e+06,474005,498202,460.603,666.763,1.05105,1.44759,11.0528,False,1,without_window
+TPCH,flink,DS2,ds2,1e+06,474005,498070,460.603,497.201,1.05077,1.07946,7.38443,False,1,without_window
+TPCH,flink,Dh,dhalion,1e+06,474005,435750,460.603,842.726,0.919293,1.82961,2.28426,False,1,without_window
+TPCH,storm,L,DoP 40,100000,50607.6,50650.8,98.07,63.587,1.00085,0.648384,25.8875,False,1,without_window
+TPCH,storm,M,DoP 40,500000,105573,239628,196.547,271.775,2.26978,1.38275,17.6313,False,1,without_window
+TPCH,storm,H,DoP 40,1e+06,109478,229554,202.077,304.62,2.0968,1.50745,13.925,False,1,without_window
+TPCH,storm,DS2,ds2,1e+06,109478,178887,202.077,266.389,1.634,1.31825,13.6875,False,1,without_window
+TPCH,storm,Dh,dhalion,1e+06,109478,97666.8,202.077,340.741,0.892112,1.68619,4.18125,False,1,without_window
+TPCH,spark,L,DoP 40,100000,103560,102246,746.203,858.907,0.987312,1.15104,0.166689,False,1,without_window
+TPCH,spark,M,DoP 40,500000,498793,494315,2388.82,2081.81,0.991023,0.871478,-0.0625855,False,1,without_window
+TPCH,spark,H,DoP 40,1e+06,617991,766759,24935.8,22637.1,1.24073,0.907814,0.314179,False,1,without_window
+TPCH,spark,DS2,ds2,1e+06,617991,797021,24935.8,23462.3,1.2897,0.940906,-0.785324,False,1,without_window
+TPCH,spark,Dh,dhalion,1e+06,617991,853081,24935.8,24221.8,1.38041,0.971364,-1.03913,False,1,without_window
+TPCH,kafkastream,L,DoP 40,100000,0.103618,0.10199,220.611,60.6793,0.984286,0.275051,3.1437,False,1,without_window
+TPCH,kafkastream,M,DoP 40,500000,0.102593,0.102754,226.667,62.5827,1.00157,0.2761,4.8277,False,1,without_window
+TPCH,kafkastream,H,DoP 40,1e+06,0.103238,0.101937,569.485,66.7598,0.987398,0.117228,7.38893,False,1,without_window
+TPCH,kafkastream,DS2,ds2,1e+06,0.103238,0.136599,569.485,288.551,1.32315,0.506688,-0.167768,False,1,without_window
+TPCH,kafkastream,Dh,dhalion,1e+06,0.103238,0.136862,569.485,2369.18,1.3257,4.16022,-2.17981,False,1,without_window
+TPCH,risingwave,L,DoP 40,100000,2.57989,2.50277,1361.18,1361.18,0.970106,1,0.221891,False,1,without_window
+TPCH,risingwave,M,DoP 40,500000,2.60257,2.33916,1361.18,1361.18,0.898788,1,0.13125,False,1,without_window
+TPCH,risingwave,H,DoP 40,1e+06,1.6654,2.58736,1372.57,1361.18,1.5536,0.991701,0.356163,False,1,without_window
+TPCH,risingwave,DS2,ds2,1e+06,1.6654,2.58993,1372.57,1691.51,1.55515,1.23237,0.199913,False,1,without_window
+TPCH,risingwave,Dh,dhalion,1e+06,1.6654,2.52669,1372.57,1702.9,1.51717,1.24066,0.923936,False,1,without_window
+Word Count,flink,L,DoP 40,100000,596975,598306,426.713,514.777,1.00223,1.20638,2.98078,False,3,
+Word Count,flink,M,DoP 40,500000,707039,718117,8933.45,24732.4,1.01567,2.76852,0.815625,False,2,
+Word Count,flink,H,DoP 40,1e+06,651527,675104,9641.62,22715.9,1.03619,2.35603,-2.84787,False,2,
+Word Count,flink,DS2,ds2,1e+06,651527,536438,9641.62,20095.5,0.823356,2.08424,2.28629,False,1,
+Word Count,flink,Dh,dhalion,1e+06,651527,540682,9641.62,12024.4,0.829869,1.24714,1.17643,False,1,
+Word Count,storm,L,DoP 40,100000,313769,338931,954.93,7158.03,1.08019,7.49587,23.9937,False,1,
+Word Count,storm,M,DoP 40,500000,309688,352703,913.119,7042.45,1.13889,7.71252,22.1375,False,1,
+Word Count,storm,H,DoP 40,1e+06,297047,355867,1005.48,7594.2,1.19802,7.5528,18.4688,False,1,
+Word Count,storm,DS2,ds2,1e+06,297047,,1005.48,0,,,35.9813,False,1,
+Word Count,storm,Dh,dhalion,1e+06,297047,,1005.48,0,,,35.9063,False,1,
+Word Count,spark,L,DoP 40,100000,99051.6,101264,1269.03,1288.92,1.02234,1.01567,-0.124529,False,1,
+Word Count,spark,M,DoP 40,500000,245294,277601,30244.1,33091.4,1.13171,1.09414,-0.0116146,False,1,
+Word Count,spark,H,DoP 40,1e+06,233523,276851,8139.12,18742.3,1.18554,2.30274,0.172979,False,1,
+Word Count,spark,DS2,ds2,1e+06,233523,239984,8139.12,25079.7,1.02767,3.08137,-1.00987,False,1,
+Word Count,spark,Dh,dhalion,1e+06,233523,269890,8139.12,12204.8,1.15573,1.49953,-0.939553,False,1,
+Word Count,kafkastream,L,DoP 40,100000,4.58591,4.52781,339.714,116.896,0.987331,0.344101,9.56767,False,1,
+Word Count,kafkastream,M,DoP 40,500000,4.59634,3.92184,14836.5,637.986,0.853252,0.0430011,37.7028,False,1,
+Word Count,kafkastream,H,DoP 40,1e+06,4.58845,0.50947,54116.8,116.266,0.111033,0.00214843,50.2982,False,1,
+Word Count,kafkastream,DS2,ds2,1e+06,4.58845,5.51026,54116.8,238003,1.2009,4.39794,-0.378128,False,1,
+Word Count,kafkastream,Dh,dhalion,1e+06,4.58845,5.55318,54116.8,235501,1.21025,4.35172,-2.18449,False,1,
+Word Count,risingwave,L,DoP 40,100000,107.696,108.26,751.781,1691.51,1.00524,2.25,1.51474,False,1,
+Word Count,risingwave,M,DoP 40,500000,49.7945,110.302,754.313,754.313,2.21514,1,5.59832,False,1,
+Word Count,risingwave,H,DoP 40,1e+06,108.317,107.271,756.844,1685.81,0.990342,2.22742,0.360067,False,1,
+Word Count,risingwave,DS2,ds2,1e+06,108.317,91.9021,756.844,1685.81,0.848456,2.22742,-0.56538,False,1,
+Word Count,risingwave,Dh,dhalion,1e+06,108.317,109.045,756.844,1686.19,1.00672,2.22792,-0.277433,False,1,

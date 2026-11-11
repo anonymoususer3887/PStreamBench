@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
+"""Operator-level metrics for all five engines (Flink, Storm, Spark, Kafka Streams, RisingWave).
 
+Walks artifacts/ (same layout as 1_data_extractor.py) and writes
+  data_20251201.csv                         run-level metrics (one row per run)
+  operator_metrics_wide/operator_metrics_<query>.csv   one row per run, operator metrics as op<i>_* columns
+Run-level values for Spark, Kafka Streams and RisingWave, and the strategy/query-variant parsing, are taken from
+1_data_extractor.py so both scripts read every engine the same way. uniform_1 folders are skipped (as in step 1).
+Operator columns: op<i>_name_<framework>, op<i>_selectivity, op<i>_latency_50/95/99 (Flink/Storm only),
+op<i>_throughput_per_sec, op<i>_busy_ratio, op<i>_backpressure_ratio (where the engine reports them).
+Operator index i follows each engine's own operator order, so op<i> can be a different operator per engine."""
+
+import importlib.util
 import os
 import json
 import re
@@ -7,6 +18,11 @@ import statistics
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_spec = importlib.util.spec_from_file_location("data_extractor_step1", os.path.join(_HERE, "1_data_extractor.py"))
+step1 = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(step1)
 
 
 # ============================================================
@@ -348,6 +364,9 @@ def get_flink_values(info: dict, data: dict, path_parts: List[str]) -> pd.DataFr
 _PCT_RE = re.compile(r"_(\d+)(?:th)?$", re.IGNORECASE)
 
 def extract_scalar_from_nested(d: Any) -> Optional[float]:
+    """Flink/Storm store operator metrics as {series_id: value}; Spark, Kafka Streams and RisingWave as plain numbers."""
+    if isinstance(d, (int, float)) and not isinstance(d, bool):
+        return float(d)
     if not isinstance(d, dict) or not d:
         return None
     return to_float(list(d.values())[0])
@@ -432,6 +451,12 @@ def build_operator_wide_row(
             if sel is not None:
                 row[f"op{i}_selectivity"] = sel
 
+            # throughput / busy / backpressure (reported by Spark, Kafka Streams, RisingWave and some Storm runs)
+            for mk in ("throughput_per_sec", "busy_ratio", "backpressure_ratio"):
+                mv = extract_scalar_from_nested(metrics.get(mk))
+                if mv is not None:
+                    row[f"op{i}_{mk}"] = mv
+
             # unified latency
             lat = extract_operator_latency(metrics)
             for k, v in lat.items():
@@ -497,6 +522,8 @@ def build_operator_base(
         "class": _v("class"),
         "class_num": _v("class_num"),
         "class_num_distinct": _v("class_num_distinct"),
+        "enumeration_strategy": _v("enumeration_strategy"),
+        "query_variant": _v("query_variant"),
         "path": path,
         "artifact": artifact,
     }
@@ -522,6 +549,7 @@ def get_artifacts() -> Iterable[Tuple[str, str]]:
 # ============================================================
 
 def main():
+    os.chdir(_HERE)  # artifacts/ and outputs are relative to this script
     df_runs = pd.DataFrame()
     op_rows_by_query: Dict[str, List[Dict[str, Any]]] = {}
 
@@ -541,15 +569,35 @@ def main():
         path_parts = path.split(os.sep)
         fw_raw = info.get("job_framework", "")
 
-        if fw_raw == "Apache Storm":
-            df_row = get_storm_values(info, data, path_parts)
-            framework = "storm"
-        elif fw_raw == "Apache Flink":
-            df_row = get_flink_values(info, data, path_parts)
-            framework = "flink"
-        else:
-            print(f"[WARN] Unknown framework '{fw_raw}', skipping {artifact}")
+        location = step1.parse_location(path, info)
+        if location is None:
+            continue  # uniform_1 excluded, as in 1_data_extractor.py
+
+        try:
+            if fw_raw == "Apache Storm":
+                df_row = get_storm_values(info, data, path_parts)
+                framework = "storm"
+            elif fw_raw == "Apache Flink":
+                df_row = get_flink_values(info, data, path_parts)
+                framework = "flink"
+            elif fw_raw == "Apache Spark":
+                df_row = step1.get_spark_values(info, data, path_parts)
+                framework = "spark"
+            elif fw_raw == "Apache Kafka Streams":
+                df_row = step1.get_kafkastreams_values(info, data, path_parts)
+                framework = "kafkastream"
+            elif fw_raw == "RisingWave":
+                df_row = step1.get_risingwave_values(info, data, path_parts)
+                framework = "risingwave"
+            else:
+                print(f"[WARN] Unknown framework '{fw_raw}', skipping {artifact}")
+                continue
+        except (NotImplementedError, KeyError, IndexError, ValueError) as e:
+            # folders that do not follow <app>/<hw>/<engine>/... (e.g. workloads_hardwares_additional/)
+            print(f"[WARN] Skipping {path} {artifact}: {type(e).__name__}: {e}")
             continue
+        df_row["enumeration_strategy"] = location[0]
+        df_row["query_variant"] = location[1]
 
         # run-level append
         df_row["path"] = path
@@ -558,8 +606,7 @@ def main():
         df_runs = pd.concat([df_runs, df_row], ignore_index=True)
 
         # operator-level WIDE row per run
-        query_dir = path_parts[1] if len(path_parts) > 1 else ""
-        query_name = get_query_from_directory(query_dir)
+        query_name = str(df_row["query"].iloc[0])
 
         base = build_operator_base(
             info=info,
@@ -603,6 +650,8 @@ def main():
             "class",
             "class_num",
             "class_num_distinct",
+            "enumeration_strategy",
+            "query_variant",
             "num_operators",
             "path",
             "artifact",
@@ -630,6 +679,8 @@ def main():
                 rank = 10
             elif rest.startswith("latency_"):
                 rank = 20
+            elif rest == "throughput_per_sec":
+                rank = 30
             return (idx, rank, rest)
 
         op_cols = sorted(op_cols, key=op_sort_key)

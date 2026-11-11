@@ -1,0 +1,811 @@
+event_rate,dop,structure,structure_name,system,source_folder,n_runs,n_runs_consuming_input,n_runs_with_output,throughput_sink_output_ev_s,consumed_input_ev_s,offered_input_ev_s,consumed_over_offered,e2e_latency_p50_s,latency_definition,cpu_50_pct
+100000,2,Lin,LinearQuery,flink,uniform,1,1,1,439.821,88224.6,100000,0.882246,0.207091,latency markers (excl. Kafka wait),10.4167
+100000,2,Lin,LinearQuery,kafkastream,uniform,1,1,1,1117.32,92147.2,100000,0.921472,192.895,record-e2e-latency avg (incl. Kafka wait),5.60417
+100000,2,Lin,LinearQuery,risingwave,uniform,1,1,1,844.997,6225.7,100000,0.062257,0.460688,barrier in-flight latency,1.91667
+100000,2,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,862.026,119689,100000,1.19689,3.181,ingestion-to-processing lag (before sink),3.81468
+100000,2,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,0,0,7404.03,100000,0.0740403,1.55002,complete latency (acking),3.82292
+100000,2,2F,TwoFilters,flink,uniform,1,1,1,430.918,86842.7,100000,0.868427,0.374807,latency markers (excl. Kafka wait),10.1354
+100000,2,2F,TwoFilters,kafkastream,uniform,1,1,1,522.705,86662.7,100000,0.866627,3.27828,record-e2e-latency avg (incl. Kafka wait),6.85417
+100000,2,2F,TwoFilters,risingwave,uniform,1,1,1,565.165,7682.26,100000,0.0768226,0.334125,barrier in-flight latency,2.13542
+100000,2,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,399.933,117578,100000,1.17578,3.924,ingestion-to-processing lag (before sink),4.21668
+100000,2,2F,TwoFilters,storm,distributed_fixed_exporter_fix,3,3,3,1.86435,1.4531,100000,1.4531e-05,1.74582,complete latency (acking),11.6615
+100000,2,3F,ThreeFilters,flink,uniform,1,0,0,0,0,100000,0,,latency markers (excl. Kafka wait),10.4583
+100000,2,3F,ThreeFilters,kafkastream,uniform,1,1,1,272.59,162738,100000,1.62738,5.61649,record-e2e-latency avg (incl. Kafka wait),7.09375
+100000,2,3F,ThreeFilters,risingwave,uniform,1,1,1,343.793,8149.03,100000,0.0814903,0.494438,barrier in-flight latency,2.47917
+100000,2,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,210.886,113508,100000,1.13508,3.671,ingestion-to-processing lag (before sink),4.32505
+100000,2,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,3,3,3,1.86441,1.84246,100000,1.84246e-05,1.74632,complete latency (acking),17.0312
+100000,2,4F,FourFilters,flink,uniform,1,1,1,71.1967,86625.5,100000,0.866255,,latency markers (excl. Kafka wait),10.4948
+100000,2,4F,FourFilters,kafkastream,uniform,1,1,1,87.7154,161896,100000,1.61896,4.93384,record-e2e-latency avg (incl. Kafka wait),7.23437
+100000,2,4F,FourFilters,risingwave,uniform,1,1,1,198.237,7964.58,100000,0.0796458,0.336375,barrier in-flight latency,2.97396
+100000,2,4F,FourFilters,spark,uniform_e2e_rerun,2,1,1,69.2808,108460,100000,1.0846,3.884,ingestion-to-processing lag (before sink),3.58824
+100000,2,4F,FourFilters,storm,distributed_fixed_exporter_fix,2,2,2,191.356,1275.42,100000,0.0127542,1.74522,complete latency (acking),14.0365
+100000,2,2J,TwoWayJoin,flink,uniform,1,1,1,3200.21,173859,200000,0.869295,0.814407,latency markers (excl. Kafka wait),10.8854
+100000,2,2J,TwoWayJoin,kafkastream,uniform,1,1,1,117.581,143662,200000,0.718312,37.2881,record-e2e-latency avg (incl. Kafka wait),13.7344
+100000,2,2J,TwoWayJoin,risingwave,uniform,1,1,1,1018.82,10279.3,200000,0.0513964,5.72422,barrier in-flight latency,3.71875
+100000,2,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,3406.75,204499,200000,1.02249,8.39101,ingestion-to-processing lag (before sink),4.94969
+100000,2,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,10.1695,9943,100000,0.09943,0.873597,complete latency (acking),5.79167
+100000,2,3J,ThreeWayJoin,flink,uniform,1,1,1,8180.62,259711,300000,0.865702,2.5262,latency markers (excl. Kafka wait),11.8854
+100000,2,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,47.2725,335139,300000,1.11713,46.9386,record-e2e-latency avg (incl. Kafka wait),17.8021
+100000,2,3J,ThreeWayJoin,risingwave,uniform,1,1,1,329.845,1776.51,300000,0.00592171,42.4392,barrier in-flight latency,5.82157
+100000,2,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,7778.14,273303,300000,0.911009,33.4883,ingestion-to-processing lag (before sink),6.50276
+100000,2,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,3.38983,14726.7,100000,0.147267,0.872937,complete latency (acking),6.30208
+100000,2,4J,FourWayJoin,flink,uniform,1,1,1,19254,347934,400000,0.869835,4.29412,latency markers (excl. Kafka wait),13.2135
+100000,2,4J,FourWayJoin,kafkastream,uniform,1,1,1,5.27136,249252,400000,0.623131,55.783,record-e2e-latency avg (incl. Kafka wait),22.2031
+100000,2,4J,FourWayJoin,risingwave,uniform,4,1,1,4.39857,405.682,400000,0.0010142,98.1977,barrier in-flight latency,9.38542
+100000,2,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,0,0,123439,400000,0.308598,,ingestion-to-processing lag (before sink),11.2001
+100000,2,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.677966,10114.9,100000,0.101149,1.7399,complete latency (acking),5.32813
+100000,2,5J,FiveWayJoin,flink,uniform,1,1,1,614.743,157832,500000,0.315663,40.321,latency markers (excl. Kafka wait),13.0573
+100000,2,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.30802,244636,500000,0.489272,64.3458,record-e2e-latency avg (incl. Kafka wait),23.2708
+100000,2,5J,FiveWayJoin,risingwave,uniform,1,1,1,8.50963,449.32,500000,0.00089864,147.297,barrier in-flight latency,7.69792
+100000,2,5J,FiveWayJoin,spark,uniform_e2e_rerun,9,0,0,0,0,500000,0,,ingestion-to-processing lag (before sink),0.556843
+100000,2,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,12705.5,100000,0.127055,1.73856,complete latency (acking),5.67188
+100000,2,6J,SixWayJoin,flink,uniform,1,1,1,61.5983,110416,600000,0.184027,153.941,latency markers (excl. Kafka wait),12.25
+100000,2,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.125007,303428,600000,0.505714,57.8099,record-e2e-latency avg (incl. Kafka wait),23.3021
+100000,2,6J,SixWayJoin,risingwave,uniform,1,1,0,0,495.993,600000,0.000826655,0.336375,barrier in-flight latency,9.34896
+100000,2,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,600000,0,,ingestion-to-processing lag (before sink),0.524891
+100000,2,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,15238.1,100000,0.152381,1.73846,complete latency (acking),6.05208
+100000,4,Lin,LinearQuery,flink,uniform,1,1,1,430.009,86570.2,100000,0.865702,0.269288,latency markers (excl. Kafka wait),10.2969
+100000,4,Lin,LinearQuery,kafkastream,uniform,1,1,1,1096.07,89371.5,100000,0.893715,97.5272,record-e2e-latency avg (incl. Kafka wait),5.74479
+100000,4,Lin,LinearQuery,risingwave,uniform,1,1,1,1186.33,9276.43,100000,0.0927643,0.49275,barrier in-flight latency,2.02604
+100000,4,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,840.275,111081,100000,1.11081,3.672,ingestion-to-processing lag (before sink),4.66599
+100000,4,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,7.79661,18195.8,100000,0.181958,1.3787,complete latency (acking),23.5729
+100000,4,2F,TwoFilters,flink,uniform,1,1,1,431.081,86514.5,100000,0.865145,0.286494,latency markers (excl. Kafka wait),10.4427
+100000,4,2F,TwoFilters,kafkastream,uniform,1,1,1,593.702,161011,100000,1.61011,15.3862,record-e2e-latency avg (incl. Kafka wait),7.30208
+100000,4,2F,TwoFilters,risingwave,uniform,1,1,1,563.017,8651.38,100000,0.0865138,0.502875,barrier in-flight latency,2.25521
+100000,4,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,487.612,110375,100000,1.10375,3.47,ingestion-to-processing lag (before sink),4.46413
+100000,4,2F,TwoFilters,storm,distributed_fixed_exporter_fix,4,4,4,1.34868,189.231,100000,0.00189231,11.3588,complete latency (acking),26.4141
+100000,4,3F,ThreeFilters,flink,uniform,1,0,0,0,0,100000,0,,latency markers (excl. Kafka wait),10.3073
+100000,4,3F,ThreeFilters,kafkastream,uniform,1,1,1,279.456,90739,100000,0.90739,6.13486,record-e2e-latency avg (incl. Kafka wait),7.07292
+100000,4,3F,ThreeFilters,risingwave,uniform,1,1,1,351.762,8183.31,100000,0.0818331,0.491063,barrier in-flight latency,2.58333
+100000,4,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,211.333,111173,100000,1.11173,3.821,ingestion-to-processing lag (before sink),4.98113
+100000,4,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,3,3,3,1.01695,325.976,100000,0.00325976,1.61906,complete latency (acking),39.3594
+100000,4,4F,FourFilters,flink,uniform,1,0,0,0,0,100000,0,,latency markers (excl. Kafka wait),10.2396
+100000,4,4F,FourFilters,kafkastream,uniform,1,1,1,99.5178,90423.1,100000,0.904231,5.94001,record-e2e-latency avg (incl. Kafka wait),7.20312
+100000,4,4F,FourFilters,risingwave,uniform,1,1,1,196.288,7714.36,100000,0.0771436,0.504563,barrier in-flight latency,2.90104
+100000,4,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,70.8519,110375,100000,1.10375,3.473,ingestion-to-processing lag (before sink),4.99963
+100000,4,4F,FourFilters,storm,distributed_fixed_exporter_fix,2,2,2,189.651,3138.27,100000,0.0313827,1.61889,complete latency (acking),21.1667
+100000,4,2J,TwoWayJoin,flink,uniform,1,1,1,3187.5,173967,200000,0.869835,0.501348,latency markers (excl. Kafka wait),11.151
+100000,4,2J,TwoWayJoin,kafkastream,uniform,1,1,1,85.177,197679,200000,0.988395,174.91,record-e2e-latency avg (incl. Kafka wait),15.8906
+100000,4,2J,TwoWayJoin,risingwave,uniform,1,1,1,1094.69,18993.2,200000,0.0949659,5.09375,barrier in-flight latency,3.86458
+100000,4,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,3464.38,206045,200000,1.03023,6.01107,ingestion-to-processing lag (before sink),6.13056
+100000,4,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,44.0678,20125,100000,0.20125,0.840288,complete latency (acking),8.58333
+100000,4,3J,ThreeWayJoin,flink,uniform,1,0,1,8086.83,0,300000,0,,latency markers (excl. Kafka wait),11.3229
+100000,4,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,37.3805,286705,300000,0.955683,165.493,record-e2e-latency avg (incl. Kafka wait),19.0677
+100000,4,3J,ThreeWayJoin,risingwave,uniform,1,1,1,130.019,2055.89,300000,0.00685296,147.297,barrier in-flight latency,11.2656
+100000,4,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,8810.68,309142,300000,1.03047,13.5135,ingestion-to-processing lag (before sink),7.08218
+100000,4,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,32.2034,31545.7,100000,0.315457,0.812307,complete latency (acking),10.4479
+100000,4,4J,FourWayJoin,flink,uniform,1,1,1,19203.1,346999,400000,0.867499,6.23869,latency markers (excl. Kafka wait),13.9427
+100000,4,4J,FourWayJoin,kafkastream,uniform,1,1,1,10.7004,278784,400000,0.696959,203.702,record-e2e-latency avg (incl. Kafka wait),29.5156
+100000,4,4J,FourWayJoin,risingwave,uniform,1,1,1,6.36342,727.405,400000,0.00181851,65.4651,barrier in-flight latency,11.5371
+100000,4,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,1,3839.04,200885,400000,0.502212,33.6508,ingestion-to-processing lag (before sink),13.1489
+100000,4,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,3.38983,23428.6,100000,0.234286,1.61071,complete latency (acking),8.35417
+100000,4,5J,FiveWayJoin,flink,uniform,1,1,1,742.926,122622,500000,0.245244,74.8248,latency markers (excl. Kafka wait),12.0365
+100000,4,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.100373,406709,500000,0.813417,22.1874,record-e2e-latency avg (incl. Kafka wait),25.1615
+100000,4,5J,FiveWayJoin,risingwave,uniform,2,1,0,0,786.262,500000,0.00157252,0.336375,barrier in-flight latency,12.2396
+100000,4,5J,FiveWayJoin,spark,uniform_e2e_rerun,3,0,0,0,0,500000,0,,ingestion-to-processing lag (before sink),0.593181
+100000,4,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,2.0339,29718.1,100000,0.297181,1.61159,complete latency (acking),9.78125
+100000,4,6J,SixWayJoin,flink,uniform,1,0,0,0,0,600000,0,,latency markers (excl. Kafka wait),12.3646
+100000,4,6J,SixWayJoin,kafkastream,uniform,1,1,1,1.92828,439083,600000,0.731804,197.633,record-e2e-latency avg (incl. Kafka wait),27.4479
+100000,4,6J,SixWayJoin,risingwave,uniform,4,1,1,3.8959,1631.83,600000,0.00271971,43.6434,barrier in-flight latency,13.9635
+100000,4,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,600000,0,,ingestion-to-processing lag (before sink),0.511125
+100000,4,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,1.35593,34427.5,100000,0.344275,1.63559,complete latency (acking),10.474
+100000,8,Lin,LinearQuery,flink,uniform,1,1,1,398.168,80421.7,100000,0.804217,0.307642,latency markers (excl. Kafka wait),11.3906
+100000,8,Lin,LinearQuery,kafkastream,uniform,1,1,1,1130.97,91232.6,100000,0.912326,5.65346,record-e2e-latency avg (incl. Kafka wait),6.16146
+100000,8,Lin,LinearQuery,risingwave,uniform,1,1,1,771.167,6112.42,100000,0.0611242,0.432,barrier in-flight latency,1.98437
+100000,8,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,917.943,101061,100000,1.01061,4.0995,ingestion-to-processing lag (before sink),4.95868
+100000,8,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,49.4915,6752.55,100000,0.0675255,3.06394,complete latency (acking),9.09896
+100000,8,2F,TwoFilters,flink,uniform,1,1,1,430.247,86570.2,100000,0.865702,0.350696,latency markers (excl. Kafka wait),10.3229
+100000,8,2F,TwoFilters,kafkastream,uniform,1,1,1,555.173,90921,100000,0.90921,4.90819,record-e2e-latency avg (incl. Kafka wait),7.32813
+100000,8,2F,TwoFilters,risingwave,uniform,1,1,1,578.166,9100.39,100000,0.0910039,0.33525,barrier in-flight latency,2.32292
+100000,8,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,471.367,98619.3,100000,0.986193,4.378,ingestion-to-processing lag (before sink),5.2444
+100000,8,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,12.8814,1078.64,100000,0.0107864,13.1677,complete latency (acking),18.776
+100000,8,3F,ThreeFilters,flink,uniform,1,1,1,214.105,86734.7,100000,0.867347,0.668283,latency markers (excl. Kafka wait),10.5208
+100000,8,3F,ThreeFilters,kafkastream,uniform,1,1,1,273.795,90635.8,100000,0.906358,6.26032,record-e2e-latency avg (incl. Kafka wait),7.51563
+100000,8,3F,ThreeFilters,risingwave,uniform,1,1,1,361.114,8954.43,100000,0.0895443,0.46575,barrier in-flight latency,2.55208
+100000,8,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,233.402,91575.1,100000,0.915751,4.55975,ingestion-to-processing lag (before sink),4.98122
+100000,8,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,26.4407,124.45,100000,0.0012445,3.48049,complete latency (acking),28.1354
+100000,8,4F,FourFilters,flink,uniform,1,0,1,72.3201,0,100000,0,,latency markers (excl. Kafka wait),10.3958
+100000,8,4F,FourFilters,kafkastream,uniform,1,1,1,101.862,90537,100000,0.90537,5.02955,record-e2e-latency avg (incl. Kafka wait),7.60417
+100000,8,4F,FourFilters,risingwave,uniform,1,1,1,201.158,8537.82,100000,0.0853782,0.33525,barrier in-flight latency,2.85937
+100000,8,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,80.7113,87412.6,100000,0.874126,4.2845,ingestion-to-processing lag (before sink),4.76446
+100000,8,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,23.3898,1273.3,100000,0.012733,30.1619,complete latency (acking),39.9896
+100000,8,2J,TwoWayJoin,flink,uniform,1,1,1,3225.28,173967,200000,0.869835,0.659894,latency markers (excl. Kafka wait),11.2708
+100000,8,2J,TwoWayJoin,kafkastream,uniform,1,1,1,137.628,180773,200000,0.903864,327.457,record-e2e-latency avg (incl. Kafka wait),18.8073
+100000,8,2J,TwoWayJoin,risingwave,uniform,1,1,1,1114.47,18804.1,200000,0.0940207,2.14429,barrier in-flight latency,3.94097
+100000,8,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,3504.76,202669,200000,1.01335,7.51824,ingestion-to-processing lag (before sink),6.3297
+100000,8,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,4,1,1,208.814,43305,100000,0.43305,0.783864,complete latency (acking),14.5417
+100000,8,3J,ThreeWayJoin,flink,uniform,1,1,1,8175.93,259711,300000,0.865702,2.57653,latency markers (excl. Kafka wait),12.34
+100000,8,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,35.7599,273980,300000,0.913265,337.516,record-e2e-latency avg (incl. Kafka wait),27.4792
+100000,8,3J,ThreeWayJoin,risingwave,uniform,1,1,1,104.596,1390.78,300000,0.00463594,146.968,barrier in-flight latency,5.125
+100000,8,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,8804.08,298473,300000,0.994911,16.2534,ingestion-to-processing lag (before sink),8.25308
+100000,8,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,236.61,63011.1,100000,0.630111,0.802411,complete latency (acking),17.2865
+100000,8,4J,FourWayJoin,flink,uniform,1,1,1,17929,347934,400000,0.869835,3.6981,latency markers (excl. Kafka wait),14.0573
+100000,8,4J,FourWayJoin,kafkastream,uniform,1,1,1,9.92807,406795,400000,1.01699,301.539,record-e2e-latency avg (incl. Kafka wait),29.7865
+100000,8,4J,FourWayJoin,risingwave,uniform,1,1,1,4.35568,854.756,400000,0.00213689,147.297,barrier in-flight latency,12.7604
+100000,8,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,1,3441.81,196521,400000,0.491302,34.8877,ingestion-to-processing lag (before sink),10.6969
+100000,8,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,45.4237,48033.7,100000,0.480337,1.57025,complete latency (acking),14.3906
+100000,8,5J,FiveWayJoin,flink,uniform,1,1,1,21949.2,433866,500000,0.867732,9.22855,latency markers (excl. Kafka wait),23.0469
+100000,8,5J,FiveWayJoin,kafkastream,uniform,1,1,1,1.26473,432026,500000,0.864052,21.8397,record-e2e-latency avg (incl. Kafka wait),27.7344
+100000,8,5J,FiveWayJoin,risingwave,uniform,4,1,1,8.50534,3057.01,500000,0.00611401,19.3971,barrier in-flight latency,15.349
+100000,8,5J,FiveWayJoin,spark,uniform_e2e_rerun,1,0,0,0,0,500000,0,,ingestion-to-processing lag (before sink),15.1376
+100000,8,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,50.5085,57871.8,100000,0.578718,1.60951,complete latency (acking),15.974
+100000,8,6J,SixWayJoin,flink,uniform,1,1,1,211.103,113227,600000,0.188711,299.006,latency markers (excl. Kafka wait),12.276
+100000,8,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.397671,583673,600000,0.972788,371.536,record-e2e-latency avg (incl. Kafka wait),40.1615
+100000,8,6J,SixWayJoin,risingwave,uniform,4,1,0,0,3427.7,600000,0.00571283,5.70824,barrier in-flight latency,16.9635
+100000,8,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,600000,0,,ingestion-to-processing lag (before sink),0.510057
+100000,8,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,44.0678,66767.1,100000,0.667671,1.64849,complete latency (acking),17.1875
+100000,16,Lin,LinearQuery,flink,uniform,1,1,1,432.768,86514.5,100000,0.865145,0.33556,latency markers (excl. Kafka wait),10.7135
+100000,16,Lin,LinearQuery,kafkastream,uniform,1,1,1,1053.61,90021.4,100000,0.900214,4.53955,record-e2e-latency avg (incl. Kafka wait),6.84375
+100000,16,Lin,LinearQuery,risingwave,uniform,1,1,1,1158.03,10003.9,100000,0.100039,0.33525,barrier in-flight latency,2.17187
+100000,16,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,930.562,102174,100000,1.02174,4.612,ingestion-to-processing lag (before sink),5.24949
+100000,16,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,156.271,6464.33,100000,0.0646433,2.93373,complete latency (acking),12.4635
+100000,16,2F,TwoFilters,flink,uniform,1,1,1,432.807,86929.5,100000,0.869295,0.469824,latency markers (excl. Kafka wait),10.8177
+100000,16,2F,TwoFilters,kafkastream,uniform,1,1,1,524.121,90911,100000,0.90911,4.20442,record-e2e-latency avg (incl. Kafka wait),8.02083
+100000,16,2F,TwoFilters,risingwave,uniform,1,1,1,576.424,9669.14,100000,0.0966914,0.456469,barrier in-flight latency,2.42187
+100000,16,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,477.678,101112,100000,1.01112,5.029,ingestion-to-processing lag (before sink),4.77949
+100000,16,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,22.3721,2070.25,100000,0.0207025,42.7026,complete latency (acking),20.5469
+100000,16,3F,ThreeFilters,flink,uniform,1,1,1,211.007,86929.5,100000,0.869295,0.536096,latency markers (excl. Kafka wait),10.5469
+100000,16,3F,ThreeFilters,kafkastream,uniform,1,1,1,267.557,90619.5,100000,0.906195,4.63908,record-e2e-latency avg (incl. Kafka wait),7.97396
+100000,16,3F,ThreeFilters,risingwave,uniform,1,1,1,350.682,9181.72,100000,0.0918172,0.447188,barrier in-flight latency,2.71875
+100000,16,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,238.437,108814,100000,1.08814,4.77993,ingestion-to-processing lag (before sink),4.37819
+100000,16,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,20.339,2324.46,100000,0.0232446,5.81437,complete latency (acking),19.25
+100000,16,4F,FourFilters,flink,uniform,1,1,1,71.8464,86776.9,100000,0.867769,0.821303,latency markers (excl. Kafka wait),10.7552
+100000,16,4F,FourFilters,kafkastream,uniform,1,1,1,98.4262,90584.2,100000,0.905842,4.11437,record-e2e-latency avg (incl. Kafka wait),8.03125
+100000,16,4F,FourFilters,risingwave,uniform,1,1,1,98.6053,4554.56,100000,0.0455456,1.54343,barrier in-flight latency,2.81771
+100000,16,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,81.7072,102722,100000,1.02722,5.98211,ingestion-to-processing lag (before sink),4.43527
+100000,16,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,30.5085,3342.85,100000,0.0334285,5.05749,complete latency (acking),18.1823
+100000,16,2J,TwoWayJoin,flink,uniform,1,1,1,3190.38,173859,200000,0.869295,0.873328,latency markers (excl. Kafka wait),11.5365
+100000,16,2J,TwoWayJoin,kafkastream,uniform,1,1,1,144.512,181678,200000,0.908392,488.246,record-e2e-latency avg (incl. Kafka wait),19.5677
+100000,16,2J,TwoWayJoin,risingwave,uniform,1,1,1,1110.48,18568.1,200000,0.0928404,2.08448,barrier in-flight latency,3.9375
+100000,16,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,3494.97,205565,200000,1.02782,9.6933,ingestion-to-processing lag (before sink),6.66623
+100000,16,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,790.169,85221.8,100000,0.852218,0.791373,complete latency (acking),21.5781
+100000,16,3J,ThreeWayJoin,flink,uniform,1,1,1,8230.24,259711,300000,0.865702,2.15565,latency markers (excl. Kafka wait),12.8542
+100000,16,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,42.3033,285658,300000,0.952194,469.656,record-e2e-latency avg (incl. Kafka wait),27.6354
+100000,16,3J,ThreeWayJoin,risingwave,uniform,1,1,1,223.652,2580.31,300000,0.00860102,65.4651,barrier in-flight latency,24.1406
+100000,16,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,8731.74,299685,300000,0.998948,23.9348,ingestion-to-processing lag (before sink),8.33583
+100000,16,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,708.814,94722.2,100000,0.947222,0.779338,complete latency (acking),47.1615
+100000,16,4J,FourWayJoin,flink,uniform,1,1,1,19241.8,347587,400000,0.868968,3.82875,latency markers (excl. Kafka wait),15.0417
+100000,16,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.235372,361192,400000,0.90298,221.504,record-e2e-latency avg (incl. Kafka wait),32.151
+100000,16,4J,FourWayJoin,risingwave,uniform,7,1,1,1.3435,7021.28,400000,0.0175532,2.54368,barrier in-flight latency,25.7292
+100000,16,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,1,2611.2,171086,400000,0.427716,42.5397,ingestion-to-processing lag (before sink),7.08813
+100000,16,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,523.729,93777.2,100000,0.937772,1.57537,complete latency (acking),24.1823
+100000,16,5J,FiveWayJoin,flink,uniform,1,1,1,21917.5,432851,500000,0.865702,13.1034,latency markers (excl. Kafka wait),23.8073
+100000,16,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.28253,443694,500000,0.887388,17.89,record-e2e-latency avg (incl. Kafka wait),36.2448
+100000,16,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,8371.17,500000,0.0167423,2.54438,barrier in-flight latency,26.9583
+100000,16,5J,FiveWayJoin,spark,uniform_e2e_rerun,1,0,0,0,0,500000,0,,ingestion-to-processing lag (before sink),11.0484
+100000,16,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,326.102,95714.8,100000,0.957148,1.53974,complete latency (acking),27.2604
+100000,16,6J,SixWayJoin,flink,uniform,1,1,1,309.924,107512,600000,0.179186,381.184,latency markers (excl. Kafka wait),18.0677
+100000,16,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.105845,538711,600000,0.897851,127.909,record-e2e-latency avg (incl. Kafka wait),41.1875
+100000,16,6J,SixWayJoin,risingwave,uniform,4,1,0,0,8200.01,600000,0.0136667,2.5446,barrier in-flight latency,28.0191
+100000,16,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,600000,0,,ingestion-to-processing lag (before sink),0.512425
+100000,16,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,199.322,93403.9,100000,0.934039,1.53968,complete latency (acking),27.7083
+100000,32,Lin,LinearQuery,flink,uniform,1,0,1,433.245,0,100000,0,,latency markers (excl. Kafka wait),10.8906
+100000,32,Lin,LinearQuery,kafkastream,uniform,1,1,1,1046.38,90878.3,100000,0.908783,3.21217,record-e2e-latency avg (incl. Kafka wait),7.77083
+100000,32,Lin,LinearQuery,risingwave,uniform,1,1,1,992.44,8583.95,100000,0.0858395,0.333,barrier in-flight latency,2.15104
+100000,32,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,924.27,92764.4,100000,0.927644,5.962,ingestion-to-processing lag (before sink),5.31309
+100000,32,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,258.983,20272,100000,0.20272,5.0624,complete latency (acking),23.3802
+100000,32,2F,TwoFilters,flink,uniform,1,1,1,430.83,86983.5,100000,0.869835,0.46347,latency markers (excl. Kafka wait),10.9583
+100000,32,2F,TwoFilters,kafkastream,uniform,1,1,1,516.018,90573,100000,0.90573,3.6029,record-e2e-latency avg (incl. Kafka wait),9.11979
+100000,32,2F,TwoFilters,risingwave,uniform,1,1,1,576.299,9806.62,100000,0.0980662,0.457313,barrier in-flight latency,2.46354
+100000,32,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,479.543,105079,100000,1.05079,6.55852,ingestion-to-processing lag (before sink),4.30787
+100000,32,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,0.677966,6234.38,100000,0.0623438,32.4339,complete latency (acking),19.8073
+100000,32,3F,ThreeFilters,flink,uniform,1,1,1,211.502,86776.9,100000,0.867769,0.700133,latency markers (excl. Kafka wait),10.724
+100000,32,3F,ThreeFilters,kafkastream,uniform,1,1,1,262.303,90922.6,100000,0.909226,4.10367,record-e2e-latency avg (incl. Kafka wait),9.02604
+100000,32,3F,ThreeFilters,risingwave,uniform,1,1,1,249.263,6541.86,100000,0.0654186,0.42525,barrier in-flight latency,2.69271
+100000,32,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,235.059,99173.6,100000,0.991736,7.76147,ingestion-to-processing lag (before sink),4.70635
+100000,32,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,28.4746,9610.73,100000,0.0961073,39.6809,complete latency (acking),20.3594
+100000,32,4F,FourFilters,flink,uniform,1,1,1,71.7495,86942.5,100000,0.869425,0.862115,latency markers (excl. Kafka wait),11.1615
+100000,32,4F,FourFilters,kafkastream,uniform,1,1,1,100.81,91177.4,100000,0.911774,2.84982,record-e2e-latency avg (incl. Kafka wait),9.16146
+100000,32,4F,FourFilters,risingwave,uniform,1,1,1,191.533,8882.66,100000,0.0888266,0.406687,barrier in-flight latency,2.88542
+100000,32,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,82.6225,95785.4,100000,0.957854,7.60804,ingestion-to-processing lag (before sink),4.34428
+100000,32,4F,FourFilters,storm,distributed_fixed_exporter_fix,2,1,0,0,11718.2,100000,0.117182,38.9983,complete latency (acking),22.4271
+100000,32,2J,TwoWayJoin,flink,uniform,1,1,1,3183.76,173140,200000,0.865702,1.04106,latency markers (excl. Kafka wait),12.9635
+100000,32,2J,TwoWayJoin,kafkastream,uniform,1,1,1,153.737,184382,200000,0.921912,649.906,record-e2e-latency avg (incl. Kafka wait),20.4375
+100000,32,2J,TwoWayJoin,risingwave,uniform,1,1,1,1120.05,18672.1,200000,0.0933603,2.20409,barrier in-flight latency,3.95833
+100000,32,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,3463.48,201488,200000,1.00744,12.2747,ingestion-to-processing lag (before sink),6.92054
+100000,32,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,978.983,96243.7,100000,0.962437,0.774499,complete latency (acking),65.9531
+100000,32,3J,ThreeWayJoin,flink,uniform,1,1,1,8250.53,260743,300000,0.869144,2.72761,latency markers (excl. Kafka wait),14.7135
+100000,32,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,39.0923,278567,300000,0.928557,496.117,record-e2e-latency avg (incl. Kafka wait),28.5885
+100000,32,3J,ThreeWayJoin,risingwave,uniform,4,1,1,272.506,3290.91,300000,0.0109697,80.7914,barrier in-flight latency,35.8125
+100000,32,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,8440.57,302309,300000,1.0077,27.1269,ingestion-to-processing lag (before sink),9.24662
+100000,32,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,709.831,93947.6,100000,0.939476,0.780249,complete latency (acking),70.8229
+100000,32,4J,FourWayJoin,flink,uniform,1,1,1,19272.1,347909,400000,0.869773,4.01223,latency markers (excl. Kafka wait),16.099
+100000,32,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.00487784,369597,400000,0.923993,92.1326,record-e2e-latency avg (incl. Kafka wait),32.3021
+100000,32,4J,FourWayJoin,risingwave,uniform,6,1,1,1.05381,4905.6,400000,0.012264,220.945,barrier in-flight latency,1.58333
+100000,32,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,1,2472.59,175854,400000,0.439636,50.9918,ingestion-to-processing lag (before sink),19.3811
+100000,32,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,523.39,92246.7,100000,0.922467,1.53877,complete latency (acking),36.9219
+100000,32,5J,FiveWayJoin,flink,uniform,1,1,1,21883.2,433749,500000,0.867499,7.97082,latency markers (excl. Kafka wait),25.1042
+100000,32,5J,FiveWayJoin,kafkastream,uniform,1,1,1,4.37886,467143,500000,0.934287,18.1237,record-e2e-latency avg (incl. Kafka wait),40.151
+100000,32,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,6168.03,500000,0.0123361,1.13527,barrier in-flight latency,1.6875
+100000,32,5J,FiveWayJoin,spark,uniform_e2e_rerun,1,0,0,0,0,500000,0,,ingestion-to-processing lag (before sink),15.9183
+100000,32,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,326.102,95036.7,100000,0.950367,1.53537,complete latency (acking),38.8854
+100000,32,6J,SixWayJoin,flink,uniform,1,1,1,268.403,103797,600000,0.172995,718.452,latency markers (excl. Kafka wait),25.099
+100000,32,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.0976931,547701,600000,0.912836,75.6227,record-e2e-latency avg (incl. Kafka wait),41.8177
+100000,32,6J,SixWayJoin,risingwave,uniform,5,1,0,0,7160.46,600000,0.0119341,1.13527,barrier in-flight latency,1.55729
+100000,32,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,600000,0,,ingestion-to-processing lag (before sink),0.522808
+100000,32,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,198.983,93167.9,100000,0.931679,1.53302,complete latency (acking),41.4271
+100000,40,Lin,LinearQuery,flink,uniform,1,1,1,430.791,86523.6,100000,0.865236,0.422146,latency markers (excl. Kafka wait),11.3646
+100000,40,Lin,LinearQuery,kafkastream,uniform,1,1,1,1099.17,90454.1,100000,0.904541,2.791,record-e2e-latency avg (incl. Kafka wait),8.38021
+100000,40,Lin,LinearQuery,risingwave,uniform,1,1,1,1205.66,10432.5,100000,0.104325,0.501188,barrier in-flight latency,2.16146
+100000,40,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,958.957,105597,100000,1.05597,6.402,ingestion-to-processing lag (before sink),5.40653
+100000,40,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,360,94733.8,100000,0.947338,0.880406,complete latency (acking),55.5156
+100000,40,2F,TwoFilters,flink,uniform,1,1,1,430.115,86758.4,100000,0.867584,0.367653,latency markers (excl. Kafka wait),10.7813
+100000,40,2F,TwoFilters,kafkastream,uniform,1,1,1,576.65,91616.6,100000,0.916166,2.7117,record-e2e-latency avg (incl. Kafka wait),9.72917
+100000,40,2F,TwoFilters,risingwave,uniform,1,1,1,185.4,3091.27,100000,0.0309127,0.4725,barrier in-flight latency,2.23958
+100000,40,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,480.31,96416.5,100000,0.964165,7.9637,ingestion-to-processing lag (before sink),4.72952
+100000,40,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,2.03404,21374.5,100000,0.213745,31.4131,complete latency (acking),14.6146
+100000,40,3F,ThreeFilters,flink,uniform,1,1,1,214.683,86749.9,100000,0.867499,0.604815,latency markers (excl. Kafka wait),10.9063
+100000,40,3F,ThreeFilters,kafkastream,uniform,1,1,1,300.32,90765.4,100000,0.907654,2.86771,record-e2e-latency avg (incl. Kafka wait),9.58333
+100000,40,3F,ThreeFilters,risingwave,uniform,1,1,1,354.422,9363.5,100000,0.093635,0.502875,barrier in-flight latency,2.59896
+100000,40,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,236.586,102722,100000,1.02722,8.20104,ingestion-to-processing lag (before sink),4.57928
+100000,40,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,1.35593,27047.9,100000,0.270479,28.3134,complete latency (acking),21.0573
+100000,40,4F,FourFilters,flink,uniform,1,1,1,71.7312,86542.4,100000,0.865424,0.96572,latency markers (excl. Kafka wait),10.9896
+100000,40,4F,FourFilters,kafkastream,uniform,1,1,1,135.019,90685.8,100000,0.906858,2.82974,record-e2e-latency avg (incl. Kafka wait),9.64063
+100000,40,4F,FourFilters,risingwave,uniform,1,1,1,190.554,8905.83,100000,0.0890583,0.456469,barrier in-flight latency,2.87933
+100000,40,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,80.9309,101087,100000,1.01087,8.28701,ingestion-to-processing lag (before sink),4.36528
+100000,40,4F,FourFilters,storm,distributed_fixed_exporter_fix,4,1,1,139.661,60438.2,100000,0.604382,1.55799,complete latency (acking),34.0312
+100000,40,2J,TwoWayJoin,flink,uniform,1,1,1,3170.92,173859,200000,0.869295,,latency markers (excl. Kafka wait),13.0937
+100000,40,2J,TwoWayJoin,kafkastream,uniform,1,1,1,154.393,185588,200000,0.927942,548.681,record-e2e-latency avg (incl. Kafka wait),21.5833
+100000,40,2J,TwoWayJoin,risingwave,uniform,2,1,1,1114.46,18241.9,200000,0.0912095,2.47746,barrier in-flight latency,4.03646
+100000,40,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,3446.37,202576,200000,1.01288,12.8797,ingestion-to-processing lag (before sink),8.11333
+100000,40,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,976.61,95098.7,100000,0.950987,0.775654,complete latency (acking),69.9635
+100000,40,3J,ThreeWayJoin,flink,uniform,1,1,1,8370.49,260788,300000,0.869295,2.87765,latency markers (excl. Kafka wait),14.901
+100000,40,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,47.0147,277043,300000,0.923477,523.701,record-e2e-latency avg (incl. Kafka wait),29.1458
+100000,40,3J,ThreeWayJoin,risingwave,uniform,4,1,1,19.7658,238.819,300000,0.000796065,43.118,barrier in-flight latency,3.29167
+100000,40,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,8282.32,289811,300000,0.966036,30.7955,ingestion-to-processing lag (before sink),9.45979
+100000,40,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,706.102,94676.2,100000,0.946762,0.771573,complete latency (acking),72.4635
+100000,40,4J,FourWayJoin,flink,uniform,1,1,1,19191.1,347718,400000,0.869295,,latency markers (excl. Kafka wait),15.5833
+100000,40,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.133303,365471,400000,0.913677,128.293,record-e2e-latency avg (incl. Kafka wait),34.901
+100000,40,4J,FourWayJoin,risingwave,uniform,8,1,0,0,5130.64,400000,0.0128266,0.498881,barrier in-flight latency,1.65625
+100000,40,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,1,2936.16,187613,400000,0.469032,53.3096,ingestion-to-processing lag (before sink),20.1961
+100000,40,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,524.719,94526.6,100000,0.945266,1.54261,complete latency (acking),44.1458
+100000,40,5J,FiveWayJoin,flink,uniform,1,1,1,21708.1,432851,500000,0.865702,,latency markers (excl. Kafka wait),24.7969
+100000,40,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.382741,483843,500000,0.967686,16.2816,record-e2e-latency avg (incl. Kafka wait),39.6563
+100000,40,5J,FiveWayJoin,risingwave,uniform,6,1,0,0,7017.8,500000,0.0140356,0.502875,barrier in-flight latency,1.57292
+100000,40,5J,FiveWayJoin,spark,uniform_e2e_rerun,7,0,0,0,0,500000,0,,ingestion-to-processing lag (before sink),0.517501
+100000,40,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,327.458,94652.6,100000,0.946526,1.53803,complete latency (acking),46.625
+100000,40,6J,SixWayJoin,flink,uniform,1,1,1,472.358,107445,600000,0.179075,2437.16,latency markers (excl. Kafka wait),35.1042
+100000,40,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.0790347,560169,600000,0.933615,143.386,record-e2e-latency avg (incl. Kafka wait),43.6094
+100000,40,6J,SixWayJoin,risingwave,uniform,7,1,0,0,7074.55,600000,0.0117909,0.501346,barrier in-flight latency,1.67708
+100000,40,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,600000,0,,ingestion-to-processing lag (before sink),0.522264
+100000,40,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,200,95263,100000,0.95263,1.53567,complete latency (acking),48.5052
+500000,2,Lin,LinearQuery,flink,uniform,1,1,1,433.159,434647,500000,0.869295,0.149423,latency markers (excl. Kafka wait),10.8177
+500000,2,Lin,LinearQuery,kafkastream,uniform,1,1,1,1206.63,398044,500000,0.796088,6.60154,record-e2e-latency avg (incl. Kafka wait),10.1875
+500000,2,Lin,LinearQuery,risingwave,uniform,1,1,1,1147.73,8254.7,500000,0.0165094,0.475031,barrier in-flight latency,3.29688
+500000,2,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,850.765,499351,500000,0.998702,6.2005,ingestion-to-processing lag (before sink),3.67958
+500000,2,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,1.01695,25813.5,500000,0.0516271,0.773739,complete latency (acking),13.6667
+500000,2,2F,TwoFilters,flink,uniform,1,1,1,433.448,434917,500000,0.869835,0.353149,latency markers (excl. Kafka wait),10.7865
+500000,2,2F,TwoFilters,kafkastream,uniform,1,1,1,572.097,398369,500000,0.796737,4.95853,record-e2e-latency avg (incl. Kafka wait),13.3542
+500000,2,2F,TwoFilters,risingwave,uniform,1,1,1,545.902,8352.4,500000,0.0167048,0.489375,barrier in-flight latency,3.625
+500000,2,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,413.795,517331,500000,1.03466,4.677,ingestion-to-processing lag (before sink),3.44742
+500000,2,2F,TwoFilters,storm,distributed_fixed_exporter_fix,3,3,3,1.01695,1.5873,500000,3.1746e-06,1.74539,complete latency (acking),6.51563
+500000,2,3F,ThreeFilters,flink,uniform,1,1,1,52.2177,432851,500000,0.865702,0.555529,latency markers (excl. Kafka wait),11.0208
+500000,2,3F,ThreeFilters,kafkastream,uniform,1,1,1,92.9277,397628,500000,0.795256,13.8591,record-e2e-latency avg (incl. Kafka wait),12.1719
+500000,2,3F,ThreeFilters,risingwave,uniform,1,1,1,215.783,8074.58,500000,0.0161492,1.08591,barrier in-flight latency,3.91146
+500000,2,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,53.9618,522193,500000,1.04439,5.6058,ingestion-to-processing lag (before sink),3.64764
+500000,2,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,2,2,2,209.831,1282.71,500000,0.00256542,1.74597,complete latency (acking),4.55208
+500000,2,4F,FourFilters,flink,uniform,1,1,1,0.983609,434823,500000,0.869647,0.899145,latency markers (excl. Kafka wait),10.8854
+500000,2,4F,FourFilters,kafkastream,uniform,1,1,1,23.7651,398733,500000,0.797465,6.09284,record-e2e-latency avg (incl. Kafka wait),13.1458
+500000,2,4F,FourFilters,risingwave,uniform,1,1,1,84.0735,7517.72,500000,0.0150354,0.635344,barrier in-flight latency,4.23958
+500000,2,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,2.95081,512470,500000,1.02494,5.867,ingestion-to-processing lag (before sink),3.08214
+500000,2,4F,FourFilters,storm,distributed_fixed_exporter_fix,3,2,2,191.695,1278.64,500000,0.00255728,1.74327,complete latency (acking),15.5781
+500000,2,2J,TwoWayJoin,flink,uniform,1,1,1,3406.96,869686,1e+06,0.869686,0.426381,latency markers (excl. Kafka wait),14.1562
+500000,2,2J,TwoWayJoin,kafkastream,uniform,1,1,1,71.8214,799140,1e+06,0.79914,281.273,record-e2e-latency avg (incl. Kafka wait),20.2656
+500000,2,2J,TwoWayJoin,risingwave,uniform,1,1,1,612.24,4543.11,1e+06,0.00454311,12.8917,barrier in-flight latency,6.39583
+500000,2,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,464468,1e+06,0.464468,,ingestion-to-processing lag (before sink),12.7669
+500000,2,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,9855.16,500000,0.0197103,0.871893,complete latency (acking),5.49479
+500000,2,3J,ThreeWayJoin,flink,uniform,1,0,0,0,0,1.5e+06,0,,latency markers (excl. Kafka wait),14.8333
+500000,2,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,23.2853,1.07674e+06,1.5e+06,0.717825,339.994,record-e2e-latency avg (incl. Kafka wait),21.6667
+500000,2,3J,ThreeWayJoin,risingwave,uniform,3,1,1,120.584,224.93,1.5e+06,0.000149953,43.5428,barrier in-flight latency,6.92188
+500000,2,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,457364,1.5e+06,0.304909,,ingestion-to-processing lag (before sink),9.5194
+500000,2,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,14509.8,500000,0.0290196,0.870228,complete latency (acking),6.33333
+500000,2,4J,FourWayJoin,flink,uniform,1,1,1,12810.9,1.1841e+06,2e+06,0.592049,9.2014,latency markers (excl. Kafka wait),21.8073
+500000,2,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.0654277,900741,2e+06,0.450371,119.05,record-e2e-latency avg (incl. Kafka wait),24.6562
+500000,2,4J,FourWayJoin,risingwave,uniform,7,1,0,0,504.863,2e+06,0.000252431,19.3376,barrier in-flight latency,13.4375
+500000,2,4J,FourWayJoin,spark,uniform_e2e_rerun,10,0,0,0,0,2e+06,0,,ingestion-to-processing lag (before sink),0.570302
+500000,2,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,10179.5,500000,0.0203591,1.74044,complete latency (acking),5.42708
+500000,2,5J,FiveWayJoin,flink,uniform,1,1,1,9489.1,1.11198e+06,2.5e+06,0.444791,16.989,latency markers (excl. Kafka wait),20.1146
+500000,2,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.314326,1.32284e+06,2.5e+06,0.529134,14.0087,record-e2e-latency avg (incl. Kafka wait),25.8177
+500000,2,5J,FiveWayJoin,risingwave,uniform,2,1,0,0,520.16,2.5e+06,0.000208064,0.336375,barrier in-flight latency,11.8958
+500000,2,5J,FiveWayJoin,spark,uniform_e2e_rerun,7,0,0,0,0,2.5e+06,0,,ingestion-to-processing lag (before sink),0.540924
+500000,2,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,12724.3,500000,0.0254485,1.73757,complete latency (acking),6.05208
+500000,2,6J,SixWayJoin,flink,uniform,1,0,0,0,0,3e+06,0,,latency markers (excl. Kafka wait),9.02083
+500000,2,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.105975,985631,3e+06,0.328544,399.921,record-e2e-latency avg (incl. Kafka wait),30.3542
+500000,2,6J,SixWayJoin,risingwave,uniform,4,1,0,0,574.652,3e+06,0.000191551,19.3403,barrier in-flight latency,15.2435
+500000,2,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),0.515828
+500000,2,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,15162.8,500000,0.0303257,1.73578,complete latency (acking),6.51562
+500000,4,Lin,LinearQuery,flink,uniform,1,1,1,432.243,432573,500000,0.865145,0.209905,latency markers (excl. Kafka wait),11.125
+500000,4,Lin,LinearQuery,kafkastream,uniform,1,1,1,1200.64,457315,500000,0.91463,7.11074,record-e2e-latency avg (incl. Kafka wait),11.5521
+500000,4,Lin,LinearQuery,risingwave,uniform,1,1,1,1147.31,9247.08,500000,0.0184942,0.632813,barrier in-flight latency,3.47396
+500000,4,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,890.259,495175,500000,0.990349,6.432,ingestion-to-processing lag (before sink),3.14522
+500000,4,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,3.05085,16218.6,500000,0.0324371,1.60331,complete latency (acking),14.5781
+500000,4,2F,TwoFilters,flink,uniform,1,1,1,430.228,432851,500000,0.865702,0.314625,latency markers (excl. Kafka wait),10.9948
+500000,4,2F,TwoFilters,kafkastream,uniform,1,1,1,592.987,453256,500000,0.906512,7.74533,record-e2e-latency avg (incl. Kafka wait),13.2292
+500000,4,2F,TwoFilters,risingwave,uniform,1,1,1,555.893,8806.85,500000,0.0176137,0.74925,barrier in-flight latency,3.77083
+500000,4,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,438.744,514139,500000,1.02828,5.10473,ingestion-to-processing lag (before sink),4.35102
+500000,4,2F,TwoFilters,storm,distributed_fixed_exporter_fix,2,2,1,0.59322,78.9188,500000,0.000157838,30.261,complete latency (acking),11.875
+500000,4,3F,ThreeFilters,flink,uniform,1,1,1,51.7904,433402,500000,0.866803,0.521699,latency markers (excl. Kafka wait),10.8542
+500000,4,3F,ThreeFilters,kafkastream,uniform,1,1,1,78.8191,453866,500000,0.907731,25.328,record-e2e-latency avg (incl. Kafka wait),13.2448
+500000,4,3F,ThreeFilters,risingwave,uniform,1,1,1,233.564,8204.39,500000,0.0164088,1.47509,barrier in-flight latency,3.98438
+500000,4,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,54.5768,521648,500000,1.0433,4.83576,ingestion-to-processing lag (before sink),4.29339
+500000,4,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,2,2,2,220.508,3281.27,500000,0.00656255,1.62047,complete latency (acking),23.7891
+500000,4,4F,FourFilters,flink,uniform,1,1,1,0.893499,432851,500000,0.865702,0.698758,latency markers (excl. Kafka wait),10.6771
+500000,4,4F,FourFilters,kafkastream,uniform,1,1,1,4.11072,451884,500000,0.903769,8.89072,record-e2e-latency avg (incl. Kafka wait),13.25
+500000,4,4F,FourFilters,risingwave,uniform,1,1,1,88.149,7851.81,500000,0.0157036,0.744188,barrier in-flight latency,4.26042
+500000,4,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.986553,518403,500000,1.03681,4.918,ingestion-to-processing lag (before sink),3.54844
+500000,4,4F,FourFilters,storm,distributed_fixed_exporter_fix,2,2,2,104.237,3030.23,500000,0.00606047,1.61475,complete latency (acking),15.4375
+500000,4,2J,TwoWayJoin,flink,uniform,1,1,1,3505.13,869835,1e+06,0.869835,0.557846,latency markers (excl. Kafka wait),13.6354
+500000,4,2J,TwoWayJoin,kafkastream,uniform,1,1,1,30.2287,899873,1e+06,0.899873,128.24,record-e2e-latency avg (incl. Kafka wait),21.7604
+500000,4,2J,TwoWayJoin,risingwave,uniform,1,1,1,726.51,8184.21,1e+06,0.00818421,12.806,barrier in-flight latency,6.52083
+500000,4,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,1228.24,606665,1e+06,0.606665,38.8827,ingestion-to-processing lag (before sink),11.8694
+500000,4,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,1.18644,21012.3,500000,0.0420246,0.807998,complete latency (acking),8.72917
+500000,4,3J,ThreeWayJoin,flink,uniform,1,1,1,14278.5,1.29855e+06,1.5e+06,0.865702,3.51877,latency markers (excl. Kafka wait),15.5417
+500000,4,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,9.80199,1.11497e+06,1.5e+06,0.74331,13.5035,record-e2e-latency avg (incl. Kafka wait),28.3385
+500000,4,3J,ThreeWayJoin,risingwave,uniform,1,1,1,45.6647,1725.45,1.5e+06,0.0011503,147.235,barrier in-flight latency,7.22396
+500000,4,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,2040.74,632019,1.5e+06,0.421346,32.9276,ingestion-to-processing lag (before sink),15.1123
+500000,4,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,30341.9,500000,0.0606838,0.833644,complete latency (acking),9.89062
+500000,4,4J,FourWayJoin,flink,uniform,1,1,1,23921.1,1.38498e+06,2e+06,0.69249,8.66053,latency markers (excl. Kafka wait),24.5573
+500000,4,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.259219,1.61054e+06,2e+06,0.805268,136.638,record-e2e-latency avg (incl. Kafka wait),35.7448
+500000,4,4J,FourWayJoin,risingwave,uniform,1,1,1,17.3822,704.483,2e+06,0.000352242,98.1977,barrier in-flight latency,15.5521
+500000,4,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,0,0,370724,2e+06,0.185362,,ingestion-to-processing lag (before sink),13.8028
+500000,4,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,23389.1,500000,0.0467781,1.61141,complete latency (acking),8.20313
+500000,4,5J,FiveWayJoin,flink,uniform,1,1,1,13687.4,1.26501e+06,2.5e+06,0.506002,17.0069,latency markers (excl. Kafka wait),22.599
+500000,4,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.189361,1.87017e+06,2.5e+06,0.748069,19.0831,record-e2e-latency avg (incl. Kafka wait),36.2396
+500000,4,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,1499.72,2.5e+06,0.000599887,12.7334,barrier in-flight latency,16.724
+500000,4,5J,FiveWayJoin,spark,uniform_e2e_rerun,7,0,0,0,0,2.5e+06,0,,ingestion-to-processing lag (before sink),0.489291
+500000,4,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,29310.2,500000,0.0586205,1.62211,complete latency (acking),9.51042
+500000,4,6J,SixWayJoin,flink,uniform,1,1,1,503.643,684361,3e+06,0.22812,57.7677,latency markers (excl. Kafka wait),13.4844
+500000,4,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.176139,1.9048e+06,3e+06,0.634934,484.299,record-e2e-latency avg (incl. Kafka wait),43.4896
+500000,4,6J,SixWayJoin,risingwave,uniform,4,1,0,0,1691.61,3e+06,0.000563869,12.6935,barrier in-flight latency,18.2964
+500000,4,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),0.506356
+500000,4,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,34096.6,500000,0.0681931,1.643,complete latency (acking),10.4948
+500000,8,Lin,LinearQuery,flink,uniform,1,1,1,431.616,433749,500000,0.867499,0.279452,latency markers (excl. Kafka wait),11.5313
+500000,8,Lin,LinearQuery,kafkastream,uniform,1,1,1,1196.98,456365,500000,0.912731,6.08792,record-e2e-latency avg (incl. Kafka wait),11.9792
+500000,8,Lin,LinearQuery,risingwave,uniform,1,1,1,1154.41,9643.62,500000,0.0192872,0.475875,barrier in-flight latency,3.56771
+500000,8,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,904.246,502513,500000,1.00503,6.065,ingestion-to-processing lag (before sink),4.49918
+500000,8,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,31.8644,6988.5,500000,0.013977,3.37934,complete latency (acking),22.2135
+500000,8,2F,TwoFilters,flink,uniform,1,1,1,434.103,433297,500000,0.866594,0.365002,latency markers (excl. Kafka wait),11.4062
+500000,8,2F,TwoFilters,kafkastream,uniform,1,1,1,554.728,456467,500000,0.912934,9.19402,record-e2e-latency avg (incl. Kafka wait),13.6406
+500000,8,2F,TwoFilters,risingwave,uniform,1,1,1,561.239,9146.73,500000,0.0182935,1.07072,barrier in-flight latency,3.71354
+500000,8,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,448.169,483425,500000,0.966851,6.4622,ingestion-to-processing lag (before sink),3.88654
+500000,8,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,9.83051,408.568,500000,0.000817135,4.104,complete latency (acking),43.4635
+500000,8,3F,ThreeFilters,flink,uniform,1,1,1,53.5794,434694,500000,0.869388,0.603918,latency markers (excl. Kafka wait),11.6979
+500000,8,3F,ThreeFilters,kafkastream,uniform,1,1,1,80.3371,451473,500000,0.902945,15.8643,record-e2e-latency avg (incl. Kafka wait),13.651
+500000,8,3F,ThreeFilters,risingwave,uniform,1,1,1,199.016,8837.55,500000,0.0176751,0.494438,barrier in-flight latency,4.00521
+500000,8,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,56.4482,494560,500000,0.98912,6.64154,ingestion-to-processing lag (before sink),3.87513
+500000,8,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,89.433,500000,0.000178866,25.577,complete latency (acking),6.72396
+500000,8,4F,FourFilters,flink,uniform,1,1,1,0.87865,432851,500000,0.865702,0.68749,latency markers (excl. Kafka wait),11.3177
+500000,8,4F,FourFilters,kafkastream,uniform,1,1,1,7.59747,451516,500000,0.903032,5.78579,record-e2e-latency avg (incl. Kafka wait),13.3437
+500000,8,4F,FourFilters,risingwave,uniform,1,1,1,84.7835,8275.95,500000,0.0165519,0.497813,barrier in-flight latency,4.39063
+500000,8,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.952231,510130,500000,1.02026,6.094,ingestion-to-processing lag (before sink),4.3625
+500000,8,4F,FourFilters,storm,distributed_fixed_exporter_fix,2,2,2,163.898,6181.34,500000,0.0123627,1.57185,complete latency (acking),21.8828
+500000,8,2J,TwoWayJoin,flink,uniform,1,1,1,3395.29,865424,1e+06,0.865424,0.529264,latency markers (excl. Kafka wait),14.3906
+500000,8,2J,TwoWayJoin,kafkastream,uniform,1,1,1,43.1407,909193,1e+06,0.909193,131.887,record-e2e-latency avg (incl. Kafka wait),25.6979
+500000,8,2J,TwoWayJoin,risingwave,uniform,1,1,1,743.384,14741.4,1e+06,0.0147414,8.5104,barrier in-flight latency,6.51042
+500000,8,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,1129.49,561608,1e+06,0.561608,43.1193,ingestion-to-processing lag (before sink),16.9086
+500000,8,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,8.81356,43573.8,500000,0.0871475,0.780926,complete latency (acking),13.9219
+500000,8,3J,ThreeWayJoin,flink,uniform,1,1,1,14317.3,1.30125e+06,1.5e+06,0.867499,2.11199,latency markers (excl. Kafka wait),16.8802
+500000,8,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,23.0654,1.28504e+06,1.5e+06,0.856696,17.7147,record-e2e-latency avg (incl. Kafka wait),32.9531
+500000,8,3J,ThreeWayJoin,risingwave,uniform,1,1,1,43.1689,1814.49,1.5e+06,0.00120966,98.1977,barrier in-flight latency,6.89583
+500000,8,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,1,1932.19,647691,1.5e+06,0.431794,31.9584,ingestion-to-processing lag (before sink),12.1262
+500000,8,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,2.0339,63998.7,500000,0.127997,0.794719,complete latency (acking),17.7448
+500000,8,4J,FourWayJoin,flink,uniform,1,1,1,49129,1.73618e+06,2e+06,0.868088,5.39482,latency markers (excl. Kafka wait),27.0104
+500000,8,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.172566,1.54416e+06,2e+06,0.772082,154.647,record-e2e-latency avg (incl. Kafka wait),42.5313
+500000,8,4J,FourWayJoin,risingwave,uniform,7,1,1,8.56815,2509.1,2e+06,0.00125455,8.62092,barrier in-flight latency,17.8229
+500000,8,4J,FourWayJoin,spark,uniform_e2e_rerun,1,1,0,0,358115,2e+06,0.179057,,ingestion-to-processing lag (before sink),18.484
+500000,8,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,47293.3,500000,0.0945867,1.62436,complete latency (acking),13.6198
+500000,8,5J,FiveWayJoin,flink,uniform,1,1,1,6951.58,1.23203e+06,2.5e+06,0.492811,18.7901,latency markers (excl. Kafka wait),23.1667
+500000,8,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.0737291,1.9106e+06,2.5e+06,0.76424,18.6138,record-e2e-latency avg (incl. Kafka wait),45.1458
+500000,8,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,3056.35,2.5e+06,0.00122254,5.69923,barrier in-flight latency,19.8125
+500000,8,5J,FiveWayJoin,spark,uniform_e2e_rerun,7,0,0,0,0,2.5e+06,0,,ingestion-to-processing lag (before sink),0.525884
+500000,8,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,59365.3,500000,0.118731,1.62342,complete latency (acking),16.0417
+500000,8,6J,SixWayJoin,flink,uniform,1,1,1,697.706,822433,3e+06,0.274144,42.3069,latency markers (excl. Kafka wait),16.625
+500000,8,6J,SixWayJoin,kafkastream,uniform,1,1,0,0,2.04793e+06,3e+06,0.682642,145.07,record-e2e-latency avg (incl. Kafka wait),50.0521
+500000,8,6J,SixWayJoin,risingwave,uniform,4,1,1,1.98972,3485.76,3e+06,0.00116192,5.70243,barrier in-flight latency,21.2309
+500000,8,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),0.521363
+500000,8,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,68588.7,500000,0.137177,1.64548,complete latency (acking),16.5885
+500000,16,Lin,LinearQuery,flink,uniform,1,1,1,430.976,433273,500000,0.866545,0.271212,latency markers (excl. Kafka wait),11.8177
+500000,16,Lin,LinearQuery,kafkastream,uniform,1,1,1,1104.48,452161,500000,0.904323,5.60652,record-e2e-latency avg (incl. Kafka wait),12.4479
+500000,16,Lin,LinearQuery,risingwave,uniform,1,1,1,1142.35,10238.4,500000,0.0204768,0.470813,barrier in-flight latency,3.5625
+500000,16,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,918.453,489803,500000,0.979606,8.12,ingestion-to-processing lag (before sink),4.07009
+500000,16,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,46.7797,9795.1,500000,0.0195902,3.19206,complete latency (acking),18.8854
+500000,16,2F,TwoFilters,flink,uniform,1,1,1,432.058,432851,500000,0.865702,0.393869,latency markers (excl. Kafka wait),11.7135
+500000,16,2F,TwoFilters,kafkastream,uniform,1,1,1,514.852,454552,500000,0.909104,9.58362,record-e2e-latency avg (incl. Kafka wait),14.2552
+500000,16,2F,TwoFilters,risingwave,uniform,1,1,1,540.232,9710.56,500000,0.0194211,0.481781,barrier in-flight latency,3.85417
+500000,16,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,456.358,491481,500000,0.982962,7.98266,ingestion-to-processing lag (before sink),4.04776
+500000,16,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,24.4068,2007.95,500000,0.00401589,2.74299,complete latency (acking),18.6979
+500000,16,3F,ThreeFilters,flink,uniform,1,1,1,54.9837,434917,500000,0.869835,0.528648,latency markers (excl. Kafka wait),11.6042
+500000,16,3F,ThreeFilters,kafkastream,uniform,1,1,1,71.6146,452369,500000,0.904738,8.32348,record-e2e-latency avg (incl. Kafka wait),14.1615
+500000,16,3F,ThreeFilters,risingwave,uniform,1,1,1,224.602,9230.76,500000,0.0184615,0.486338,barrier in-flight latency,4.06771
+500000,16,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,54.6733,510951,500000,1.0219,7.808,ingestion-to-processing lag (before sink),4.56508
+500000,16,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,13.2203,2634.43,500000,0.00526886,12.2698,complete latency (acking),8.47917
+500000,16,4F,FourFilters,flink,uniform,1,1,1,0.847727,434917,500000,0.869835,0.834459,latency markers (excl. Kafka wait),11.4271
+500000,16,4F,FourFilters,kafkastream,uniform,1,1,1,11.6708,454615,500000,0.90923,5.88203,record-e2e-latency avg (incl. Kafka wait),14.1875
+500000,16,4F,FourFilters,risingwave,uniform,1,1,1,78.563,8807.97,500000,0.0176159,2.44329,barrier in-flight latency,4.27604
+500000,16,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.87325,508001,500000,1.016,7.95214,ingestion-to-processing lag (before sink),4.09797
+500000,16,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,249.831,24406.1,500000,0.0488121,1.56032,complete latency (acking),16.7656
+500000,16,2J,TwoWayJoin,flink,uniform,1,1,1,3384.87,868431,1e+06,0.868431,0.735338,latency markers (excl. Kafka wait),15.6562
+500000,16,2J,TwoWayJoin,kafkastream,uniform,1,1,1,44.2313,914436,1e+06,0.914436,116.711,record-e2e-latency avg (incl. Kafka wait),26.599
+500000,16,2J,TwoWayJoin,risingwave,uniform,1,1,1,1097.43,18689.2,1e+06,0.0186892,8.5969,barrier in-flight latency,6.71354
+500000,16,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,1222.02,597487,1e+06,0.597487,43.307,ingestion-to-processing lag (before sink),9.39492
+500000,16,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,34.5763,86741,500000,0.173482,0.775489,complete latency (acking),24.0625
+500000,16,3J,ThreeWayJoin,flink,uniform,1,1,1,14396.7,1.30094e+06,1.5e+06,0.867293,2.3622,latency markers (excl. Kafka wait),17.0937
+500000,16,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,24.6294,1.13296e+06,1.5e+06,0.755309,14.6263,record-e2e-latency avg (incl. Kafka wait),32.1719
+500000,16,3J,ThreeWayJoin,risingwave,uniform,2,2,2,23.3197,443.957,1.5e+06,0.000295972,42.9136,barrier in-flight latency,6.88802
+500000,16,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,564787,1.5e+06,0.376525,,ingestion-to-processing lag (before sink),11.6412
+500000,16,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,19.322,127416,500000,0.254831,0.789674,complete latency (acking),30.7083
+500000,16,4J,FourWayJoin,flink,uniform,1,1,1,49139.8,1.73554e+06,2e+06,0.867769,5.78499,latency markers (excl. Kafka wait),27.6146
+500000,16,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.109817,1.77389e+06,2e+06,0.886946,153.965,record-e2e-latency avg (incl. Kafka wait),47.1146
+500000,16,4J,FourWayJoin,risingwave,uniform,7,1,1,2.30099,4985.49,2e+06,0.00249275,2.54368,barrier in-flight latency,1.53646
+500000,16,4J,FourWayJoin,spark,uniform_e2e_rerun,1,0,0,0,0,2e+06,0,,ingestion-to-processing lag (before sink),18.3071
+500000,16,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,1.69492,91564.6,500000,0.183129,1.71631,complete latency (acking),19.4219
+500000,16,5J,FiveWayJoin,flink,uniform,1,1,1,5879.46,955381,2.5e+06,0.382152,14.4125,latency markers (excl. Kafka wait),15.4427
+500000,16,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.900049,1.95318e+06,2.5e+06,0.781271,19.5996,record-e2e-latency avg (incl. Kafka wait),53.7188
+500000,16,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,4490.22,2.5e+06,0.00179609,2.54438,barrier in-flight latency,1.69792
+500000,16,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,2.5e+06,0,,ingestion-to-processing lag (before sink),0.533614
+500000,16,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.677966,116393,500000,0.232785,1.60326,complete latency (acking),24.0573
+500000,16,6J,SixWayJoin,flink,uniform,1,1,1,941.402,648292,3e+06,0.216097,36.9279,latency markers (excl. Kafka wait),14.6562
+500000,16,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.0750082,2.13864e+06,3e+06,0.712879,5.36383,record-e2e-latency avg (incl. Kafka wait),55.1354
+500000,16,6J,SixWayJoin,risingwave,uniform,4,1,0,0,8437.35,3e+06,0.00281245,2.5446,barrier in-flight latency,28.7708
+500000,16,6J,SixWayJoin,spark,uniform_e2e_rerun,8,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),0.518017
+500000,16,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,138102,500000,0.276204,1.58559,complete latency (acking),26.8698
+500000,32,Lin,LinearQuery,flink,uniform,1,1,1,433.755,434231,500000,0.868462,0.402968,latency markers (excl. Kafka wait),12.6823
+500000,32,Lin,LinearQuery,kafkastream,uniform,1,1,1,1088.78,455264,500000,0.910527,5.11298,record-e2e-latency avg (incl. Kafka wait),13.474
+500000,32,Lin,LinearQuery,risingwave,uniform,1,1,1,1148.28,10431.7,500000,0.0208633,0.485156,barrier in-flight latency,3.63021
+500000,32,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,919.532,509476,500000,1.01895,10.851,ingestion-to-processing lag (before sink),3.38733
+500000,32,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,3.38983,18165,500000,0.03633,5.05855,complete latency (acking),19.6146
+500000,32,2F,TwoFilters,flink,uniform,1,1,1,432.388,434917,500000,0.869835,0.401541,latency markers (excl. Kafka wait),11.5231
+500000,32,2F,TwoFilters,kafkastream,uniform,1,1,1,518.56,452483,500000,0.904967,9.04546,record-e2e-latency avg (incl. Kafka wait),15.1719
+500000,32,2F,TwoFilters,risingwave,uniform,1,1,1,546.055,9851.22,500000,0.0197024,0.486338,barrier in-flight latency,3.89583
+500000,32,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,464.617,506997,500000,1.01399,10.895,ingestion-to-processing lag (before sink),3.53813
+500000,32,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,2.54237,7206.07,500000,0.0144121,32.1221,complete latency (acking),19.7396
+500000,32,3F,ThreeFilters,flink,uniform,1,1,1,52.6235,432851,500000,0.865702,0.609424,latency markers (excl. Kafka wait),11.625
+500000,32,3F,ThreeFilters,kafkastream,uniform,1,1,1,76.5351,453968,500000,0.907936,8.46423,record-e2e-latency avg (incl. Kafka wait),15.3542
+500000,32,3F,ThreeFilters,risingwave,uniform,1,1,1,215.868,9423.81,500000,0.0188476,0.481359,barrier in-flight latency,4.1875
+500000,32,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,56.6709,510031,500000,1.02006,10.9577,ingestion-to-processing lag (before sink),3.96406
+500000,32,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,5.76271,8950.28,500000,0.0179006,41.6875,complete latency (acking),20.7917
+500000,32,4F,FourFilters,flink,uniform,1,1,1,0.85758,432573,500000,0.865145,0.82467,latency markers (excl. Kafka wait),11.651
+500000,32,4F,FourFilters,kafkastream,uniform,1,1,1,13.756,455210,500000,0.910421,6.04466,record-e2e-latency avg (incl. Kafka wait),15.1094
+500000,32,4F,FourFilters,risingwave,uniform,1,1,1,81.5311,8910.02,500000,0.01782,0.496125,barrier in-flight latency,4.41146
+500000,32,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.952071,509079,500000,1.01816,11.664,ingestion-to-processing lag (before sink),3.72695
+500000,32,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,169.831,47570,500000,0.0951399,1.58412,complete latency (acking),27.9115
+500000,32,2J,TwoWayJoin,flink,uniform,1,1,1,3400.38,867499,1e+06,0.867499,0.815351,latency markers (excl. Kafka wait),16.375
+500000,32,2J,TwoWayJoin,kafkastream,uniform,1,1,1,45.6523,927132,1e+06,0.927132,101.102,record-e2e-latency avg (incl. Kafka wait),27.3958
+500000,32,2J,TwoWayJoin,risingwave,uniform,1,1,1,788.967,18608.3,1e+06,0.0186083,3.69569,barrier in-flight latency,6.71354
+500000,32,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,1275.52,588015,1e+06,0.588015,46.3757,ingestion-to-processing lag (before sink),13.53
+500000,32,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,136.255,170324,500000,0.340647,0.779925,complete latency (acking),52.25
+500000,32,3J,ThreeWayJoin,flink,uniform,1,1,1,14364.6,1.30297e+06,1.5e+06,0.868647,2.43697,latency markers (excl. Kafka wait),21.6875
+500000,32,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,32.8025,1.27505e+06,1.5e+06,0.850032,14.3966,record-e2e-latency avg (incl. Kafka wait),34.0156
+500000,32,3J,ThreeWayJoin,risingwave,uniform,1,1,1,71.1686,706.494,1.5e+06,0.000470996,12.5421,barrier in-flight latency,6.83333
+500000,32,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,602426,1.5e+06,0.401617,,ingestion-to-processing lag (before sink),13.9791
+500000,32,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,145.424,253361,500000,0.506722,0.787148,complete latency (acking),54.6042
+500000,32,4J,FourWayJoin,flink,uniform,1,1,1,48963.2,1.73554e+06,2e+06,0.867769,3.60116,latency markers (excl. Kafka wait),25.4792
+500000,32,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.0885221,1.82985e+06,2e+06,0.914927,116.077,record-e2e-latency avg (incl. Kafka wait),47.0052
+500000,32,4J,FourWayJoin,risingwave,uniform,10,1,0,0,6536.88,2e+06,0.00326844,1.13527,barrier in-flight latency,1.53646
+500000,32,4J,FourWayJoin,spark,uniform_e2e_rerun,10,0,0,0,0,2e+06,0,,ingestion-to-processing lag (before sink),0.574551
+500000,32,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,20.339,185468,500000,0.370936,1.63577,complete latency (acking),35.8073
+500000,32,5J,FiveWayJoin,flink,uniform,1,1,1,84930.1,2.16875e+06,2.5e+06,0.867499,7.26262,latency markers (excl. Kafka wait),41.7292
+500000,32,5J,FiveWayJoin,kafkastream,uniform,1,1,1,1.31105,1.92325e+06,2.5e+06,0.769299,15.1551,record-e2e-latency avg (incl. Kafka wait),56.3698
+500000,32,5J,FiveWayJoin,risingwave,uniform,7,1,0,0,7257.57,2.5e+06,0.00290303,1.13527,barrier in-flight latency,1.625
+500000,32,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,2.5e+06,0,,ingestion-to-processing lag (before sink),0.512729
+500000,32,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,28.4746,229054,500000,0.458108,1.58724,complete latency (acking),38.1302
+500000,32,6J,SixWayJoin,flink,uniform,1,1,1,1566.01,590653,3e+06,0.196884,54.7551,latency markers (excl. Kafka wait),14.8906
+500000,32,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.105253,2.15909e+06,3e+06,0.719698,3.55178,record-e2e-latency avg (incl. Kafka wait),56.8333
+500000,32,6J,SixWayJoin,risingwave,uniform,7,1,1,2.12482,7740.15,3e+06,0.00258005,221.684,barrier in-flight latency,1.60937
+500000,32,6J,SixWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),0.563906
+500000,32,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,14.4068,279837,500000,0.559674,1.57755,complete latency (acking),52.1354
+500000,40,Lin,LinearQuery,flink,uniform,1,1,1,425.848,433757,500000,0.867513,0.348288,latency markers (excl. Kafka wait),12.6458
+500000,40,Lin,LinearQuery,kafkastream,uniform,1,1,1,1188.1,452784,500000,0.905567,4.51132,record-e2e-latency avg (incl. Kafka wait),13.9583
+500000,40,Lin,LinearQuery,risingwave,uniform,1,1,1,1052.04,9571.11,500000,0.0191422,0.473063,barrier in-flight latency,3.64583
+500000,40,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,912.836,508130,500000,1.01626,12.045,ingestion-to-processing lag (before sink),3.81919
+500000,40,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,69.4915,74017.6,500000,0.148035,6.42747,complete latency (acking),36.1458
+500000,40,2F,TwoFilters,flink,uniform,1,1,1,430.256,434224,500000,0.868449,0.357682,latency markers (excl. Kafka wait),11.8021
+500000,40,2F,TwoFilters,kafkastream,uniform,1,1,1,554.95,453193,500000,0.906387,10.1273,record-e2e-latency avg (incl. Kafka wait),15.9219
+500000,40,2F,TwoFilters,risingwave,uniform,1,1,1,332.396,5820.93,500000,0.0116419,0.4995,barrier in-flight latency,3.80729
+500000,40,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,460.42,502008,500000,1.00402,13.1663,ingestion-to-processing lag (before sink),3.82605
+500000,40,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,1.01695,23393.5,500000,0.0467871,41.1542,complete latency (acking),20.4375
+500000,40,3F,ThreeFilters,flink,uniform,1,1,1,52.769,432851,500000,0.865702,,latency markers (excl. Kafka wait),11.6094
+500000,40,3F,ThreeFilters,kafkastream,uniform,1,1,1,112.954,451892,500000,0.903784,7.81299,record-e2e-latency avg (incl. Kafka wait),15.9792
+500000,40,3F,ThreeFilters,risingwave,uniform,1,1,1,212.642,9419,500000,0.018838,0.4995,barrier in-flight latency,4.16667
+500000,40,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,56.1821,500751,500000,1.0015,12.3264,ingestion-to-processing lag (before sink),3.41013
+500000,40,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,48.8136,25825.7,500000,0.0516513,39.3106,complete latency (acking),21.3281
+500000,40,4F,FourFilters,flink,uniform,1,1,1,0.866761,432712,500000,0.865424,0.91865,latency markers (excl. Kafka wait),11.974
+500000,40,4F,FourFilters,kafkastream,uniform,1,1,1,49.2845,453627,500000,0.907255,7.10281,record-e2e-latency avg (incl. Kafka wait),15.8177
+500000,40,4F,FourFilters,risingwave,uniform,1,1,1,74.8716,8968.49,500000,0.017937,0.501188,barrier in-flight latency,4.31771
+500000,40,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.900745,509461,500000,1.01892,12.926,ingestion-to-processing lag (before sink),3.40104
+500000,40,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,144.407,57745.1,500000,0.11549,1.60218,complete latency (acking),29.1042
+500000,40,2J,TwoWayJoin,flink,uniform,1,1,1,3427.13,866649,1e+06,0.866649,0.927074,latency markers (excl. Kafka wait),18.3906
+500000,40,2J,TwoWayJoin,kafkastream,uniform,1,1,1,48.5783,923599,1e+06,0.923599,87.2832,record-e2e-latency avg (incl. Kafka wait),27.7656
+500000,40,2J,TwoWayJoin,risingwave,uniform,1,1,1,983.581,16822.7,1e+06,0.0168227,5.59351,barrier in-flight latency,6.89063
+500000,40,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,1,763.493,567125,1e+06,0.567125,32.6587,ingestion-to-processing lag (before sink),8.72976
+500000,40,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,187.458,204139,500000,0.408278,0.804004,complete latency (acking),52.1562
+500000,40,3J,ThreeWayJoin,flink,uniform,1,1,1,14292.7,1.30394e+06,1.5e+06,0.869295,2.75053,latency markers (excl. Kafka wait),21.7708
+500000,40,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,33.0517,1.32966e+06,1.5e+06,0.886443,14.8829,record-e2e-latency avg (incl. Kafka wait),34.2083
+500000,40,3J,ThreeWayJoin,risingwave,uniform,13,3,2,1.22899,34.7797,1.5e+06,2.31864e-05,7.87128,barrier in-flight latency,7.05208
+500000,40,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,600616,1.5e+06,0.40041,,ingestion-to-processing lag (before sink),16.6445
+500000,40,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,229.831,297655,500000,0.59531,0.830025,complete latency (acking),48.1771
+500000,40,4J,FourWayJoin,flink,uniform,1,1,1,46399.9,1.73554e+06,2e+06,0.867768,3.98469,latency markers (excl. Kafka wait),25.224
+500000,40,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.080316,1.65788e+06,2e+06,0.828941,101.219,record-e2e-latency avg (incl. Kafka wait),45.0885
+500000,40,4J,FourWayJoin,risingwave,uniform,10,1,1,15.7256,6090.01,2e+06,0.003045,0.504563,barrier in-flight latency,1.5625
+500000,40,4J,FourWayJoin,spark,uniform_e2e_rerun,10,0,0,0,0,2e+06,0,,ingestion-to-processing lag (before sink),0.598738
+500000,40,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,57.9661,230253,500000,0.460507,1.57662,complete latency (acking),44.1458
+500000,40,5J,FiveWayJoin,flink,uniform,1,1,1,84873.9,2.16707e+06,2.5e+06,0.866827,10.9677,latency markers (excl. Kafka wait),39.497
+500000,40,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.279109,2.09988e+06,2.5e+06,0.839953,21.9759,record-e2e-latency avg (incl. Kafka wait),56.1667
+500000,40,5J,FiveWayJoin,risingwave,uniform,7,1,0,0,7074.34,2.5e+06,0.00282973,0.504563,barrier in-flight latency,1.59375
+500000,40,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,2.5e+06,0,,ingestion-to-processing lag (before sink),0.512106
+500000,40,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,33.5593,285727,500000,0.571455,1.63519,complete latency (acking),50.0417
+500000,40,6J,SixWayJoin,flink,uniform,1,1,1,1774.77,655125,3e+06,0.218375,28.7792,latency markers (excl. Kafka wait),15.6719
+500000,40,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.150387,2.33964e+06,3e+06,0.779879,15.6057,record-e2e-latency avg (incl. Kafka wait),59.599
+500000,40,6J,SixWayJoin,risingwave,uniform,7,1,0,0,7790.11,3e+06,0.0025967,0.502875,barrier in-flight latency,1.63021
+500000,40,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),0.561719
+500000,40,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,43.7288,348821,500000,0.697643,1.57452,complete latency (acking),59.5625
+1000000,2,Lin,LinearQuery,flink,uniform,1,1,1,434.2,868888,1e+06,0.868888,0.216855,latency markers (excl. Kafka wait),11.4635
+1000000,2,Lin,LinearQuery,kafkastream,uniform,1,1,1,1069.63,650400,1e+06,0.6504,14.2438,record-e2e-latency avg (incl. Kafka wait),12.3073
+1000000,2,Lin,LinearQuery,risingwave,uniform,1,1,1,1146.86,8403.12,1e+06,0.00840312,0.482203,barrier in-flight latency,4.00521
+1000000,2,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,544.911,780850,1e+06,0.78085,42.866,ingestion-to-processing lag (before sink),2.94139
+1000000,2,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,3.38983,27706.6,1e+06,0.0277066,0.76607,complete latency (acking),14.2344
+1000000,2,2F,TwoFilters,flink,uniform,1,1,1,431.27,865424,1e+06,0.865424,0.339438,latency markers (excl. Kafka wait),11.6823
+1000000,2,2F,TwoFilters,kafkastream,uniform,1,1,1,484.11,649420,1e+06,0.64942,21.8887,record-e2e-latency avg (incl. Kafka wait),14.8333
+1000000,2,2F,TwoFilters,risingwave,uniform,1,1,1,543.031,8097.96,1e+06,0.00809796,0.680906,barrier in-flight latency,4.39063
+1000000,2,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,372.038,908624,1e+06,0.908624,35.3806,ingestion-to-processing lag (before sink),1.98689
+1000000,2,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,1.35593,1.25984,1e+06,1.25984e-06,1.42421,complete latency (acking),26.349
+1000000,2,3F,ThreeFilters,flink,uniform,1,1,1,12.7796,866388,1e+06,0.866388,0.565595,latency markers (excl. Kafka wait),11.7604
+1000000,2,3F,ThreeFilters,kafkastream,uniform,1,1,1,39.6037,644652,1e+06,0.644652,19.7782,record-e2e-latency avg (incl. Kafka wait),14.5937
+1000000,2,3F,ThreeFilters,risingwave,uniform,1,1,1,222.931,8368.58,1e+06,0.00836858,2.33223,barrier in-flight latency,4.5625
+1000000,2,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,11.1382,885903,1e+06,0.885903,36.6562,ingestion-to-processing lag (before sink),2.0456
+1000000,2,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,3.55932,2.11921,1e+06,2.11921e-06,16.302,complete latency (acking),25.5052
+1000000,2,4F,FourFilters,flink,uniform,1,1,1,0.00413223,867499,1e+06,0.867499,0.818869,latency markers (excl. Kafka wait),11.7031
+1000000,2,4F,FourFilters,kafkastream,uniform,1,1,1,9.06265,643639,1e+06,0.643639,15.9168,record-e2e-latency avg (incl. Kafka wait),14.875
+1000000,2,4F,FourFilters,risingwave,uniform,1,1,1,77.6806,8011.52,1e+06,0.00801152,0.746719,barrier in-flight latency,4.86979
+1000000,2,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.0066255,894960,1e+06,0.89496,39.063,ingestion-to-processing lag (before sink),1.37691
+1000000,2,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,383.051,2566.06,1e+06,0.00256606,1.74309,complete latency (acking),4.89583
+1000000,2,2J,TwoWayJoin,flink,uniform,1,1,1,3442.34,1.73124e+06,2e+06,0.865621,0.583024,latency markers (excl. Kafka wait),16.6823
+1000000,2,2J,TwoWayJoin,kafkastream,uniform,1,1,1,41.7473,1.01227e+06,2e+06,0.506133,122.589,record-e2e-latency avg (incl. Kafka wait),21.4271
+1000000,2,2J,TwoWayJoin,risingwave,uniform,1,1,1,868.487,6961.15,2e+06,0.00348058,12.38,barrier in-flight latency,7.24479
+1000000,2,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,526829,2e+06,0.263414,,ingestion-to-processing lag (before sink),5.53806
+1000000,2,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,9812.03,1e+06,0.00981203,0.874024,complete latency (acking),5.5
+1000000,2,3J,ThreeWayJoin,flink,uniform,1,1,1,8705.57,2.08726e+06,3e+06,0.695754,,latency markers (excl. Kafka wait),18.4965
+1000000,2,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,2.1022,1.63996e+06,3e+06,0.546652,30.5814,record-e2e-latency avg (incl. Kafka wait),21.8385
+1000000,2,3J,ThreeWayJoin,risingwave,uniform,4,1,1,182.775,951.316,3e+06,0.000317105,65.4253,barrier in-flight latency,9.42188
+1000000,2,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,0,0,0,0,3e+06,0,,ingestion-to-processing lag (before sink),7.18751
+1000000,2,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.334147,14754.6,1e+06,0.0147546,0.871781,complete latency (acking),6.19271
+1000000,2,4J,FourWayJoin,flink,uniform,1,1,1,1594.5,1.14828e+06,4e+06,0.287069,8.73737,latency markers (excl. Kafka wait),21.8542
+1000000,2,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.039394,1.30362e+06,4e+06,0.325904,51.3699,record-e2e-latency avg (incl. Kafka wait),24.7083
+1000000,2,4J,FourWayJoin,risingwave,uniform,7,1,1,8.3194,579.465,4e+06,0.000144866,19.3554,barrier in-flight latency,14.0729
+1000000,2,4J,FourWayJoin,spark,uniform_e2e_rerun,10,0,0,0,0,4e+06,0,,ingestion-to-processing lag (before sink),0.560431
+1000000,2,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,10190.8,1e+06,0.0101908,1.74221,complete latency (acking),5.25
+1000000,2,5J,FiveWayJoin,flink,uniform,1,1,1,1896.6,1.33702e+06,5e+06,0.267405,17.4311,latency markers (excl. Kafka wait),23.6615
+1000000,2,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.624611,1.65067e+06,5e+06,0.330134,33.3396,record-e2e-latency avg (incl. Kafka wait),26.9687
+1000000,2,5J,FiveWayJoin,risingwave,uniform,4,1,1,3.54821,528.362,5e+06,0.000105672,19.3569,barrier in-flight latency,13.7031
+1000000,2,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,5e+06,0,,ingestion-to-processing lag (before sink),0.522308
+1000000,2,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,12702.8,1e+06,0.0127028,1.73884,complete latency (acking),5.75
+1000000,2,6J,SixWayJoin,flink,uniform,1,1,1,7320.67,1.85707e+06,6e+06,0.309511,31.4181,latency markers (excl. Kafka wait),26.8646
+1000000,2,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.00409535,1.66433e+06,6e+06,0.277388,23.5117,record-e2e-latency avg (incl. Kafka wait),28.7656
+1000000,2,6J,SixWayJoin,risingwave,uniform,4,1,0,0,615.084,6e+06,0.000102514,19.3507,barrier in-flight latency,15.6458
+1000000,2,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,6e+06,0,,ingestion-to-processing lag (before sink),0.480414
+1000000,2,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,15295,1e+06,0.015295,1.73671,complete latency (acking),6.29167
+1000000,4,Lin,LinearQuery,flink,uniform,1,1,1,431.969,865702,1e+06,0.865702,0.183398,latency markers (excl. Kafka wait),11.8958
+1000000,4,Lin,LinearQuery,kafkastream,uniform,1,1,1,1409.8,705669,1e+06,0.705669,25.5867,record-e2e-latency avg (incl. Kafka wait),13.4531
+1000000,4,Lin,LinearQuery,risingwave,uniform,1,1,1,1140.97,9192.59,1e+06,0.00919259,0.502875,barrier in-flight latency,4.125
+1000000,4,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,547.961,783466,1e+06,0.783466,42.482,ingestion-to-processing lag (before sink),2.46506
+1000000,4,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,10.8475,17218.4,1e+06,0.0172184,1.23626,complete latency (acking),20.9427
+1000000,4,2F,TwoFilters,flink,uniform,1,1,1,432.227,865702,1e+06,0.865702,0.368254,latency markers (excl. Kafka wait),11.5729
+1000000,4,2F,TwoFilters,kafkastream,uniform,1,1,1,432.583,691783,1e+06,0.691783,36.4244,record-e2e-latency avg (incl. Kafka wait),15.2292
+1000000,4,2F,TwoFilters,risingwave,uniform,1,1,1,545.78,8735.09,1e+06,0.00873509,0.501188,barrier in-flight latency,4.40625
+1000000,4,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,381.523,901283,1e+06,0.901283,33.7499,ingestion-to-processing lag (before sink),3.27874
+1000000,4,2F,TwoFilters,storm,distributed_fixed_exporter_fix,3,3,3,0.338983,360.106,1e+06,0.000360106,1.61841,complete latency (acking),32.8073
+1000000,4,3F,ThreeFilters,flink,uniform,1,1,1,13.1635,869835,1e+06,0.869835,0.443826,latency markers (excl. Kafka wait),11.6146
+1000000,4,3F,ThreeFilters,kafkastream,uniform,1,1,1,28.7806,702970,1e+06,0.70297,37.4071,record-e2e-latency avg (incl. Kafka wait),14.8438
+1000000,4,3F,ThreeFilters,risingwave,uniform,1,1,1,211.502,8031.51,1e+06,0.00803151,0.70875,barrier in-flight latency,4.69271
+1000000,4,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,10.8385,910278,1e+06,0.910278,32.1002,ingestion-to-processing lag (before sink),2.85881
+1000000,4,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,2,2,2,221.695,2941.38,1e+06,0.00294138,1.61657,complete latency (acking),7.32292
+1000000,4,4F,FourFilters,flink,uniform,1,1,1,0.00823045,866255,1e+06,0.866255,0.805733,latency markers (excl. Kafka wait),11.6771
+1000000,4,4F,FourFilters,kafkastream,uniform,1,1,1,1.95758,679305,1e+06,0.679305,36.3668,record-e2e-latency avg (incl. Kafka wait),15.0104
+1000000,4,4F,FourFilters,risingwave,uniform,1,1,1,73.6467,8003.62,1e+06,0.00800362,0.502875,barrier in-flight latency,4.95313
+1000000,4,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,1.2173,898473,1e+06,0.898473,22.668,ingestion-to-processing lag (before sink),3.29355
+1000000,4,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,377.966,5862.33,1e+06,0.00586233,1.61773,complete latency (acking),7.19271
+1000000,4,2J,TwoWayJoin,flink,uniform,1,1,1,3460.93,1.73399e+06,2e+06,0.866995,1.26795,latency markers (excl. Kafka wait),20.1302
+1000000,4,2J,TwoWayJoin,kafkastream,uniform,1,1,1,28.4557,1.35666e+06,2e+06,0.678328,113.645,record-e2e-latency avg (incl. Kafka wait),23.1667
+1000000,4,2J,TwoWayJoin,risingwave,uniform,1,1,1,755.323,9903.75,2e+06,0.00495188,12.225,barrier in-flight latency,7.33333
+1000000,4,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,717927,2e+06,0.358963,,ingestion-to-processing lag (before sink),15.9082
+1000000,4,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,20299.2,1e+06,0.0202992,0.835993,complete latency (acking),8.19271
+1000000,4,3J,ThreeWayJoin,flink,uniform,1,1,1,5050.57,1.80668e+06,3e+06,0.602228,7.45545,latency markers (excl. Kafka wait),20.3906
+1000000,4,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,3.42546,1.71328e+06,3e+06,0.571092,15.1344,record-e2e-latency avg (incl. Kafka wait),28.7031
+1000000,4,3J,ThreeWayJoin,risingwave,uniform,6,1,1,105.182,1511.72,3e+06,0.000503908,147.023,barrier in-flight latency,8.41667
+1000000,4,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,712406,3e+06,0.237469,,ingestion-to-processing lag (before sink),9.29005
+1000000,4,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,31691.1,1e+06,0.0316911,0.810123,complete latency (acking),10.1719
+1000000,4,4J,FourWayJoin,flink,uniform,1,1,1,12795.7,2.16184e+06,4e+06,0.54046,6.78603,latency markers (excl. Kafka wait),28.0253
+1000000,4,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.00139939,1.67727e+06,4e+06,0.419317,47.1107,record-e2e-latency avg (incl. Kafka wait),37.9948
+1000000,4,4J,FourWayJoin,risingwave,uniform,7,1,0,0,1278.38,4e+06,0.000319595,12.6935,barrier in-flight latency,16.25
+1000000,4,4J,FourWayJoin,spark,uniform_e2e_rerun,10,0,0,0,0,4e+06,0,,ingestion-to-processing lag (before sink),0.616408
+1000000,4,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,22720.2,1e+06,0.0227202,1.655,complete latency (acking),8.03646
+1000000,4,5J,FiveWayJoin,flink,uniform,1,1,1,3123.42,1.47177e+06,5e+06,0.294354,17.824,latency markers (excl. Kafka wait),24.8073
+1000000,4,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.0654873,1.87058e+06,5e+06,0.374116,26.7003,record-e2e-latency avg (incl. Kafka wait),37.0052
+1000000,4,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,1511.5,5e+06,0.0003023,12.6863,barrier in-flight latency,17.7083
+1000000,4,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,5e+06,0,,ingestion-to-processing lag (before sink),0.514412
+1000000,4,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,29404.6,1e+06,0.0294046,1.60775,complete latency (acking),9.64063
+1000000,4,6J,SixWayJoin,flink,uniform,1,1,1,4942.38,1.89977e+06,6e+06,0.316629,25.2972,latency markers (excl. Kafka wait),27.1146
+1000000,4,6J,SixWayJoin,kafkastream,uniform,1,1,0,0,2.01378e+06,6e+06,0.335631,13.1879,record-e2e-latency avg (incl. Kafka wait),38.5573
+1000000,4,6J,SixWayJoin,risingwave,uniform,5,1,0,0,1660.75,6e+06,0.000276791,12.7334,barrier in-flight latency,19.2917
+1000000,4,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,6e+06,0,,ingestion-to-processing lag (before sink),0.507455
+1000000,4,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,34237.3,1e+06,0.0342373,1.61071,complete latency (acking),10.5104
+1000000,8,Lin,LinearQuery,flink,uniform,1,1,1,432.601,869478,1e+06,0.869478,0.273094,latency markers (excl. Kafka wait),12.8229
+1000000,8,Lin,LinearQuery,kafkastream,uniform,1,1,1,920.248,525686,1e+06,0.525686,9.11526,record-e2e-latency avg (incl. Kafka wait),12.7917
+1000000,8,Lin,LinearQuery,risingwave,uniform,1,1,1,1152.9,9838.4,1e+06,0.0098384,0.501188,barrier in-flight latency,4.10326
+1000000,8,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,568.045,783888,1e+06,0.783888,38.368,ingestion-to-processing lag (before sink),2.44768
+1000000,8,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,25.7627,5207.82,1e+06,0.00520782,2.49447,complete latency (acking),6.24479
+1000000,8,2F,TwoFilters,flink,uniform,1,1,1,433.149,865702,1e+06,0.865702,0.30612,latency markers (excl. Kafka wait),11.9844
+1000000,8,2F,TwoFilters,kafkastream,uniform,1,1,1,456.946,679630,1e+06,0.67963,32.8448,record-e2e-latency avg (incl. Kafka wait),14.9792
+1000000,8,2F,TwoFilters,risingwave,uniform,1,1,1,537.984,9150.72,1e+06,0.00915072,0.494438,barrier in-flight latency,4.36458
+1000000,8,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,381.491,891438,1e+06,0.891438,33.2262,ingestion-to-processing lag (before sink),1.45878
+1000000,8,2F,TwoFilters,storm,distributed_fixed_exporter_fix,2,2,2,2.71186,492.46,1e+06,0.00049246,24.5299,complete latency (acking),17.8073
+1000000,8,3F,ThreeFilters,flink,uniform,1,1,1,12.5042,865702,1e+06,0.865702,0.509856,latency markers (excl. Kafka wait),11.9896
+1000000,8,3F,ThreeFilters,kafkastream,uniform,1,1,1,29.9758,674464,1e+06,0.674464,34.5942,record-e2e-latency avg (incl. Kafka wait),15.099
+1000000,8,3F,ThreeFilters,risingwave,uniform,1,1,1,218.783,8696.96,1e+06,0.00869696,0.491063,barrier in-flight latency,4.59896
+1000000,8,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,11.0589,884003,1e+06,0.884003,34.254,ingestion-to-processing lag (before sink),2.91077
+1000000,8,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,0.677966,0.39267,1e+06,3.9267e-07,6.36971,complete latency (acking),56.1771
+1000000,8,4F,FourFilters,flink,uniform,1,1,1,0.036157,869835,1e+06,0.869835,0.79689,latency markers (excl. Kafka wait),11.776
+1000000,8,4F,FourFilters,kafkastream,uniform,1,1,1,1.12984,695903,1e+06,0.695903,26.7376,record-e2e-latency avg (incl. Kafka wait),15.599
+1000000,8,4F,FourFilters,risingwave,uniform,1,1,1,36.835,5518.3,1e+06,0.0055183,0.497813,barrier in-flight latency,4.76042
+1000000,8,4F,FourFilters,spark,uniform_e2e_rerun,1,1,0,0,870839,1e+06,0.870839,,ingestion-to-processing lag (before sink),2.45041
+1000000,8,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,321.017,12054.4,1e+06,0.0120544,1.58181,complete latency (acking),10.3281
+1000000,8,2J,TwoWayJoin,flink,uniform,1,1,1,3457.11,1.7397e+06,2e+06,0.86985,0.996112,latency markers (excl. Kafka wait),20.0781
+1000000,8,2J,TwoWayJoin,kafkastream,uniform,1,1,1,32.8733,1.25459e+06,2e+06,0.627293,101.69,record-e2e-latency avg (incl. Kafka wait),25.474
+1000000,8,2J,TwoWayJoin,risingwave,uniform,1,1,1,782.878,11712.8,2e+06,0.00585639,17.8077,barrier in-flight latency,7.36458
+1000000,8,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,659544,2e+06,0.329772,,ingestion-to-processing lag (before sink),9.34901
+1000000,8,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,2.37288,43504.1,1e+06,0.0435041,0.788231,complete latency (acking),14.1198
+1000000,8,3J,ThreeWayJoin,flink,uniform,1,1,1,16530.4,2.6014e+06,3e+06,0.867135,,latency markers (excl. Kafka wait),25.6563
+1000000,8,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,17.4301,1.68722e+06,3e+06,0.562405,20.4042,record-e2e-latency avg (incl. Kafka wait),35.026
+1000000,8,3J,ThreeWayJoin,risingwave,uniform,10,1,1,21.6552,3974.78,3e+06,0.00132493,43.6434,barrier in-flight latency,16.6615
+1000000,8,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,727593,3e+06,0.242531,,ingestion-to-processing lag (before sink),10.7674
+1000000,8,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,65432,1e+06,0.065432,0.791911,complete latency (acking),17.5104
+1000000,8,4J,FourWayJoin,flink,uniform,1,1,1,3057.98,1.70682e+06,4e+06,0.426706,8.85359,latency markers (excl. Kafka wait),23.0469
+1000000,8,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.109952,1.8278e+06,4e+06,0.456949,256.978,record-e2e-latency avg (incl. Kafka wait),45.1979
+1000000,8,4J,FourWayJoin,risingwave,uniform,7,1,0,0,2586.71,4e+06,0.000646677,5.70768,barrier in-flight latency,19.0521
+1000000,8,4J,FourWayJoin,spark,uniform_e2e_rerun,10,0,0,0,0,4e+06,0,,ingestion-to-processing lag (before sink),0.552396
+1000000,8,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,47241,1e+06,0.047241,1.58283,complete latency (acking),13.8073
+1000000,8,5J,FiveWayJoin,flink,uniform,1,1,1,20309.1,2.47357e+06,5e+06,0.494713,13.5199,latency markers (excl. Kafka wait),34.0937
+1000000,8,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.0783628,1.93337e+06,5e+06,0.386673,20.8737,record-e2e-latency avg (incl. Kafka wait),45.0025
+1000000,8,5J,FiveWayJoin,risingwave,uniform,4,1,0,0,2951,5e+06,0.000590199,5.70243,barrier in-flight latency,20.3125
+1000000,8,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,5e+06,0,,ingestion-to-processing lag (before sink),0.468908
+1000000,8,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,58418.8,1e+06,0.0584188,1.59686,complete latency (acking),16.3437
+1000000,8,6J,SixWayJoin,flink,uniform,1,1,1,2076.88,1.587e+06,6e+06,0.2645,18.926,latency markers (excl. Kafka wait),19.7969
+1000000,8,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.0825614,2.16098e+06,6e+06,0.360164,20.1279,record-e2e-latency avg (incl. Kafka wait),52.375
+1000000,8,6J,SixWayJoin,risingwave,uniform,4,1,0,0,3482.83,6e+06,0.000580472,5.70878,barrier in-flight latency,21.8594
+1000000,8,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,6e+06,0,,ingestion-to-processing lag (before sink),0.49509
+1000000,8,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,71427.7,1e+06,0.0714277,1.57577,complete latency (acking),18.3854
+1000000,16,Lin,LinearQuery,flink,uniform,1,0,0,0,0,1e+06,0,,latency markers (excl. Kafka wait),11.8229
+1000000,16,Lin,LinearQuery,kafkastream,uniform,3,1,1,463.086,292215,1e+06,0.292215,18.8814,record-e2e-latency avg (incl. Kafka wait),8.00521
+1000000,16,Lin,LinearQuery,risingwave,uniform,1,1,1,732.099,6482.03,1e+06,0.00648203,0.477563,barrier in-flight latency,4.02604
+1000000,16,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,540.779,770925,1e+06,0.770925,40.481,ingestion-to-processing lag (before sink),3.05457
+1000000,16,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,74.5763,8873.72,1e+06,0.00887372,3.69667,complete latency (acking),19.3229
+1000000,16,2F,TwoFilters,flink,uniform,1,0,1,418.06,0,1e+06,0,,latency markers (excl. Kafka wait),11.8958
+1000000,16,2F,TwoFilters,kafkastream,uniform,1,1,1,416.266,658956,1e+06,0.658956,22.4363,record-e2e-latency avg (incl. Kafka wait),15.6927
+1000000,16,2F,TwoFilters,risingwave,uniform,1,1,1,549.178,9678.33,1e+06,0.00967833,0.50188,barrier in-flight latency,4.35938
+1000000,16,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,362.575,876701,1e+06,0.876701,35.3981,ingestion-to-processing lag (before sink),3.12527
+1000000,16,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,13.2203,1039.74,1e+06,0.00103974,2.94592,complete latency (acking),18.2135
+1000000,16,3F,ThreeFilters,flink,uniform,1,1,1,12.4969,867547,1e+06,0.867547,0.536589,latency markers (excl. Kafka wait),12.6042
+1000000,16,3F,ThreeFilters,kafkastream,uniform,1,1,1,27.8184,683703,1e+06,0.683703,32.6404,record-e2e-latency avg (incl. Kafka wait),15.5208
+1000000,16,3F,ThreeFilters,risingwave,uniform,1,1,1,228.859,9197.22,1e+06,0.00919722,0.486338,barrier in-flight latency,4.73958
+1000000,16,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,10.7091,860369,1e+06,0.860369,36.5138,ingestion-to-processing lag (before sink),3.05622
+1000000,16,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,1.18644,1743.86,1e+06,0.00174386,23.2175,complete latency (acking),19.4115
+1000000,16,4F,FourFilters,flink,uniform,1,1,1,0.0095783,869789,1e+06,0.869789,0.742341,latency markers (excl. Kafka wait),12.7917
+1000000,16,4F,FourFilters,kafkastream,uniform,1,1,1,7.94891,676475,1e+06,0.676475,23.8071,record-e2e-latency avg (incl. Kafka wait),15.9792
+1000000,16,4F,FourFilters,risingwave,uniform,1,1,1,58.8775,8786.78,1e+06,0.00878678,1.69151,barrier in-flight latency,4.92188
+1000000,16,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.779799,856444,1e+06,0.856444,26.89,ingestion-to-processing lag (before sink),2.73784
+1000000,16,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,250.508,23991.4,1e+06,0.0239914,1.57629,complete latency (acking),16.1823
+1000000,16,2J,TwoWayJoin,flink,uniform,1,1,1,3436.02,1.73856e+06,2e+06,0.86928,0.877092,latency markers (excl. Kafka wait),18.6406
+1000000,16,2J,TwoWayJoin,kafkastream,uniform,1,1,1,40.2829,1.24046e+06,2e+06,0.620228,91.4716,record-e2e-latency avg (incl. Kafka wait),27.3698
+1000000,16,2J,TwoWayJoin,risingwave,uniform,1,1,1,456.464,18677.6,2e+06,0.00933878,2.55435,barrier in-flight latency,7.47917
+1000000,16,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,626449,2e+06,0.313224,,ingestion-to-processing lag (before sink),8.38824
+1000000,16,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,7.45763,83767.1,1e+06,0.0837671,0.79998,complete latency (acking),20.849
+1000000,16,3J,ThreeWayJoin,flink,uniform,1,1,1,16269.5,2.6025e+06,3e+06,0.867499,2.42876,latency markers (excl. Kafka wait),24.4479
+1000000,16,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,25.2525,1.63366e+06,3e+06,0.544553,16.7227,record-e2e-latency avg (incl. Kafka wait),35.2031
+1000000,16,3J,ThreeWayJoin,risingwave,uniform,10,1,1,8.67297,10575.6,3e+06,0.0035252,19.3971,barrier in-flight latency,29.375
+1000000,16,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,707483,3e+06,0.235828,,ingestion-to-processing lag (before sink),10.188
+1000000,16,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,2.37288,123608,1e+06,0.123608,0.809471,complete latency (acking),26.0573
+1000000,16,4J,FourWayJoin,flink,uniform,1,1,1,23725.1,3.10773e+06,4e+06,0.776932,6.784,latency markers (excl. Kafka wait),33.776
+1000000,16,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.112658,1.9451e+06,4e+06,0.486276,265.895,record-e2e-latency avg (incl. Kafka wait),47.5417
+1000000,16,4J,FourWayJoin,risingwave,uniform,5,1,0,0,7821.7,4e+06,0.00195543,2.54368,barrier in-flight latency,1.60938
+1000000,16,4J,FourWayJoin,spark,uniform_e2e_rerun,7,0,0,0,0,4e+06,0,,ingestion-to-processing lag (before sink),12.9457
+1000000,16,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,95160.2,1e+06,0.0951602,1.57304,complete latency (acking),22.9062
+1000000,16,5J,FiveWayJoin,flink,uniform,1,1,1,20903.1,3.16779e+06,5e+06,0.633558,,latency markers (excl. Kafka wait),33.0365
+1000000,16,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.373642,1.97297e+06,5e+06,0.394595,20.8293,record-e2e-latency avg (incl. Kafka wait),52.224
+1000000,16,5J,FiveWayJoin,risingwave,uniform,7,1,0,0,8020.57,5e+06,0.00160411,2.54438,barrier in-flight latency,1.53125
+1000000,16,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,5e+06,0,,ingestion-to-processing lag (before sink),0.547053
+1000000,16,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,116883,1e+06,0.116883,1.62925,complete latency (acking),22.2865
+1000000,16,6J,SixWayJoin,flink,uniform,1,1,1,1348.5,2.22743e+06,6e+06,0.371239,21.2759,latency markers (excl. Kafka wait),22.3177
+1000000,16,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.161227,2.04238e+06,6e+06,0.340397,8.78581,record-e2e-latency avg (incl. Kafka wait),55.4375
+1000000,16,6J,SixWayJoin,risingwave,uniform,7,1,1,7.71731,8517.78,6e+06,0.00141963,2.5446,barrier in-flight latency,1.65625
+1000000,16,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,6e+06,0,,ingestion-to-processing lag (before sink),0.536225
+1000000,16,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,0,0,140929,1e+06,0.140929,1.60161,complete latency (acking),25.8021
+1000000,32,Lin,LinearQuery,flink,uniform,1,1,1,436.119,867499,1e+06,0.867499,0.359157,latency markers (excl. Kafka wait),14.0417
+1000000,32,Lin,LinearQuery,kafkastream,uniform,1,1,1,916.321,675304,1e+06,0.675304,1.05299,record-e2e-latency avg (incl. Kafka wait),15.1615
+1000000,32,Lin,LinearQuery,risingwave,uniform,1,1,1,1148.31,10381.5,1e+06,0.0103815,0.489656,barrier in-flight latency,4.11458
+1000000,32,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,502.683,744906,1e+06,0.744906,44.969,ingestion-to-processing lag (before sink),3.55844
+1000000,32,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,3.38983,20285.1,1e+06,0.0202851,6.87519,complete latency (acking),19.5938
+1000000,32,2F,TwoFilters,flink,uniform,1,1,1,428.494,865145,1e+06,0.865145,0.278047,latency markers (excl. Kafka wait),12.9792
+1000000,32,2F,TwoFilters,kafkastream,uniform,1,1,1,386.003,675450,1e+06,0.67545,33.7839,record-e2e-latency avg (incl. Kafka wait),16.7812
+1000000,32,2F,TwoFilters,risingwave,uniform,1,1,1,173.915,2987.18,1e+06,0.00298718,0.494438,barrier in-flight latency,4.24479
+1000000,32,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,327.97,847883,1e+06,0.847883,40.7024,ingestion-to-processing lag (before sink),2.75626
+1000000,32,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,19.1525,6719.02,1e+06,0.00671902,16.0185,complete latency (acking),41.7656
+1000000,32,3F,ThreeFilters,flink,uniform,1,1,1,12.2041,867499,1e+06,0.867499,0.620975,latency markers (excl. Kafka wait),13.0365
+1000000,32,3F,ThreeFilters,kafkastream,uniform,1,1,1,30.577,693223,1e+06,0.693223,30.0703,record-e2e-latency avg (incl. Kafka wait),16.7865
+1000000,32,3F,ThreeFilters,risingwave,uniform,1,1,1,192.21,9337.49,1e+06,0.00933749,0.504563,barrier in-flight latency,4.92708
+1000000,32,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,9.86043,815245,1e+06,0.815245,36.1216,ingestion-to-processing lag (before sink),3.24625
+1000000,32,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,1.35593,8724.72,1e+06,0.00872472,41.889,complete latency (acking),20.7188
+1000000,32,4F,FourFilters,flink,uniform,1,1,0,0,867499,1e+06,0.867499,0.670888,latency markers (excl. Kafka wait),12.8281
+1000000,32,4F,FourFilters,kafkastream,uniform,1,1,1,9.12478,678428,1e+06,0.678428,40.1393,record-e2e-latency avg (incl. Kafka wait),16.901
+1000000,32,4F,FourFilters,risingwave,uniform,1,1,1,95.3705,8964.92,1e+06,0.00896492,1.4637,barrier in-flight latency,4.90625
+1000000,32,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.341947,818154,1e+06,0.818154,21.2127,ingestion-to-processing lag (before sink),2.76961
+1000000,32,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,167.797,48125,1e+06,0.048125,1.57097,complete latency (acking),29.901
+1000000,32,2J,TwoWayJoin,flink,uniform,1,1,1,3427.63,1.7314e+06,2e+06,0.865702,0.903967,latency markers (excl. Kafka wait),21.7917
+1000000,32,2J,TwoWayJoin,kafkastream,uniform,1,1,1,44.3852,1.2216e+06,2e+06,0.6108,107.964,record-e2e-latency avg (incl. Kafka wait),28.5469
+1000000,32,2J,TwoWayJoin,risingwave,uniform,1,1,1,743.797,12540.4,2e+06,0.00627022,3.69056,barrier in-flight latency,7.30729
+1000000,32,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,726612,2e+06,0.363306,,ingestion-to-processing lag (before sink),13.238
+1000000,32,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,32.5424,169941,1e+06,0.169941,0.78536,complete latency (acking),49.2604
+1000000,32,3J,ThreeWayJoin,flink,uniform,1,1,1,16507.3,2.60612e+06,3e+06,0.868706,,latency markers (excl. Kafka wait),28.3021
+1000000,32,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,15.2876,1.65637e+06,3e+06,0.552125,15.2465,record-e2e-latency avg (incl. Kafka wait),35.9167
+1000000,32,3J,ThreeWayJoin,risingwave,uniform,19,1,1,35.1295,27543.3,3e+06,0.00918112,4.13287,barrier in-flight latency,1.45833
+1000000,32,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,729430,3e+06,0.243143,,ingestion-to-processing lag (before sink),10.1642
+1000000,32,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,18.3051,249962,1e+06,0.249962,0.787204,complete latency (acking),50.3958
+1000000,32,4J,FourWayJoin,flink,uniform,1,1,1,52552.7,3.21313e+06,4e+06,0.803283,5.63866,latency markers (excl. Kafka wait),42.7292
+1000000,32,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.0330474,1.98111e+06,4e+06,0.495278,68.3563,record-e2e-latency avg (incl. Kafka wait),47.4896
+1000000,32,4J,FourWayJoin,risingwave,uniform,7,1,0,0,5774.99,4e+06,0.00144375,1.13527,barrier in-flight latency,1.52083
+1000000,32,4J,FourWayJoin,spark,uniform_e2e_rerun,7,0,0,0,0,4e+06,0,,ingestion-to-processing lag (before sink),6.82856
+1000000,32,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,1.35593,185281,1e+06,0.185281,1.57476,complete latency (acking),36.5521
+1000000,32,5J,FiveWayJoin,flink,uniform,1,1,1,18555.9,3.34994e+06,5e+06,0.669987,10.6192,latency markers (excl. Kafka wait),32.1566
+1000000,32,5J,FiveWayJoin,kafkastream,uniform,1,1,1,2.1055,2.03382e+06,5e+06,0.406763,14.3769,record-e2e-latency avg (incl. Kafka wait),56.3594
+1000000,32,5J,FiveWayJoin,risingwave,uniform,7,1,0,0,6915.86,5e+06,0.00138317,1.13527,barrier in-flight latency,1.56771
+1000000,32,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,5e+06,0,,ingestion-to-processing lag (before sink),0.517923
+1000000,32,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,1.01695,230795,1e+06,0.230795,1.59059,complete latency (acking),43.5625
+1000000,32,6J,SixWayJoin,flink,uniform,1,1,1,1962.23,1.50455e+06,6e+06,0.250758,20.7851,latency markers (excl. Kafka wait),18.4635
+1000000,32,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.0972077,2.29716e+06,6e+06,0.38286,8.62078,record-e2e-latency avg (incl. Kafka wait),59.9673
+1000000,32,6J,SixWayJoin,risingwave,uniform,7,1,1,1.61279,7891,6e+06,0.00131517,1.13527,barrier in-flight latency,0.578125
+1000000,32,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,6e+06,0,,ingestion-to-processing lag (before sink),0.529351
+1000000,32,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,0.338983,271464,1e+06,0.271464,1.59551,complete latency (acking),46.849
+1000000,40,Lin,LinearQuery,flink,uniform,1,1,1,428.824,865899,1e+06,0.865899,0.352509,latency markers (excl. Kafka wait),14.2708
+1000000,40,Lin,LinearQuery,kafkastream,uniform,1,1,1,1070.26,702902,1e+06,0.702902,5.0894,record-e2e-latency avg (incl. Kafka wait),15.6667
+1000000,40,Lin,LinearQuery,risingwave,uniform,1,1,1,985.552,8791.41,1e+06,0.00879141,0.502875,barrier in-flight latency,4.10938
+1000000,40,Lin,LinearQuery,spark,uniform_e2e_rerun,1,1,1,471.275,725142,1e+06,0.725142,35.39,ingestion-to-processing lag (before sink),3.46791
+1000000,40,Lin,LinearQuery,storm,distributed_fixed_exporter_fix,1,1,1,64.0678,71290.5,1e+06,0.0712905,5.02184,complete latency (acking),28.3073
+1000000,40,2F,TwoFilters,flink,uniform,1,1,1,433.353,865702,1e+06,0.865702,0.324906,latency markers (excl. Kafka wait),12.9115
+1000000,40,2F,TwoFilters,kafkastream,uniform,1,1,1,383.784,691731,1e+06,0.691731,25.9441,record-e2e-latency avg (incl. Kafka wait),17.3594
+1000000,40,2F,TwoFilters,risingwave,uniform,1,1,1,555.713,9726.48,1e+06,0.00972648,0.4995,barrier in-flight latency,4.39063
+1000000,40,2F,TwoFilters,spark,uniform_e2e_rerun,1,1,1,310.258,806192,1e+06,0.806192,37.9789,ingestion-to-processing lag (before sink),2.54069
+1000000,40,2F,TwoFilters,storm,distributed_fixed_exporter_fix,1,1,1,4.40678,10105.9,1e+06,0.0101059,9.03251,complete latency (acking),54.6406
+1000000,40,3F,ThreeFilters,flink,uniform,1,1,1,11.6985,865702,1e+06,0.865702,0.596412,latency markers (excl. Kafka wait),12.7656
+1000000,40,3F,ThreeFilters,kafkastream,uniform,1,1,1,57.1709,683716,1e+06,0.683716,30.3798,record-e2e-latency avg (incl. Kafka wait),17.6198
+1000000,40,3F,ThreeFilters,risingwave,uniform,1,1,1,240.445,9408.34,1e+06,0.00940834,0.504563,barrier in-flight latency,4.75
+1000000,40,3F,ThreeFilters,spark,uniform_e2e_rerun,1,1,1,8.62059,820049,1e+06,0.820049,37.5133,ingestion-to-processing lag (before sink),2.18896
+1000000,40,3F,ThreeFilters,storm,distributed_fixed_exporter_fix,1,1,1,0.677966,22813.2,1e+06,0.0228132,45.9144,complete latency (acking),21.0052
+1000000,40,4F,FourFilters,flink,uniform,1,1,0,0,867499,1e+06,0.867499,0.916595,latency markers (excl. Kafka wait),13.1563
+1000000,40,4F,FourFilters,kafkastream,uniform,1,1,1,33.3505,686489,1e+06,0.686489,31.3259,record-e2e-latency avg (incl. Kafka wait),17.4323
+1000000,40,4F,FourFilters,risingwave,uniform,1,1,1,70.5947,8906.01,1e+06,0.00890601,1.42952,barrier in-flight latency,4.86979
+1000000,40,4F,FourFilters,spark,uniform_e2e_rerun,1,1,1,0.024497,824978,1e+06,0.824978,23.137,ingestion-to-processing lag (before sink),1.7548
+1000000,40,4F,FourFilters,storm,distributed_fixed_exporter_fix,1,1,1,140.346,59540.6,1e+06,0.0595406,1.5885,complete latency (acking),33.8958
+1000000,40,2J,TwoWayJoin,flink,uniform,1,1,1,3385.1,1.7314e+06,2e+06,0.865702,0.80127,latency markers (excl. Kafka wait),22.099
+1000000,40,2J,TwoWayJoin,kafkastream,uniform,1,1,1,40.0805,1.24624e+06,2e+06,0.62312,99.0916,record-e2e-latency avg (incl. Kafka wait),29.4219
+1000000,40,2J,TwoWayJoin,risingwave,uniform,1,1,1,1085.06,18432.6,2e+06,0.00921628,5.21869,barrier in-flight latency,7.50521
+1000000,40,2J,TwoWayJoin,spark,uniform_e2e_rerun,1,1,0,0,706443,2e+06,0.353222,,ingestion-to-processing lag (before sink),9.87838
+1000000,40,2J,TwoWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,50.1695,209376,1e+06,0.209376,0.795899,complete latency (acking),52.4427
+1000000,40,3J,ThreeWayJoin,flink,uniform,1,1,1,16705.9,2.60897e+06,3e+06,0.869657,2.43035,latency markers (excl. Kafka wait),29.8073
+1000000,40,3J,ThreeWayJoin,kafkastream,uniform,1,1,1,19.9302,1.66819e+06,3e+06,0.556062,18.1214,record-e2e-latency avg (incl. Kafka wait),37.8021
+1000000,40,3J,ThreeWayJoin,risingwave,uniform,13,1,1,3.74488,7229.1,3e+06,0.0024097,1.59746,barrier in-flight latency,0.46875
+1000000,40,3J,ThreeWayJoin,spark,uniform_e2e_rerun,1,1,0,0,732355,3e+06,0.244118,,ingestion-to-processing lag (before sink),13.0276
+1000000,40,3J,ThreeWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,34.9153,308940,1e+06,0.30894,0.791366,complete latency (acking),57.6771
+1000000,40,4J,FourWayJoin,flink,uniform,1,1,1,64512.6,3.46827e+06,4e+06,0.867069,5.74202,latency markers (excl. Kafka wait),40.6146
+1000000,40,4J,FourWayJoin,kafkastream,uniform,1,1,1,0.108264,1.9878e+06,4e+06,0.49695,20.6004,record-e2e-latency avg (incl. Kafka wait),47.3922
+1000000,40,4J,FourWayJoin,risingwave,uniform,7,1,1,10.6203,6203.87,4e+06,0.00155097,221.684,barrier in-flight latency,1.63542
+1000000,40,4J,FourWayJoin,spark,uniform_e2e_rerun,9,0,0,0,0,4e+06,0,,ingestion-to-processing lag (before sink),1.58629
+1000000,40,4J,FourWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,3.05085,229803,1e+06,0.229803,1.62253,complete latency (acking),42.8958
+1000000,40,5J,FiveWayJoin,flink,uniform,1,1,1,9071.38,2.42772e+06,5e+06,0.485545,8.97959,latency markers (excl. Kafka wait),26.875
+1000000,40,5J,FiveWayJoin,kafkastream,uniform,1,1,1,0.333703,1.95431e+06,5e+06,0.390861,17.7478,record-e2e-latency avg (incl. Kafka wait),56.6979
+1000000,40,5J,FiveWayJoin,risingwave,uniform,7,1,0,0,7413.84,5e+06,0.00148277,0.504563,barrier in-flight latency,1.52604
+1000000,40,5J,FiveWayJoin,spark,uniform_e2e_rerun,6,0,0,0,0,5e+06,0,,ingestion-to-processing lag (before sink),0.512873
+1000000,40,5J,FiveWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,2.71186,290639,1e+06,0.290639,1.59943,complete latency (acking),52.651
+1000000,40,6J,SixWayJoin,flink,uniform,1,1,1,2021.59,1.32576e+06,6e+06,0.220961,18.6327,latency markers (excl. Kafka wait),17.651
+1000000,40,6J,SixWayJoin,kafkastream,uniform,1,1,1,0.113682,2.15016e+06,6e+06,0.358359,4.8368,record-e2e-latency avg (incl. Kafka wait),57.1406
+1000000,40,6J,SixWayJoin,risingwave,uniform,9,1,0,0,8333.8,6e+06,0.00138897,0.504563,barrier in-flight latency,0.494792
+1000000,40,6J,SixWayJoin,spark,uniform_e2e_rerun,5,0,0,0,0,6e+06,0,,ingestion-to-processing lag (before sink),0.517026
+1000000,40,6J,SixWayJoin,storm,distributed_fixed_exporter_fix,1,1,1,1.69492,347494,1e+06,0.347494,1.57635,complete latency (acking),58.8229

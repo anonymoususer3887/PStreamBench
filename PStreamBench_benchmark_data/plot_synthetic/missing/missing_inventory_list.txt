@@ -1,0 +1,64 @@
+
+### real / flink
+- Bargain Index: lat_only: 100k DoP 4, 100k DoP 8, 100k DoP 16, 100k DoP 32, 100k DoP 40, 500k DoP 4, 500k DoP 8, 500k DoP 16, 500k DoP 32, 500k DoP 40, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40
+- Spike Detection: lat_only: 1M DoP 16, 1M ds2, 1M dhalion
+
+### real / kafkastream
+- Ad Analytics: missing: 1M ds2
+- Click Analytics: thr_only: 1M ds2
+- Google Cloud Monitoring: missing: 1M ds2
+- Linear Road: no_output: 1M ds2, 1M dhalion
+- Log Processing: no_output: 1M ds2, 1M dhalion
+- Machine Outlier: no_output: 1M ds2, 1M dhalion
+- Sentiment Analysis: no_output: 1M ds2, 1M dhalion
+- Smart Grid: no_output: 1M ds2, 1M dhalion
+- Traffic Monitoring: lat_only: 1M DoP 32 | missing: 500k ds2, 1M ds2
+
+### real / spark
+- TPCH: no_output: 500k DoP 8, 1M DoP 32
+- Traffic Monitoring: missing: 500k DoP 4
+- Trending Topics: no_output: 1M DoP 4
+- Word Count: no_output: 500k DoP 16
+
+### real / storm
+- Ad Analytics: no_output: 1M ds2, 1M dhalion
+- Bargain Index: lat_only: 100k DoP 4, 100k DoP 8, 100k DoP 16, 100k DoP 32, 100k DoP 40, 500k DoP 4, 500k DoP 8, 500k DoP 16, 500k DoP 32, 500k DoP 40, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40 | no_output: 1M ds2, 1M dhalion
+- Click Analytics: no_output: 1M ds2, 1M dhalion
+- Google Cloud Monitoring: lat_only: 100k DoP 16, 500k DoP 16, 1M DoP 16 | no_output: 100k DoP 2, 100k DoP 4, 100k DoP 8, 100k ds2, 100k dhalion, 500k DoP 2, 500k DoP 4, 500k DoP 8, 500k DoP 32, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M ds2, 1M dhalion | thr_only: 100k DoP 32, 100k DoP 40, 500k DoP 40, 1M DoP 32, 1M DoP 40
+- Linear Road: lat_only: 100k DoP 2, 100k DoP 4, 100k DoP 8, 100k DoP 16, 100k ds2, 100k dhalion, 500k DoP 2, 500k DoP 4, 500k DoP 8, 500k DoP 16, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M ds2, 1M dhalion
+- Sentiment Analysis: lat_only: 100k DoP 2, 100k DoP 4, 100k DoP 8, 100k ds2, 100k dhalion, 500k DoP 2, 500k DoP 4, 500k DoP 8, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M ds2, 1M dhalion | thr_only: 100k DoP 16, 100k DoP 32, 100k DoP 40, 500k DoP 16, 500k DoP 32, 500k DoP 40, 1M DoP 16, 1M DoP 32, 1M DoP 40
+- Smart Grid: lat_only: 500k ds2
+- Spike Detection: lat_only: 100k DoP 8, 1M DoP 32 | no_output: 100k ds2, 100k dhalion, 500k ds2, 500k dhalion, 1M ds2, 1M dhalion
+- Trending Topics: missing: 1M DoP 16, 1M DoP 32
+- Word Count: no_output: 1M ds2, 1M dhalion
+
+### synthetic / flink
+- FiveWayJoin: thr_only: 100k DoP 40, 1M DoP 16, 1M ds2
+- FourFilters: no_output: 100k DoP 4 | thr_only: 100k DoP 2, 100k DoP 8
+- FourWayJoin: thr_only: 100k DoP 40
+- LinearQuery: no_output: 1M DoP 16 | thr_only: 100k DoP 32
+- SixWayJoin: no_output: 100k DoP 4, 500k DoP 2 | thr_only: 500k dhalion
+- ThreeFilters: no_output: 100k DoP 2, 100k DoP 4 | thr_only: 500k DoP 40, 1M ds2
+- ThreeWayJoin: no_output: 500k DoP 2 | thr_only: 100k DoP 4, 1M DoP 2, 1M DoP 8, 1M DoP 32, 1M ds2
+- TwoFilters: thr_only: 1M DoP 16
+- TwoWayJoin: thr_only: 100k DoP 40, 500k ds2, 1M dhalion
+
+### synthetic / spark
+- FiveWayJoin: no_output: 100k DoP 2, 100k DoP 40, 100k ds2, 100k dhalion, 500k DoP 2, 500k DoP 4, 500k DoP 8, 500k DoP 16, 500k DoP 32, 500k DoP 40, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40, 1M ds2, 1M dhalion | thr_only: 100k DoP 4, 100k DoP 8, 100k DoP 16, 100k DoP 32
+- FourFilters: thr_only: 100k ds2, 100k dhalion, 500k ds2, 500k dhalion, 1M DoP 8, 1M ds2, 1M dhalion
+- FourWayJoin: no_output: 500k DoP 2, 500k DoP 32, 500k DoP 40, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40, 1M ds2, 1M dhalion | thr_only: 100k DoP 2, 100k ds2, 100k dhalion, 500k DoP 4, 500k DoP 8, 500k DoP 16
+- LinearQuery: no_output: 100k ds2, 100k dhalion | thr_only: 500k ds2, 500k dhalion, 1M ds2, 1M dhalion
+- SixWayJoin: no_output: 100k DoP 2, 100k DoP 4, 100k DoP 8, 100k DoP 16, 100k DoP 32, 100k DoP 40, 100k ds2, 100k dhalion, 500k DoP 2, 500k DoP 4, 500k DoP 8, 500k DoP 16, 500k DoP 32, 500k DoP 40, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40, 1M ds2, 1M dhalion
+- ThreeFilters: thr_only: 100k ds2, 100k dhalion, 500k ds2, 500k dhalion, 1M ds2, 1M dhalion
+- ThreeWayJoin: thr_only: 100k ds2, 100k dhalion, 500k DoP 2, 500k DoP 16, 500k DoP 32, 500k DoP 40, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40, 1M ds2, 1M dhalion
+- TwoFilters: thr_only: 100k ds2, 100k dhalion, 500k ds2, 500k dhalion, 1M ds2, 1M dhalion
+- TwoWayJoin: thr_only: 100k ds2, 100k dhalion, 500k DoP 2, 500k ds2, 500k dhalion, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M DoP 32, 1M DoP 40, 1M ds2, 1M dhalion
+
+### synthetic / storm
+- FiveWayJoin: lat_only: 100k DoP 2, 500k DoP 2, 500k DoP 4, 500k DoP 8, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16
+- FourFilters: lat_only: 100k DoP 32
+- FourWayJoin: lat_only: 500k DoP 2, 500k DoP 4, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16
+- LinearQuery: lat_only: 100k DoP 2
+- SixWayJoin: lat_only: 100k DoP 2, 500k DoP 2, 500k DoP 4, 500k DoP 8, 1M DoP 2, 1M DoP 4, 1M DoP 8, 1M DoP 16, 1M ds2
+- ThreeWayJoin: lat_only: 500k DoP 2, 1M DoP 4, 1M dhalion
+- TwoWayJoin: lat_only: 1M DoP 2
