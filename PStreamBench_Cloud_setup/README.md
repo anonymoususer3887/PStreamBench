@@ -2,13 +2,6 @@
 
 This README describes how to provision **CloudLab** nodes for **PStreamBench** and prepare them for benchmarking **Apache Flink**, **Apache Storm**, **Apache Spark**, **Kafka Streams**, and **RisingWave** on a multi-node cluster. The CloudLab profile installs all required system dependencies and bootstrap services so that PStreamBench can later deploy and run jobs for any of the five on the same provisioned nodes, from the controller/UI.
 
-> Scope of this README  
-> ✅ CloudLab profile setup + node preparation  
-> ✅ Kafka + ZooKeeper cluster bootstrapping across all nodes  
-> ✅ Dependencies for **Flink**, **Storm**, **Spark**, **Kafka Streams**, and **RisingWave** (including RisingWave's own binary download — see `install_all_tools.sh`)  
-> ✅ Prometheus/Grafana + Node Exporter preparation  
-> ❌ Controller/UI setup (see `PStreamBench_controller/` and `PStreamBench_wui/` READMEs)
-
 ---
 
 ## Table of Contents
