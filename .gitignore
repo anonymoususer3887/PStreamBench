@@ -31,3 +31,6 @@ PStreamBench_controller/dsp_be/infra/reporting_scripts/WordCount/
 PStreamBench_controller/data.txt
 PstreamBench_Cloud_profile/*.jar
 docs/
+
+id_rsa
+id_rsa.pub
